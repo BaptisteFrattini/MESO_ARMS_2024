@@ -20,5 +20,11 @@ Imports:
     renv,
     targets,
     rcompendium,
-    tarchetypes
+    tarchetypes,
+    vegan,
+    ggpubr,
+    forcats,
+    ggplot2,
+    wesanderson,
+    reshape2
     
