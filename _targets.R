@@ -11,5 +11,6 @@ list(
 
   ,tar_target(stack_c_chart, fun_stack_c_chart(data_and_meta_clean = clean_data_metadata))
   
+  ,tar_target(venn_diag, fun_venn_diag(data_and_meta_clean = clean_data_metadata))
   
   )
