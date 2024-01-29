@@ -2,7 +2,7 @@ name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iterat
 clean_data|stem|7e7e27effe4b2f66|874f7ed8126eb6e4|01a282feeed1ae45|-1939972259||t19746.4227078266s|6281f79619f6778a|80|rds|local|vector|||1.49||
 clean_data_metadata|stem|bfb5f7e4f817df83|874f7ed8126eb6e4|4cca66372003a166|-168816234||t19747.613963612s|37e90c3ecba3a0b1|177|rds|local|vector|||1.29||
 data_arms|function|5c45bc8c7d0be552|||||||||||||||
-explore_data|stem|d31eedc8ba1385f4|7a18a4e946a390de|69cbba5f26906ec6|-1764563911||t19747.6139765053s|a1c456b03adbfbf8|44|rds|local|vector|||1.09||
+explore_data|stem|d31eedc8ba1385f4|7a18a4e946a390de|69cbba5f26906ec6|-1764563911||t19751.3947542977s|a1c456b03adbfbf8|44|rds|local|vector|||2.92||
 fun_cleaning_data|function|1af269422154a151|||||||||||||||
 fun_data_cleaning|function|89f8a469c4a81cb7|||||||||||||||
 fun_data_exploring|function|dbe6444b2c60d7c8|||||||||||||||
