@@ -1,13 +1,19 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
+beta_decomp|stem|57b0f5e355103fda|8995caf1842ea77c|afa29ec2aa963c8d|1991815566||t19753.4435784146s|3e4acf685da8f273|84|rds|local|vector|||2.31||
+boxplot_categories|stem|c586488f8f673cf8|1eaac9150ad08650|f046d1f9426d4f13|1136800999||t19754.6431006661s|40b3a10246f0095b|83|rds|local|vector|||4.34||
 clean_data|stem|7e7e27effe4b2f66|874f7ed8126eb6e4|01a282feeed1ae45|-1939972259||t19746.4227078266s|6281f79619f6778a|80|rds|local|vector|||1.49||
-clean_data_metadata|stem|bfb5f7e4f817df83|874f7ed8126eb6e4|4cca66372003a166|-168816234||t19747.613963612s|37e90c3ecba3a0b1|177|rds|local|vector|||1.29||
+clean_data_metadata|stem|bfb5f7e4f817df83|874f7ed8126eb6e4|9c4ec1eb70260fec|-168816234||t19754.5420281336s|37e90c3ecba3a0b1|177|rds|local|vector|||1.89||
 data_arms|function|5c45bc8c7d0be552|||||||||||||||
-explore_data|stem|d31eedc8ba1385f4|7a18a4e946a390de|69cbba5f26906ec6|-1764563911||t19751.3947542977s|a1c456b03adbfbf8|44|rds|local|vector|||2.92||
+explore_data|stem|2c235800f2b18e3c|7a18a4e946a390de|91f8621879bae5ce|-1764563911||t19753.4448421661s|094cdf8ee71e1e88|135|rds|local|vector|||3.98||
+fun_boxplot_categories|function|504ae0368514d254|||||||||||||||
 fun_cleaning_data|function|1af269422154a151|||||||||||||||
-fun_data_cleaning|function|89f8a469c4a81cb7|||||||||||||||
-fun_data_exploring|function|dbe6444b2c60d7c8|||||||||||||||
-fun_stack_c_chart|function|610886cb6e91c9c8|||||||||||||||
-fun_venn_diag|function|771c55bc487cc59d|||||||||||||||
+fun_data_cleaning|function|f7879eb563c10ac6|||||||||||||||
+fun_data_exploring|function|521d56f0fee0b144|||||||||||||||
+fun_decomp_betadiv|function|bf07f4de01dbe843|||||||||||||||
+fun_PCoA|function|9c9d4bee6c804c08|||||||||||||||
+fun_stack_c_chart|function|aebe7b832c12f140|||||||||||||||
+fun_venn_diag|function|6b16167cd6ba51ff|||||||||||||||
+PCoA|stem|d31eedc8ba1385f4|1a9301a1ef9185ae|deb407616476e275|-390331804||t19754.5440971437s|a1c456b03adbfbf8|44|rds|local|vector|||9.39|lécart type est nul. lécart type est nul. lécart type est nul. lécart type est nul. lécart type est nul. lécart type est nul. lécart type est nul. lécart type est nul. lécart type est nul. lécart type est nul. lécart type est nul. lécart type est nul. lécart type est nul. lécart type est nul. lécart type est nul. lécart type est nul. lécart type est nul. lécart type est nul. lécart type est nul. lécart type est nul. lécart type est nul. lécart type est nul. lécart type est nul. lécart type est nul. lécart type est nul. lécart type est nul. lécart type est nul. lécart type est nul. lécart type est nul. lécart type est nul. lécart type est nul. lécart type est nul. Conversion automatique de LHS en liste|
 raw_data|stem|28517e83649bdb23|bae541ffe6e985b3|ef46db3751d8e999|-725646845|data/raw-data/data_MESO_ARMS(2).csv|t19747.6009306564s|f3bf6fa7f4b69337|399742|file|local|vector|||0||
-stack_c_chart|stem|d31eedc8ba1385f4|8f607d9e7d22aed9|e3ee83fb331f1439|425191072||t19747.6397996858s|a1c456b03adbfbf8|44|rds|local|vector|||0.76||
-venn_diag|stem|4d3ab6a53622b980|7a35f27582aa687d|019f10f02deb6d64|-1076613582||t19748.5298138053s|a02a8e2007330cdf|142|rds|local|vector|||3.73||
+stack_c_chart|stem|edcde4302b274ef0|8f607d9e7d22aed9|95bff4f9c3902767|425191072||t19752.3680774734s|37c5114db086cc97|136|rds|local|vector|||1.9||
+venn_diag|stem|4d3ab6a53622b980|7a35f27582aa687d|6c220771cc307c51|-1076613582||t19753.4435514973s|a02a8e2007330cdf|142|rds|local|vector|||4.68||

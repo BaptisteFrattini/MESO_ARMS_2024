@@ -1,9 +1,9 @@
-#' Stack column chart 
+#' Venn diagrams
 #'
 #' @param data_and_meta_clean the path to the clean data
 #' 
 #'
-#' @return the path to the subseted raw data file
+#' @return the path to the venn diag
 #' @export
 #'
 fun_venn_diag <- function(data_and_meta_clean){
@@ -28,8 +28,10 @@ fun_venn_diag <- function(data_and_meta_clean){
                               shallow = data_depth_pa$RUNARMS)
   
   deep_msp <- data_depth_pa$msp[data_depth_pa["deep"] == 1]
+  length(deep_msp)
   shallow_msp <- data_depth_pa$msp[data_depth_pa["shallow"] == 1]
-
+  length(shallow_msp)
+  
   # Trouver les MSP présentes dans les deux colonnes (intersection)
   msp_deep_shallow <- intersect(deep_msp, shallow_msp)
 

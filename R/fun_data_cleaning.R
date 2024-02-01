@@ -194,7 +194,18 @@ fun_data_cleaning <- function(raw_data){
   arms <- substr(rownames(data), 1,9)
   campain <- substr(rownames(data), 1,7)
   triplicat <- substr(rownames(data), 1,8) 
-  meta_data <- data.frame(name, arms, campain, triplicat)
+  plate_number <- substr(rownames(data), 11,11)
+  orientation <- substr(rownames(data), 12,12)
+  open_close <- rep(c("c","c","o","o","c","c","o","o","c","c","o","o","c","c","o","o"), 6) 
+  meta_data <- data.frame(name, arms, campain, triplicat, plate_number, orientation, open_close)
+  meta_data <- meta_data %>%
+    mutate(site = case_when(
+      triplicat %in% c("RUNARMS1", "P50ARMS1") ~ "Cap_Houssaye",
+      triplicat %in% c("RUNARMS5", "P50ARMS2") ~ "Saint_Leu",
+      triplicat %in% c("RUNARMS9", "P50ARMS3") ~ "Grand_Bois",
+      TRUE ~ "Autre"  # Vous pouvez spécifier une valeur par défaut si aucune condition n'est satisfaite
+    ))
+  
   
   path <- "data/derived-data/" 
   
@@ -223,7 +234,14 @@ fun_data_cleaning <- function(raw_data){
   arms <- rownames(data_mean)
   campain <- substr(rownames(data_mean), 1,7)
   triplicat <- substr(rownames(data_mean), 1,8) 
-  meta_data_mean <- data.frame(arms, campain, triplicat)
+  site <- c(rep("Cap_La_Houssaye", 3), 
+            rep("Saint_Leu", 3),
+            rep("Grand_Bois", 3),
+            rep("Cap_La_Houssaye", 3), 
+            rep("Saint_Leu", 3),
+            rep("Grand_Bois", 3))
+  meta_data_mean <- data.frame(arms, campain, triplicat, site)
+  
   
   path <- "data/derived-data/" 
   

@@ -13,4 +13,9 @@ list(
   
   ,tar_target(venn_diag, fun_venn_diag(data_and_meta_clean = clean_data_metadata))
   
+  ,tar_target(beta_decomp, fun_decomp_betadiv(data_and_meta_clean = clean_data_metadata))
+  
+  ,tar_target(PCoA, fun_PCoA(data_and_meta_clean = clean_data_metadata))
+  
+  ,tar_target(boxplot_categories, fun_boxplot_categories(data_and_meta_clean = clean_data_metadata))
   )

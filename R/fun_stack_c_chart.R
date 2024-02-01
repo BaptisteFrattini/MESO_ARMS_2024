@@ -3,7 +3,7 @@
 #' @param data_and_meta_clean the path to the clean data
 #' 
 #'
-#' @return the path to the subseted raw data file
+#' @return the path to the chart
 #' @export
 #'
 fun_stack_c_chart <- function(data_and_meta_clean){
@@ -94,5 +94,5 @@ fun_stack_c_chart <- function(data_and_meta_clean){
   path_to_stack_c_chart <-  here::here("outputs/stack_c_chart.pdf")
   ggsave(path_to_stack_c_chart, plot = mx, width = 8, height = 8.5)
   
-  return(NULL)
+  return(path_to_stack_c_chart)
 }
