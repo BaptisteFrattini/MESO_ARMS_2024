@@ -11,6 +11,7 @@ fun_decomp_betadiv <- function(data_and_meta_clean){
   library(betapart)
   library(reshape2)
   library(stringr)
+  library(dplyr)
   data_mean <- read.csv(data_and_meta_clean["path_data_mean"], row.names = 1)
   meta_mean <- read.csv(data_and_meta_clean["path_meta_mean"], row.names = 1)
 
@@ -21,10 +22,24 @@ fun_decomp_betadiv <- function(data_and_meta_clean){
   mat.nest <- B.pair.pa$beta.jne
   mat.jacc <- B.pair.pa$beta.jac
   
-  #### turn ####
+  ## Comparison between ARMS of the same depth and ARMS from =/= depth ####
+    ### turn ####
   
   df.turn <- melt(as.matrix(mat.turn), varnames = c("row", "col"))
   df.turn <- subset(df.turn, row != col)
+  
+  # Convert factors to characters
+  df.turn$row <- as.character(df.turn$row)
+  df.turn$col <- as.character(df.turn$col)
+  
+  # Create a new column with sorted combinations
+  df.turn$sorted_comparison <- apply(df.turn[, c("row", "col")], 1, function(x) paste(sort(x), collapse="_"))
+  
+  # Identify and remove redundant comparisons
+  df_unique <- df.turn %>% distinct(sorted_comparison, .keep_all = TRUE)
+  
+  # Remove the temporary column
+  df.turn <- df_unique[, -ncol(df_unique)]
   
   merged_df <- merge(df.turn, meta_mean, by.x = c("row"), by.y = c("arms"))
   merged_df2 <- merge(merged_df, meta_mean, by.x = c("col"), by.y = c("arms"))
@@ -113,10 +128,24 @@ fun_decomp_betadiv <- function(data_and_meta_clean){
   c1
   
 
-  #### nest ####
+    ### nest ####
   
   df.nest <- melt(as.matrix(mat.nest), varnames = c("row", "col"))
   df.nest <- subset(df.nest, row != col)
+  
+  # Convert factors to characters
+  df.nest$row <- as.character(df.nest$row)
+  df.nest$col <- as.character(df.nest$col)
+  
+  # Create a new column with sorted combinations
+  df.nest$sorted_comparison <- apply(df.nest[, c("row", "col")], 1, function(x) paste(sort(x), collapse="_"))
+  
+  # Identify and remove redundant comparisons
+  df_unique <- df.nest %>% distinct(sorted_comparison, .keep_all = TRUE)
+  
+  # Remove the temporary column
+  df.nest <- df_unique[, -ncol(df_unique)]
+  
   
   merged_df <- merge(df.nest, meta_mean, by.x = c("row"), by.y = c("arms"))
   merged_df2 <- merge(merged_df, meta_mean, by.x = c("col"), by.y = c("arms"))
@@ -200,10 +229,25 @@ fun_decomp_betadiv <- function(data_and_meta_clean){
     theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 11), axis.title.x = element_blank(), axis.title.y = element_text(size=9))
   c2
   
-  #### jacc ####
+    ### jacc ####
   
   df.jacc <- melt(as.matrix(mat.jacc), varnames = c("row", "col"))
   df.jacc <- subset(df.jacc, row != col)
+  
+  # Convert factors to characters
+  df.jacc$row <- as.character(df.jacc$row)
+  df.jacc$col <- as.character(df.jacc$col)
+  
+  # Create a new column with sorted combinations
+  df.jacc$sorted_comparison <- apply(df.jacc[, c("row", "col")], 1, function(x) paste(sort(x), collapse="_"))
+  
+  # Identify and remove redundant comparisons
+  df_unique <- df.jacc %>% distinct(sorted_comparison, .keep_all = TRUE)
+  
+  # Remove the temporary column
+  df.jacc <- df_unique[, -ncol(df_unique)]
+  
+  
   
   merged_df <- merge(df.jacc, meta_mean, by.x = c("row"), by.y = c("arms"))
   merged_df2 <- merge(merged_df, meta_mean, by.x = c("col"), by.y = c("arms"))
@@ -293,6 +337,174 @@ fun_decomp_betadiv <- function(data_and_meta_clean){
   
   path_to_boxplot_betadiv <- paste0("outputs/boxplot_beta_decomp.pdf")
   ggsave(filename =  path_to_boxplot_betadiv, plot = fin, width = 13, height = 15.5)
+  
+  
+  
+  ## Comparison between ARMS of differents site and ARMS of different depth ####
+    ### turn ####
+  df.turn <- melt(as.matrix(mat.turn), varnames = c("row", "col"))
+  df.turn <- subset(df.turn, row != col)
+  
+  # Convert factors to characters
+  df.turn$row <- as.character(df.turn$row)
+  df.turn$col <- as.character(df.turn$col)
+  
+  # Create a new column with sorted combinations
+  df.turn$sorted_comparison <- apply(df.turn[, c("row", "col")], 1, function(x) paste(sort(x), collapse="_"))
+  
+  # Identify and remove redundant comparisons
+  df_unique <- df.turn %>% distinct(sorted_comparison, .keep_all = TRUE)
+  
+  # Remove the temporary column
+  
+  df.turn <- df_unique[, -ncol(df_unique)]
+  
+  
+  merged_df <- merge(df.turn, meta_mean, by.x = c("row"), by.y = c("arms"))
+  merged_df2 <- merge(merged_df, meta_mean, by.x = c("col"), by.y = c("arms"))
+  df.turn <- subset(merged_df2, campain.x == campain.y)
+  df.turn$comparisons <- ifelse(df.turn$site.x == df.turn$site.y, "Same_site", "Different_site")
+
+  
+  
+  ggplot(df.turn, aes(x=value)) + 
+    geom_density() #Données normales
+  
+  
+  library(ggsignif)
+  library(ggpubr)
+  p3 <- ggboxplot(df.turn, x = "campain.x", 
+                  y = "value",
+                  add = "jitter", 
+                  short.panel.labs = FALSE,
+                  color = "campain.x",
+                  palette = c("blue4", "aquamarine3"),
+                  facet.by = "comparisons", ylab = "Turnover")+ stat_compare_means(label = "p.signif", method = "t.test", label.x = 1.5) 
+  
+  p3 
+  
+  ### trying to include comparison between deep and shallow
+  df.turn.2 <- subset(merged_df2, campain.x != campain.y)
+  df.turn.2$comparisons <- ifelse(df.turn.2$site.x == df.turn.2$site.y, "Same_site", "Different_site")
+  df.turn.2 <- subset(df.turn.2, df.turn.2$comparisons == "Same_site")
+  
+  
+  Z = data.frame(value = df.turn.2$value, 
+                 comp = rep("Z", nrow(df.turn.2)))
+  
+  df.turn.Y <- subset(df.turn, df.turn$comparisons == "Different_site" & df.turn$campain.x == "RUNARMS")
+  
+  Y = data.frame(value = df.turn.Y$value, 
+                 comp = rep("Y", nrow(df.turn.Y)))
+  
+  df.turn.X <- subset(df.turn, df.turn$comparisons == "Different_site" & df.turn$campain.x == "P50ARMS")
+    
+  X = data.frame(value = df.turn.X$value, 
+                 comp = rep("X", nrow(df.turn.X)))
+  
+  df <- rbind.data.frame(Z,Y,X)
+  
+  my_comparisons <- list( c("Z", "Y"), c("Y", "X"), c("Z", "X"))
+  
+  v1 <- ggboxplot(df, x = "comp", 
+                  y = "value",
+                  add = "jitter", 
+                  short.panel.labs = FALSE,
+                  color = "comp",
+                  palette = c("black", "aquamarine3", "blue3"),
+                  ylab = "Turnover") + 
+    stat_compare_means(comparisons = my_comparisons, method = "t.test", label = "p.signif") + 
+    stat_compare_means(label.y = 1, method = "anova")           
+  
+  v1 
+  
+  
+    ### nest ####
+  df.nest <- melt(as.matrix(mat.nest), varnames = c("row", "col"))
+  df.nest <- subset(df.nest, row != col)
+  
+  # Convert factors to characters
+  df.nest$row <- as.character(df.nest$row)
+  df.nest$col <- as.character(df.nest$col)
+  
+  # Create a new column with sorted combinations
+  df.nest$sorted_comparison <- apply(df.nest[, c("row", "col")], 1, function(x) paste(sort(x), collapse="_"))
+  
+  # Identify and remove redundant comparisons
+  df_unique <- df.nest %>% distinct(sorted_comparison, .keep_all = TRUE)
+  
+  # Remove the temporary column
+  
+  df.nest <- df_unique[, -ncol(df_unique)]
+  
+  
+  merged_df <- merge(df.nest, meta_mean, by.x = c("row"), by.y = c("arms"))
+  merged_df2 <- merge(merged_df, meta_mean, by.x = c("col"), by.y = c("arms"))
+  df.nest <- subset(merged_df2, campain.x == campain.y)
+  df.nest$comparisons <- ifelse(df.nest$site.x == df.nest$site.y, "Same_site", "Different_site")
+  df.nest$same_site_campain <- paste0(df.nest$same_site, "_", df.nest$campain.x)
+  
+  
+  ggplot(df.nest, aes(x=value)) + 
+    geom_density() #Données normales
+
+  p4 <- ggboxplot(df.nest, x = "campain.x", 
+                  y = "value",
+                  add = "jitter", 
+                  short.panel.labs = FALSE,
+                  color = "campain.x",
+                  palette = c("blue4", "aquamarine3"),
+                  facet.by = "comparisons", ylab = "Nestedness") + stat_compare_means(label = "p.signif", method = "t.test", label.x = 1.5) 
+  
+  p4 
+  
+    ### jacc ####
+  df.jacc <- melt(as.matrix(mat.jacc), varnames = c("row", "col"))
+  df.jacc <- subset(df.jacc, row != col)
+  
+  # Convert factors to characters
+  df.jacc$row <- as.character(df.jacc$row)
+  df.jacc$col <- as.character(df.jacc$col)
+  
+  # Create a new column with sorted combinations
+  df.jacc$sorted_comparison <- apply(df.jacc[, c("row", "col")], 1, function(x) paste(sort(x), collapse="_"))
+  
+  # Identify and remove redundant comparisons
+  df_unique <- df.jacc %>% distinct(sorted_comparison, .keep_all = TRUE)
+  
+  # Remove the temporary column
+  
+  df.jacc <- df_unique[, -ncol(df_unique)]
+  
+  
+  merged_df <- merge(df.jacc, meta_mean, by.x = c("row"), by.y = c("arms"))
+  merged_df2 <- merge(merged_df, meta_mean, by.x = c("col"), by.y = c("arms"))
+  df.jacc <- subset(merged_df2, campain.x == campain.y)
+  df.jacc$comparisons <- ifelse(df.jacc$site.x == df.jacc$site.y, "Same_site", "Different_site")
+  df.jacc$same_site_campain <- paste0(df.jacc$same_site, "_", df.jacc$campain.x)
+  
+  
+  ggplot(df.jacc, aes(x=value)) + 
+    geom_density() #Données normales
+  
+  p5 <- ggboxplot(df.jacc, x = "campain.x", 
+                  y = "value",
+                  add = "jitter", 
+                  short.panel.labs = FALSE,
+                  color = "campain.x",
+                  palette = c("blue4", "aquamarine3"),
+                  facet.by = "comparisons", ylab = "jaccard dissimilarity") + stat_compare_means(label = "p.signif", method = "t.test", label.x = 1.5) 
+  
+  
+  p5 
+  
+  fin <- cowplot::plot_grid(p5, p3, p4, 
+                            ncol = 1,
+                            nrow = 3)
+  
+  path_to_boxplot_betadiv_site <- paste0("outputs/boxplot_beta_decomp_site.pdf")
+  ggsave(filename =  path_to_boxplot_betadiv_site, plot = fin, width = 10, height = 13)
+  
   
   return(path_to_boxplot_betadiv)
 }
