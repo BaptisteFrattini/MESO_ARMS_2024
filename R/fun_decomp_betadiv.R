@@ -414,7 +414,7 @@ fun_decomp_betadiv <- function(data_and_meta_clean){
                   palette = c("black", "aquamarine3", "blue3"),
                   ylab = "Turnover") + 
     stat_compare_means(comparisons = my_comparisons, method = "t.test", label = "p.signif") + 
-    stat_compare_means(label.y = 1, method = "anova")           
+    stat_compare_means(label.y = 1, method = "anova") + theme_classic()          
   
   v1 
   
@@ -458,6 +458,41 @@ fun_decomp_betadiv <- function(data_and_meta_clean){
   
   p4 
   
+  ### trying to include comparison between deep and shallow
+  df.nest.2 <- subset(merged_df2, campain.x != campain.y)
+  df.nest.2$comparisons <- ifelse(df.nest.2$site.x == df.nest.2$site.y, "Same_site", "Different_site")
+  df.nest.2 <- subset(df.nest.2, df.nest.2$comparisons == "Same_site")
+  
+  
+  Z = data.frame(value = df.nest.2$value, 
+                 comp = rep("Z", nrow(df.nest.2)))
+  
+  df.nest.Y <- subset(df.nest, df.nest$comparisons == "Different_site" & df.nest$campain.x == "RUNARMS")
+  
+  Y = data.frame(value = df.nest.Y$value, 
+                 comp = rep("Y", nrow(df.nest.Y)))
+  
+  df.nest.X <- subset(df.nest, df.nest$comparisons == "Different_site" & df.nest$campain.x == "P50ARMS")
+  
+  X = data.frame(value = df.nest.X$value, 
+                 comp = rep("X", nrow(df.nest.X)))
+  
+  df <- rbind.data.frame(Z,Y,X)
+  
+  my_comparisons <- list( c("Z", "Y"), c("Y", "X"), c("Z", "X"))
+  
+  v2 <- ggboxplot(df, x = "comp", 
+                  y = "value",
+                  add = "jitter", 
+                  short.panel.labs = FALSE,
+                  color = "comp",
+                  palette = c("black", "aquamarine3", "blue3"),
+                  ylab = "Nestedness") + 
+    stat_compare_means(label.y = 1, method = "kruskal.test")  + theme_classic()         
+  
+  v2 
+  
+  
     ### jacc ####
   df.jacc <- melt(as.matrix(mat.jacc), varnames = c("row", "col"))
   df.jacc <- subset(df.jacc, row != col)
@@ -497,6 +532,50 @@ fun_decomp_betadiv <- function(data_and_meta_clean){
   
   
   p5 
+  
+  ### trying to include comparison between deep and shallow
+  df.jacc.2 <- subset(merged_df2, campain.x != campain.y)
+  df.jacc.2$comparisons <- ifelse(df.jacc.2$site.x == df.jacc.2$site.y, "Same_site", "Different_site")
+  df.jacc.2 <- subset(df.jacc.2, df.jacc.2$comparisons == "Same_site")
+  
+  
+  Z = data.frame(value = df.jacc.2$value, 
+                 comp = rep("Z", nrow(df.jacc.2)))
+  
+  df.jacc.Y <- subset(df.jacc, df.jacc$comparisons == "Different_site" & df.jacc$campain.x == "RUNARMS")
+  
+  Y = data.frame(value = df.jacc.Y$value, 
+                 comp = rep("Y", nrow(df.jacc.Y)))
+  
+  df.jacc.X <- subset(df.jacc, df.jacc$comparisons == "Different_site" & df.jacc$campain.x == "P50ARMS")
+  
+  X = data.frame(value = df.jacc.X$value, 
+                 comp = rep("X", nrow(df.jacc.X)))
+  
+  df <- rbind.data.frame(Z,Y,X)
+  
+  my_comparisons <- list( c("Z", "Y"), c("Y", "X"), c("Z", "X"))
+  
+  v3 <- ggboxplot(df, x = "comp", 
+                  y = "value",
+                  add = "jitter", 
+                  short.panel.labs = FALSE,
+                  color = "comp",
+                  palette = c("black", "aquamarine3", "blue3"),
+                  ylab = "jaccard dissimilarity") + 
+    stat_compare_means(comparisons = my_comparisons, method = "t.test", label = "p.signif") + 
+    stat_compare_means(label.y = 1, method = "anova") + theme_classic()          
+  
+  v3 
+  
+  fin <- cowplot::plot_grid(v3, v1, v2, 
+                            ncol = 1,
+                            nrow = 3)
+  
+  path_to_boxplot_betadiv_XYZ <- paste0("outputs/boxplot_beta_decomp_XYZ.pdf")
+  ggsave(filename =  path_to_boxplot_betadiv_XYZ, plot = fin, width = 6, height = 11.5)
+  
+  
   
   fin <- cowplot::plot_grid(p5, p3, p4, 
                             ncol = 1,
