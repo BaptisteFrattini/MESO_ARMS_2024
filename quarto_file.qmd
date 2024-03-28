@@ -1,0 +1,43 @@
+---
+format: docx
+editor: visual
+bibliography: references.bib
+csl: marine-ecology-progress-series.csl
+css: scientific.scss
+---
+
+## Informations
+
+**Title suggestion :** Are deep cryptobenthic sessile communities a potential refugia for threatened shallow reef communities ? A practical case using photo-analysis of ARMS.
+
+**Authors :** FRATTINI Baptiste 1, 2, BRUGGEMANN J. Henrich 2,3, GOBERVILLE Éric 1, BUREAU Sophie 2, GUILLAUME Mireille M.M. 1,3
+
+**Authors affiliation :** 1 Muséum national d'Histoire naturelle (MNHN), UMR 8067 BOrEA (MNHN, CNRS 2030, Sorbonne Université, IRD 207, Uni Caen-Normandie, Université des Antilles), Paris, France
+
+2 Université de La Réunion, UMR 9220 ENTROPIE (Université de La Réunion, IRD, IFREMER, Université de Nouvelle- Calédonie, CNRS), La Réunion, Saint- Denis, France
+
+3 LabEx CORAIL, Université de Perpignan, Perpignan, France
+
+**Abstract :**
+
+**Keywords :**
+
+## Introduction
+
+[@kramer2019]
+
+## Material and method
+
+## Results
+
+```{r, echo=FALSE}
+
+Venn = targets::tar_read("venn_diag")
+
+```
+
+![Figure 1. Venn diagrams or morpho-species for all sites combined and for each separate sites](%60r%20Venn%5B5%5D%60){width="80%" fig-align="left"}
+
+{{< pagebreak >}}
+
+## References

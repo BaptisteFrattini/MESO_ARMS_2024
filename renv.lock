@@ -11,7 +11,7 @@
   "Packages": {
     "BiodiversityR": {
       "Package": "BiodiversityR",
-      "Version": "2.15-4",
+      "Version": "2.16-1",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
@@ -21,7 +21,7 @@
         "tcltk",
         "vegan"
       ],
-      "Hash": "3e590b3745a9dc29fb96b2b78988cfa9"
+      "Hash": "4c1a639117a29bab0c41284e4402b6c0"
     },
     "DBI": {
       "Package": "DBI",
@@ -1192,9 +1192,9 @@
     },
     "ggplot2": {
       "Package": "ggplot2",
-      "Version": "3.4.4",
+      "Version": "3.5.0",
       "Source": "Repository",
-      "Repository": "CRAN",
+      "Repository": "RSPM",
       "Requirements": [
         "MASS",
         "R",
@@ -1213,7 +1213,7 @@
         "vctrs",
         "withr"
       ],
-      "Hash": "313d31eff2274ecf4c1d3581db7241f9"
+      "Hash": "52ef83f93f74833007f193b2d4c159a2"
     },
     "ggpubr": {
       "Package": "ggpubr",
@@ -1510,7 +1510,7 @@
     },
     "igraph": {
       "Package": "igraph",
-      "Version": "1.6.0",
+      "Version": "2.0.3",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
@@ -1526,9 +1526,10 @@
         "pkgconfig",
         "rlang",
         "stats",
-        "utils"
+        "utils",
+        "vctrs"
       ],
-      "Hash": "eef74fe28b747e52288ea9e1d3600034"
+      "Hash": "c3b7d801d722e26e4cd888e042bf9af5"
     },
     "ini": {
       "Package": "ini",
@@ -2259,6 +2260,26 @@
       ],
       "Hash": "1bbc97f7d637ab3917c514a69047b2c1"
     },
+    "quarto": {
+      "Package": "quarto",
+      "Version": "1.4",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Requirements": [
+        "R",
+        "cli",
+        "jsonlite",
+        "later",
+        "processx",
+        "rlang",
+        "rmarkdown",
+        "rstudioapi",
+        "tools",
+        "utils",
+        "yaml"
+      ],
+      "Hash": "c94c271f9b998d116186a78b2a9b23c1"
+    },
     "ragg": {
       "Package": "ragg",
       "Version": "1.2.7",
@@ -2430,13 +2451,13 @@
     },
     "renv": {
       "Package": "renv",
-      "Version": "1.0.3",
+      "Version": "1.0.5",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
         "utils"
       ],
-      "Hash": "41b847654f567341725473431dd0d5ab"
+      "Hash": "32c3f93e8360f667ca5863272ec8ba6a"
     },
     "reshape2": {
       "Package": "reshape2",
@@ -2637,6 +2658,16 @@
       ],
       "Hash": "10ee4b91ec812690bd55d9bf51edccee"
     },
+    "secretbase": {
+      "Package": "secretbase",
+      "Version": "0.3.0.1",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Requirements": [
+        "R"
+      ],
+      "Hash": "0c5ec9858d64bdcbde3e5ebf35d5a34c"
+    },
     "sessioninfo": {
       "Package": "sessioninfo",
       "Version": "1.2.2",
@@ -2792,7 +2823,7 @@
     },
     "tarchetypes": {
       "Package": "tarchetypes",
-      "Version": "0.7.11",
+      "Version": "0.8.0",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
@@ -2809,11 +2840,11 @@
         "vctrs",
         "withr"
       ],
-      "Hash": "156780d04fe436c7141f2d21b2b3446e"
+      "Hash": "38eddad863e58b95761d967887d7b59a"
     },
     "targets": {
       "Package": "targets",
-      "Version": "1.4.1",
+      "Version": "1.6.0",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
@@ -2827,7 +2858,9 @@
         "digest",
         "igraph",
         "knitr",
+        "ps",
         "rlang",
+        "secretbase",
         "stats",
         "tibble",
         "tidyselect",
@@ -2836,7 +2869,7 @@
         "vctrs",
         "yaml"
       ],
-      "Hash": "760c8dcdf3a21b7131c181f02705101c"
+      "Hash": "35b83348e5cf547715687c93ce5c2126"
     },
     "tcltk2": {
       "Package": "tcltk2",

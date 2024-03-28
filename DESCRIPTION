@@ -33,5 +33,6 @@ Imports:
     plotly,
     ggfortify,
     factoextra,
-    BiodiversityR
+    BiodiversityR,
+    quarto
     

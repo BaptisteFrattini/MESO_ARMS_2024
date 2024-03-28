@@ -32,6 +32,8 @@ fun_venn_diag <- function(data_and_meta_clean){
   shallow_msp <- data_depth_pa$msp[data_depth_pa["shallow"] == 1]
   length(shallow_msp)
   
+  #### Pour tous les sites ####
+  
   # Trouver les MSP présentes dans les deux colonnes (intersection)
   msp_deep_shallow <- intersect(deep_msp, shallow_msp)
 
@@ -46,11 +48,11 @@ fun_venn_diag <- function(data_and_meta_clean){
   x <- list(Deep = deep_msp,
             Shallow = shallow_msp)
   
-  Venn_depth_path <- here::here("outputs/Venn_depth.pdf")
+  Venn_depth_path <- here::here("outputs/Venn/Venn_depth.png")
   
-  venn <- ggvenn(x, fill_color = c("navy", "lightblue"))
+  venn <- ggvenn(x, fill_color = c("navy", "lightblue"), text_size = 5.5)
   
-  ggsave(filename =  Venn_depth_path, plot = venn , width = 6, height = 6)
+  ggsave(filename =  Venn_depth_path, plot = venn , width = 4, height = 4)
   
   
   #### Pour Saint Leu uniquement ####
@@ -93,11 +95,11 @@ fun_venn_diag <- function(data_and_meta_clean){
   x <- list(Deep = deep_msp,
             Shallow = shallow_msp)
   
-  Venn_depth_path <- here::here("outputs/Venn_depth_Saint_Leu.pdf")
+  Venn_leu_path <- here::here("outputs/Venn/Venn_depth_Saint_Leu.png")
   
-  venn <- ggvenn(x, fill_color = c("navy", "lightblue"))
+  venn_leu <- ggvenn(x, fill_color = c("navy", "lightblue"), text_size = 5.5)
   
-  ggsave(filename =  Venn_depth_path, plot = venn , width = 6, height = 6)
+  ggsave(filename =  Venn_leu_path, plot = venn_leu , width = 4, height = 4)
   
   
   
@@ -138,11 +140,11 @@ fun_venn_diag <- function(data_and_meta_clean){
   x <- list(Deep = deep_msp,
             Shallow = shallow_msp)
   
-  Venn_depth_path <- here::here("outputs/Venn_depth_Cap.pdf")
+  Venn_cap_path <- here::here("outputs/Venn/Venn_depth_Cap.png")
   
-  venn <- ggvenn(x, fill_color = c("navy", "lightblue"))
+  venn_cap <- ggvenn(x, fill_color = c("navy", "lightblue"), text_size = 5.5)
   
-  ggsave(filename =  Venn_depth_path, plot = venn , width = 6, height = 6)
+  ggsave(filename =  Venn_cap_path, plot = venn_cap , width = 4, height = 4)
   
   #### Pour grand bois uniquement ####
   
@@ -182,15 +184,32 @@ fun_venn_diag <- function(data_and_meta_clean){
   x <- list(Deep = deep_msp,
             Shallow = shallow_msp)
   
-  Venn_depth_path <- here::here("outputs/Venn_depth_Grd_Bois.pdf")
+  Venn_gd_bois_path <- here::here("outputs/Venn/Venn_depth_Grd_Bois.png")
   
   
-  venn <- ggvenn(x, fill_color = c("navy", "lightblue"))
+  venn_gd_bois <- ggvenn(x, fill_color = c("navy", "lightblue"), text_size = 5.5)
   
-  ggsave(filename =  Venn_depth_path, plot = venn , width = 6, height = 6)
+  ggsave(filename =  Venn_gd_bois_path, plot = venn_gd_bois , width = 4, height = 4)
+  
+  
+  #### return ####
   
   
   
-  return(Venn_depth_path)
+  fin <- cowplot::plot_grid(venn, venn_cap, venn_leu, venn_gd_bois, 
+                            ncol = 2,
+                            nrow = 2,
+                            labels = c("All sites", "Cap La Houssaye", "Saint-Leu", "Grand Bois"),
+                            rel_widths = c(0.6, 0.6),  # Adjust as needed
+                            rel_heights = c(0.6, 0.6)) # Adjust as needed
+  
+  
+  full_venn_path <- here::here("outputs/Venn/full_venn.png")
+  
+  ggsave(filename =  full_venn_path, plot = fin , width = 11, height = 11)
+  
+  Venn_tot <- c(Venn_depth_path,Venn_cap_path, Venn_leu_path, Venn_gd_bois_path, full_venn_path)
+  
+  return(Venn_tot)
   
 }

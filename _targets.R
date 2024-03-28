@@ -43,4 +43,6 @@ list(
   ,tar_target(PCoA, fun_PCoA(data_and_meta_clean = clean_data_metadata))
   
   ,tar_target(boxplot_categories, fun_boxplot_categories(data_and_meta_clean = clean_data_metadata))
+  
+  ,tarchetypes::tar_quarto(report, "quarto_file.qmd")
   )
