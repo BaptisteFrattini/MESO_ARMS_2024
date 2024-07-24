@@ -26,15 +26,15 @@ fun_data_exploring <- function(data_and_meta_clean){
                          campain = meta_mean$campain,
                          triplicat = meta_mean$triplicat)
 
-  ff <- ggplot(data_div, aes(x = fct_relevel(campain, "RUNARMS", "P50ARMS"), y = S)) +
-    geom_boxplot(fill =  c("lightblue","darkblue")) +
+  ff <- ggplot(data_div, aes(x = fct_relevel(campain, "RUNARMS", "RODARMS", "P50ARMS"), y = S)) +
+    geom_boxplot(fill =  c("lightblue", "lightblue3","darkblue")) +
     labs(title = "",
          x = "Depth",
          y = "Average species richness in an ARMS") +
     theme_classic()
   
-  gg <- ggplot(data_div, aes(x = fct_relevel(triplicat, "RUNARMS1","RUNARMS5","RUNARMS9", "P50ARMS1", "P50ARMS2", "P50ARMS3"), y = S)) +
-    geom_boxplot(fill =  c(rep("lightblue",3),rep("darkblue",3))) +
+  gg <- ggplot(data_div, aes(x = fct_relevel(triplicat, "RUNARMS1","RUNARMS5","RUNARMS9", "RODARMS1", "RODARMS2","RODARMS3", "P50ARMS1", "P50ARMS2", "P50ARMS3"), y = S)) +
+    geom_boxplot(fill =  c(rep("lightblue",3),rep("lightblue3",3), rep("darkblue",3))) +
     labs(title = "",
          x = "Depth",
          y = "Average species richness in an ARMS") +
@@ -59,7 +59,7 @@ fun_data_exploring <- function(data_and_meta_clean){
   vegan::ordiellipse(fit, meta_mean$triplicat, col=col1, draw="polygon", label = TRUE)
   # vegan::ordilabel(fit, display = "species", choices = c(1, 2), cex = 0.3, border = NA)
   a <- paste0("stress = ",round(fit$stress, 3))
-  text(0.8,1.1, a)
+  text(1.1,0.95, a)
   dev.off()
   #Jac
   data_mean_pa <- vegan::decostand(data_mean, "pa")
@@ -87,9 +87,9 @@ fun_data_exploring <- function(data_and_meta_clean){
   
   div_alpha_name <- paste0("div_alpha_plate.pdf")
   div_alpha_path <- here::here("outputs/", div_alpha_name)
-  pdf(file =  div_alpha_path, width = 13, height = 10)
+  pdf(file =  div_alpha_path, width = 20, height = 9)
   
-  par(mfrow = c(2, 2))
+  par(mfrow = c(1, 3))
   
   data_P50 <- subset(data, meta$campain == "P50ARMS")
    
@@ -115,14 +115,14 @@ fun_data_exploring <- function(data_and_meta_clean){
        paste("S = ", pool$Species, " ; \n Estimation of species richness (Chao) = ", round(pool$chao,2),"±",round(pool$chao.se,2)),
        cex = 0.85)
   
-  #### P50ARMS1 ####
+  #### RODARMS ####
   
-  data_P50ARMS1 <- subset(data, meta$triplicat == "P50ARMS1")
+  data_RODARMS <- subset(data, meta$campain == "RODARMS")
   
-  s <- vegan::specaccum(data_P50ARMS1, method = "random", permutations = 999,
+  s <- vegan::specaccum(data_RODARMS, method = "random", permutations = 999,
                         conditioned =TRUE)
   
-  pool <- vegan::specpool(data_P50ARMS1)
+  pool <- vegan::specpool(data_RODARMS)
   
   plot(s, 
        ci.type="poly",
@@ -131,7 +131,7 @@ fun_data_exploring <- function(data_and_meta_clean){
        ci.lty=0,
        ci.col="lightblue",
        xlab="Number of plates analysed",
-       ylab="# morpho-species detected in all 3 mesophotic ARMS of P50ARMS1",
+       ylab="# morpho-species detected in all 8 ARMS from Rodrigues",
        ylim=c(1,100))
   
   boxplot(s, col="yellow", add=TRUE, pch="+")
@@ -142,14 +142,14 @@ fun_data_exploring <- function(data_and_meta_clean){
        paste("S = ", pool$Species, " ; \n Estimation of species richness (Chao) = ", round(pool$chao,2),"±",round(pool$chao.se,2)),
        cex = 0.85)
   
-  #### P50ARMS1 ####
+  #### RUNARMS ####
   
-  data_P50ARMS2 <- subset(data, meta$triplicat == "P50ARMS2")
+  data_RUNARMS <- subset(data, meta$campain == "RUNARMS")
   
-  s <- vegan::specaccum(data_P50ARMS2, method = "random", permutations = 999,
+  s <- vegan::specaccum(data_RUNARMS, method = "random", permutations = 999,
                         conditioned =TRUE)
   
-  pool <- vegan::specpool(data_P50ARMS2)
+  pool <- vegan::specpool(data_RUNARMS)
   
   plot(s, 
        ci.type="poly",
@@ -158,34 +158,7 @@ fun_data_exploring <- function(data_and_meta_clean){
        ci.lty=0,
        ci.col="lightblue",
        xlab="Number of plates analysed",
-       ylab="# morpho-species detected in all 3 mesophotic ARMS of P50ARMS2",
-       ylim=c(1,100))
-  
-  boxplot(s, col="yellow", add=TRUE, pch="+")
-  
-  
-  text(25,
-       10,
-       paste("S = ", pool$Species, " ; \n Estimation of species richness (Chao) = ", round(pool$chao,2),"±",round(pool$chao.se,2)),
-       cex = 0.85)
-  
-  #### P50ARMS3 ####
-  
-  data_P50ARMS3 <- subset(data, meta$triplicat == "P50ARMS3")
-  
-  s <- vegan::specaccum(data_P50ARMS3, method = "random", permutations = 999,
-                        conditioned =TRUE)
-  
-  pool <- vegan::specpool(data_P50ARMS3)
-  
-  plot(s, 
-       ci.type="poly",
-       col="blue", 
-       lwd=2,
-       ci.lty=0,
-       ci.col="lightblue",
-       xlab="Number of plates analysed",
-       ylab="# morpho-species detected in all 3 mesophotic ARMS of P50ARMS3",
+       ylab="# morpho-species detected in all 8 ARMS from Reunion",
        ylim=c(1,100))
   
   boxplot(s, col="yellow", add=TRUE, pch="+")
@@ -197,43 +170,128 @@ fun_data_exploring <- function(data_and_meta_clean){
        cex = 0.85)
   
   dev.off()
-  #### Spec curve by ARMS (instead of plates) ####
   
-  
-  div_alpha_name <- paste0("div_alpha_ARMS.pdf")
-  div_alpha_path <- here::here("outputs/", div_alpha_name)
-  pdf(file =  div_alpha_path, width = 11, height = 8.5)
-  
-  data_mean <- read.csv(data_and_meta_clean["path_data_mean"], row.names = 1)
-  meta_mean <- read.csv(data_and_meta_clean["path_meta_mean"], row.names = 1)
-  
-  #### All MESO ARMS combined ####
-
-  data_mean_P50ARMS <- subset(data_mean, meta_mean$campain == "P50ARMS")
-  
-  s <- vegan::specaccum(data_mean_P50ARMS, method = "random", permutations = 999,
-                        conditioned =TRUE)
-  pool <- vegan::specpool(data_mean_P50ARMS)
-  
-  plot(s, 
-       ci.type="poly",
-       col="blue", 
-       lwd=2,
-       ci.lty=0,
-       ci.col="lightblue",
-       xlab="Number of plates analysed",
-       ylab="# morpho-species detected in all 9 mesophotic ARMS",
-       ylim=c(1,100))
-  
-  boxplot(s, col="yellow", add=TRUE, pch="+")
-  
-  
-  text(5,
-       10,
-       paste("S = ", pool$Species, " ; \n Estimation of species richness (Chao) = ", round(pool$chao,2),"±",round(pool$chao.se,2)),
-       cex = 0.85)
-  
-  dev.off()
+  # #### P50ARMS1 ####
+  # 
+  # data_P50ARMS1 <- subset(data, meta$triplicat == "P50ARMS1")
+  # 
+  # s <- vegan::specaccum(data_P50ARMS1, method = "random", permutations = 999,
+  #                       conditioned =TRUE)
+  # 
+  # pool <- vegan::specpool(data_P50ARMS1)
+  # 
+  # plot(s, 
+  #      ci.type="poly",
+  #      col="blue", 
+  #      lwd=2,
+  #      ci.lty=0,
+  #      ci.col="lightblue",
+  #      xlab="Number of plates analysed",
+  #      ylab="# morpho-species detected in all 3 mesophotic ARMS of P50ARMS1",
+  #      ylim=c(1,100))
+  # 
+  # boxplot(s, col="yellow", add=TRUE, pch="+")
+  # 
+  # 
+  # text(26,
+  #      10,
+  #      paste("S = ", pool$Species, " ; \n Estimation of species richness (Chao) = ", round(pool$chao,2),"±",round(pool$chao.se,2)),
+  #      cex = 0.85)
+  # 
+  # 
+  # 
+  # #### P50ARMS1 ####
+  # 
+  # data_P50ARMS2 <- subset(data, meta$triplicat == "P50ARMS2")
+  # 
+  # s <- vegan::specaccum(data_P50ARMS2, method = "random", permutations = 999,
+  #                       conditioned =TRUE)
+  # 
+  # pool <- vegan::specpool(data_P50ARMS2)
+  # 
+  # plot(s, 
+  #      ci.type="poly",
+  #      col="blue", 
+  #      lwd=2,
+  #      ci.lty=0,
+  #      ci.col="lightblue",
+  #      xlab="Number of plates analysed",
+  #      ylab="# morpho-species detected in all 3 mesophotic ARMS of P50ARMS2",
+  #      ylim=c(1,100))
+  # 
+  # boxplot(s, col="yellow", add=TRUE, pch="+")
+  # 
+  # 
+  # text(25,
+  #      10,
+  #      paste("S = ", pool$Species, " ; \n Estimation of species richness (Chao) = ", round(pool$chao,2),"±",round(pool$chao.se,2)),
+  #      cex = 0.85)
+  # 
+  # #### P50ARMS3 ####
+  # 
+  # data_P50ARMS3 <- subset(data, meta$triplicat == "P50ARMS3")
+  # 
+  # s <- vegan::specaccum(data_P50ARMS3, method = "random", permutations = 999,
+  #                       conditioned =TRUE)
+  # 
+  # pool <- vegan::specpool(data_P50ARMS3)
+  # 
+  # plot(s, 
+  #      ci.type="poly",
+  #      col="blue", 
+  #      lwd=2,
+  #      ci.lty=0,
+  #      ci.col="lightblue",
+  #      xlab="Number of plates analysed",
+  #      ylab="# morpho-species detected in all 3 mesophotic ARMS of P50ARMS3",
+  #      ylim=c(1,100))
+  # 
+  # boxplot(s, col="yellow", add=TRUE, pch="+")
+  # 
+  # 
+  # text(26,
+  #      10,
+  #      paste("S = ", pool$Species, " ; \n Estimation of species richness (Chao) = ", round(pool$chao,2),"±",round(pool$chao.se,2)),
+  #      cex = 0.85)
+  # 
+  # dev.off()
+  # #### Spec curve by ARMS (instead of plates) ####
+  # 
+  # 
+  # div_alpha_name <- paste0("div_alpha_ARMS.pdf")
+  # div_alpha_path <- here::here("outputs/", div_alpha_name)
+  # pdf(file =  div_alpha_path, width = 11, height = 8.5)
+  # 
+  # data_mean <- read.csv(data_and_meta_clean["path_data_mean"], row.names = 1)
+  # meta_mean <- read.csv(data_and_meta_clean["path_meta_mean"], row.names = 1)
+  # 
+  # #### All MESO ARMS combined ####
+  # 
+  # data_mean_P50ARMS <- subset(data_mean, meta_mean$campain == "P50ARMS")
+  # 
+  # s <- vegan::specaccum(data_mean_P50ARMS, method = "random", permutations = 999,
+  #                       conditioned =TRUE)
+  # pool <- vegan::specpool(data_mean_P50ARMS)
+  # 
+  # plot(s, 
+  #      ci.type="poly",
+  #      col="blue", 
+  #      lwd=2,
+  #      ci.lty=0,
+  #      ci.col="lightblue",
+  #      xlab="Number of plates analysed",
+  #      ylab="# morpho-species detected in all 9 mesophotic ARMS",
+  #      ylim=c(1,100))
+  # 
+  # boxplot(s, col="yellow", add=TRUE, pch="+")
+  # 
+  # 
+  # text(5,
+  #      10,
+  #      paste("S = ", pool$Species, " ; \n Estimation of species richness (Chao) = ", round(pool$chao,2),"±",round(pool$chao.se,2)),
+  #      cex = 0.85)
+  # 
+  # dev.off()
   #### 
   
   return(div_alpha_path)

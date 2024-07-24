@@ -24,13 +24,16 @@ fun_data_cleaning <- function(raw_data){
   data <- data_raw[-(nrow(data_raw)), c(5:ncol(data_raw))]
   data <- data[,!colSums(data) == 0]
   
-  data_filtered <- data[grepl("RUNARMS1|RUNARMS5|RUNARMS9|P50", meta_data$Image.name),]
-  meta_filtered <- meta_data[grepl("RUNARMS1|RUNARMS5|RUNARMS9|P50", meta_data$Image.name),]
+  data_filtered <- data[grepl("RUNARMS1|RUNARMS5|RUNARMS9|P50|RODRARMS", meta_data$Image.name),]
+  meta_filtered <- meta_data[grepl("RUNARMS1|RUNARMS5|RUNARMS9|P50|RODRARMS", meta_data$Image.name),]
   
-  data_filtered2 <- data_filtered[!grepl("9T", meta_filtered$Image.name),]
-  meta_filtered2 <- meta_filtered[!grepl("9T", meta_filtered$Image.name),]
+  data_filtered2 <- data_filtered[!grepl("Unconfirmed", meta_filtered$Annotation.status),]
+  meta_filtered2 <- meta_filtered[!grepl("Unconfirmed", meta_filtered$Annotation.status),]
+ 
+  # data_filtered2 <- data_filtered[!grepl("9T", meta_filtered$Image.name),]
+  # meta_filtered2 <- meta_filtered[!grepl("9T", meta_filtered$Image.name),]
   
-  rownames(data_filtered2) <- substr(meta_filtered2$Image.name, 1, 12)
+  rownames(data_filtered2) <- substr(meta_filtered2$Image.name, 1, nchar(meta_filtered2$Image.name) - 4)
   
   data_filtered2$MSP1_BRYO <- NULL
   
@@ -55,17 +58,17 @@ fun_data_cleaning <- function(raw_data){
   data_filtered2$MSP26_ASCC <- data_filtered2$MSP31_ASCC + data_filtered2$MSP26_ASCC
   data_filtered2$MSP31_ASCC <- NULL
   
-  data_filtered2$MSP15_SPON <- data_filtered2$MSP13_SP + data_filtered2$MSP15_SPON + data_filtered2$MSP17_SPON
+  data_filtered2$MSP15_SPON <- data_filtered2$MSP13_SP + data_filtered2$MSP15_SP + data_filtered2$MSP17_SP
   data_filtered2$MSP13_SPON <- NULL
   data_filtered2$MSP17_SPON <- NULL
   
-  data_filtered2$MSP9_SPON <- data_filtered2$MSP32_SPON + data_filtered2$MSP9_SPON
+  data_filtered2$MSP9_SPON <- data_filtered2$MSP32_SP + data_filtered2$MSP9_SP
   data_filtered2$MSP32_SPON <- NULL
   
-  data_filtered2$MSP15_ASCC <- data_filtered2$MSP6_SPON + data_filtered2$MSP15_ASCC
+  data_filtered2$MSP15_ASCC <- data_filtered2$MSP6_SP + data_filtered2$MSP15_ASCC
   data_filtered2$MSP6_SPON <- NULL
   
-  data_filtered2$MSP10_SPON <- data_filtered2$MSP40_SPON + data_filtered2$MSP10_SPON
+  data_filtered2$MSP10_SPON <- data_filtered2$MSP40_SP + data_filtered2$MSP10_SP
   data_filtered2$MSP40_SPON <- NULL
   
   data_filtered2$OROS <- data_filtered2$OROS + data_filtered2$X_SED
@@ -150,8 +153,21 @@ fun_data_cleaning <- function(raw_data){
     rename(Ascc_Botryllus_tuberatus = MSP24_ASCC)
   data_filtered2 <- data_filtered2 %>%
     rename(Ascc_Botryllus_sp6 = MSP25_ASCC)
+  data_filtered2 <- data_filtered2 %>%
+    rename(Ascc_Polysyncraton_sp1 = MSP37_ASCC)
+  data_filtered2 <- data_filtered2 %>%
+    rename(Ascc_Symplegma_sp1 = MSP38_ASCC)
+  data_filtered2 <- data_filtered2 %>%
+    rename(Ascc_Polyclinum_sp1 = MSP39_ASCC)
+  data_filtered2 <- data_filtered2 %>%
+    rename(Ascc_Botrylloides_sp1 = MSP40_ASCC)
+  data_filtered2 <- data_filtered2 %>%
+    rename(Ascc_Didemnidae_sp4 = MSP42_ASCC)
+  data_filtered2 <- data_filtered2 %>%
+    rename(Ascc_Symplegma_sp2 = MSP45_ASCC)
+  data_filtered2 <- data_filtered2 %>%
+    rename(Ascc_Botryllus_sp7 = MSP46_ASCC)
   
-
   # Other
   data_filtered2 <- data_filtered2 %>%
     rename(Erect_Phaeophyceae_algae = X_BRUP)
@@ -188,24 +204,83 @@ fun_data_cleaning <- function(raw_data){
   data_filtered2 <- vegan::decostand(data_filtered2, method = "total")
   data <- data_filtered2*100
   rowSums(data)
+  rownames(data) <- gsub("RODRARMS", "RODARMS", rownames(data))
   
-  #### build meta_data and data ####
+  dataROD <- data[grep("ROD", rownames(data)), ]
+  data <- data[!grepl("ROD", rownames(data)), ]
+  
+  #### build meta_data and data for RODARMS ####
+  name <- rownames(dataROD)
+  arms <- rownames(dataROD)
+  campain <- substr(rownames(dataROD), 1,7)
+  triplicat <- substr(rownames(dataROD), 1,8) 
+  plate_number <- substr(rownames(dataROD), 11,11)
+  orientation <- substr(rownames(dataROD), 12,12)
+  open_close <- rep(c("o","o","o","c","c","o","o","c","c","o","o","c","c","o","o","c","c","o","o"), 8) 
+  meta_dataROD <- data.frame(name, arms, campain, triplicat, plate_number, orientation, open_close)
+  meta_dataROD <- meta_dataROD %>%
+    mutate(arms = case_when(
+      triplicat %in% c("RODARMS1") ~ "RODARMS1A",
+      triplicat %in% c("RODARMS2") ~ "RODARMS1B",
+      triplicat %in% c("RODARMS3") ~ "RODARMS1C",
+      triplicat %in% c("RODARMS4") ~ "RODARMS2A",
+      triplicat %in% c("RODARMS5") ~ "RODARMS2B",
+      triplicat %in% c("RODARMS6") ~ "RODARMS2C",
+      triplicat %in% c("RODARMS7") ~ "RODARMS3A",
+      triplicat %in% c("RODARMS8") ~ "RODARMS3B",
+      TRUE ~ "Autre"  # Vous pouvez spécifier une valeur par défaut si aucune condition n'est satisfaite
+    ))
+  
+  meta_dataROD <- meta_dataROD %>%
+    mutate(plate_number = case_when(
+      plate_number %in% c("0") ~ "10",
+      TRUE ~ plate_number
+    ))
+  
+  meta_dataROD <- meta_dataROD %>%
+    mutate(orientation = case_when(
+      orientation %in% c("U") ~ "T",
+      orientation %in% c("D") ~ "B",
+      TRUE ~ "Autre"  # Vous pouvez spécifier une valeur par défaut si aucune condition n'est satisfaite
+    ))
+  
+  meta_dataROD <- meta_dataROD %>%
+    mutate(site_names = case_when(
+      triplicat %in% c("RODARMS1", "RODARMS2", "RODARMS3") ~ "Rivière_Banane",
+      triplicat %in% c("RODARMS4", "RODARMS5", "RODARMS6") ~ "Ile_aux_Fous",
+      triplicat %in% c("RODARMS7", "RODARMS8") ~ "Grand_Pate",
+      TRUE ~ "Autre"  # Vous pouvez spécifier une valeur par défaut si aucune condition n'est satisfaite
+    ))
+  
+  #### build meta_data and data for other ####
   name <- rownames(data)
   arms <- substr(rownames(data), 1,9)
   campain <- substr(rownames(data), 1,7)
   triplicat <- substr(rownames(data), 1,8) 
   plate_number <- substr(rownames(data), 11,11)
   orientation <- substr(rownames(data), 12,12)
-  open_close <- rep(c("c","c","o","o","c","c","o","o","c","c","o","o","c","c","o","o"), 6) 
+  open_close <- rep(c("c","c","o","o","c","c","o","o","c","c","o","o","c","c","o","o"), 18) 
   meta_data <- data.frame(name, arms, campain, triplicat, plate_number, orientation, open_close)
   meta_data <- meta_data %>%
-    mutate(site = case_when(
+    mutate(site_names = case_when(
       triplicat %in% c("RUNARMS1", "P50ARMS1") ~ "Cap_Houssaye",
       triplicat %in% c("RUNARMS5", "P50ARMS2") ~ "Saint_Leu",
       triplicat %in% c("RUNARMS9", "P50ARMS3") ~ "Grand_Bois",
       TRUE ~ "Autre"  # Vous pouvez spécifier une valeur par défaut si aucune condition n'est satisfaite
     ))
   
+  #### merge Rod and other ####
+  
+  data <- as.data.frame(rbind(dataROD, data))
+  meta_data <- as.data.frame(rbind(meta_dataROD, meta_data))
+  
+  meta_data <- meta_data %>%
+    mutate(island = case_when(
+      campain %in% c("RODARMS") ~ "Rodrigues",
+      campain %in% c("P50ARMS") ~ "Reunion",
+      campain %in% c("RUNARMS") ~ "Reunion",
+      TRUE ~ "Autre"  # Vous pouvez spécifier une valeur par défaut si aucune condition n'est satisfaite
+    ))
   
   path <- "data/derived-data/" 
   
@@ -230,18 +305,29 @@ fun_data_cleaning <- function(raw_data){
   data_mean <- as.data.frame(data_mean)
   row.names(data_mean) <- data_mean$`meta_data$arms`
   data_mean <- data_mean[,-1]
- 
+  
   arms <- rownames(data_mean)
   campain <- substr(rownames(data_mean), 1,7)
   triplicat <- substr(rownames(data_mean), 1,8) 
   site <- c(rep("Cap_La_Houssaye", 3), 
             rep("Saint_Leu", 3),
             rep("Grand_Bois", 3),
+            rep("Rivière_Banane",3),
+            rep("Ile_aux_Fous",3),
+            rep("Grand_Pate",2),
             rep("Cap_La_Houssaye", 3), 
             rep("Saint_Leu", 3),
             rep("Grand_Bois", 3))
+  
   meta_data_mean <- data.frame(arms, campain, triplicat, site)
   
+  meta_data_mean <- meta_data_mean %>%
+    mutate(island = case_when(
+      campain %in% c("RODARMS") ~ "Rodrigues",
+      campain %in% c("P50ARMS") ~ "Reunion",
+      campain %in% c("RUNARMS") ~ "Reunion",
+      TRUE ~ "Autre"  # Vous pouvez spécifier une valeur par défaut si aucune condition n'est satisfaite
+    ))
   
   path <- "data/derived-data/" 
   
@@ -256,8 +342,6 @@ fun_data_cleaning <- function(raw_data){
   write.csv(data_mean, file = data_mean_out_path, row.names = TRUE)
   write.csv(meta_data_mean, file = meta_mean_out_path, row.names = TRUE)
 
-  
-  
   
   #### Build the pool data ####
 

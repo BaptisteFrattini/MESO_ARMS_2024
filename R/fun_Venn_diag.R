@@ -12,6 +12,9 @@ fun_venn_diag <- function(data_and_meta_clean){
   data_mean <- read.csv(data_and_meta_clean["path_data_mean"], row.names = 1)
   meta_mean <- read.csv(data_and_meta_clean["path_meta_mean"], row.names = 1)
   
+  data_mean <- subset(data_mean, meta_mean$island == "Reunion")
+  meta_mean <- subset(meta_mean, meta_mean$island == "Reunion")
+  
   data_depth <- data_mean %>% 
     group_by(meta_mean$campain) %>% 
     summarise_all(mean, na.rm = TRUE)
@@ -59,6 +62,9 @@ fun_venn_diag <- function(data_and_meta_clean){
   
   data_mean <- read.csv(data_and_meta_clean["path_data_mean"], row.names = 1)
   meta_mean <- read.csv(data_and_meta_clean["path_meta_mean"], row.names = 1)
+  
+  data_mean <- subset(data_mean, meta_mean$island == "Reunion")
+  meta_mean <- subset(meta_mean, meta_mean$island == "Reunion")
   
   data_mean <- data_mean[grepl("RUNARMS5|P50ARMS2", rownames(data_mean)), ]
   meta_mean <-meta_mean[grepl("RUNARMS5|P50ARMS2", meta_mean$triplicat), ]
@@ -108,6 +114,9 @@ fun_venn_diag <- function(data_and_meta_clean){
   data_mean <- read.csv(data_and_meta_clean["path_data_mean"], row.names = 1)
   meta_mean <- read.csv(data_and_meta_clean["path_meta_mean"], row.names = 1)
   
+  data_mean <- subset(data_mean, meta_mean$island == "Reunion")
+  meta_mean <- subset(meta_mean, meta_mean$island == "Reunion")
+  
   data_mean <- data_mean[grepl("RUNARMS1|P50ARMS1", rownames(data_mean)), ]
   meta_mean <-meta_mean[grepl("RUNARMS1|P50ARMS1", meta_mean$triplicat), ]
   
@@ -151,6 +160,9 @@ fun_venn_diag <- function(data_and_meta_clean){
   data_mean <- read.csv(data_and_meta_clean["path_data_mean"], row.names = 1)
   meta_mean <- read.csv(data_and_meta_clean["path_meta_mean"], row.names = 1)
   
+  data_mean <- subset(data_mean, meta_mean$island == "Reunion")
+  meta_mean <- subset(meta_mean, meta_mean$island == "Reunion")
+  
   data_mean <- data_mean[grepl("RUNARMS9|P50ARMS3", rownames(data_mean)), ]
   meta_mean <-meta_mean[grepl("RUNARMS9|P50ARMS3", meta_mean$triplicat), ]
   
@@ -192,14 +204,59 @@ fun_venn_diag <- function(data_and_meta_clean){
   ggsave(filename =  Venn_gd_bois_path, plot = venn_gd_bois , width = 4, height = 4)
   
   
+  #### Entre Reunion et Rodrigues ####
+  
+  data_mean <- read.csv(data_and_meta_clean["path_data_mean"], row.names = 1)
+  meta_mean <- read.csv(data_and_meta_clean["path_meta_mean"], row.names = 1)
+  
+  data_mean_masc <- subset(data_mean, meta_mean$campain != "P50ARMS")
+  meta_mean_masc <- subset(meta_mean, meta_mean$campain != "P50ARMS")
+  
+  data_island <- data_mean_masc %>% 
+    group_by(meta_mean_masc$island) %>% 
+    summarise_all(mean, na.rm = TRUE)
+  
+  data_island <- as.data.frame(data_island)
+  row.names(data_island) <- data_island$`meta_mean$island`
+  data_island <- data_island[,-1]
+  
+  data_island_pa <- vegan::decostand(data_island, "pa")
+  
+  data_island_pa <- data.frame(t(data_island_pa))
+  data_island_pa <- data.frame(msp = rownames(data_island_pa),
+                              reunion = data_island_pa$X1,
+                              rodrigues = data_island_pa$X2)
+  
+  reunion_msp <- data_island_pa$msp[data_island_pa["reunion"] == 1]
+  rodrigues_msp <- data_island_pa$msp[data_island_pa["rodrigues"] == 1]
+  
+  # Trouver les MSP présentes dans les deux colonnes (intersection)
+  msp_reunion_rodrigues <- intersect(reunion_msp, rodrigues_msp)
+  
+  
+  only_reunion_msp <- setdiff(reunion_msp, msp_reunion_rodrigues)
+  
+  only_rodrigues_msp <- setdiff(rodrigues_msp, msp_reunion_rodrigues)
+  
+  
+  x <- list(Reunion = reunion_msp,
+            Rodrigues = rodrigues_msp)
+  
+  Venn_Reu_Rod_path <- here::here("outputs/Venn/Venn_island.png")
+  
+  library(ggvenn)
+  Venn_Reu_Rod <- ggvenn(x, fill_color = c("navy", "lightblue"), text_size = 5.5)
+  
+  ggsave(filename =  Venn_Reu_Rod_path, plot = Venn_Reu_Rod , width = 4, height = 4)
+  
   #### return ####
   
   
   
-  fin <- cowplot::plot_grid(venn, venn_cap, venn_leu, venn_gd_bois, 
+  fin <- cowplot::plot_grid(venn, venn_cap, venn_leu, venn_gd_bois, Venn_Reu_Rod,
                             ncol = 2,
-                            nrow = 2,
-                            labels = c("All sites", "Cap La Houssaye", "Saint-Leu", "Grand Bois"),
+                            nrow = 3,
+                            labels = c("All sites", "Cap La Houssaye", "Saint-Leu", "Grand Bois", "Rodrigues"),
                             rel_widths = c(0.6, 0.6),  # Adjust as needed
                             rel_heights = c(0.6, 0.6)) # Adjust as needed
   
