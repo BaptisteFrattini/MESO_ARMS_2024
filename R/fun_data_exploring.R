@@ -59,7 +59,7 @@ fun_data_exploring <- function(data_and_meta_clean){
   vegan::ordiellipse(fit, meta_mean$triplicat, col=col1, draw="polygon", label = TRUE)
   # vegan::ordilabel(fit, display = "species", choices = c(1, 2), cex = 0.3, border = NA)
   a <- paste0("stress = ",round(fit$stress, 3))
-  text(1.1,0.95, a)
+  text(0.8,0.95, a)
   dev.off()
   #Jac
   data_mean_pa <- vegan::decostand(data_mean, "pa")
@@ -87,7 +87,7 @@ fun_data_exploring <- function(data_and_meta_clean){
   
   div_alpha_name <- paste0("div_alpha_plate.pdf")
   div_alpha_path <- here::here("outputs/", div_alpha_name)
-  pdf(file =  div_alpha_path, width = 20, height = 9)
+  pdf(file =  div_alpha_path, width = 15, height = 5)
   
   par(mfrow = c(1, 3))
   
@@ -137,7 +137,7 @@ fun_data_exploring <- function(data_and_meta_clean){
   boxplot(s, col="yellow", add=TRUE, pch="+")
   
   
-  text(26,
+  text(100,
        10,
        paste("S = ", pool$Species, " ; \n Estimation of species richness (Chao) = ", round(pool$chao,2),"±",round(pool$chao.se,2)),
        cex = 0.85)
@@ -164,7 +164,7 @@ fun_data_exploring <- function(data_and_meta_clean){
   boxplot(s, col="yellow", add=TRUE, pch="+")
   
   
-  text(26,
+  text(80,
        10,
        paste("S = ", pool$Species, " ; \n Estimation of species richness (Chao) = ", round(pool$chao,2),"±",round(pool$chao.se,2)),
        cex = 0.85)
