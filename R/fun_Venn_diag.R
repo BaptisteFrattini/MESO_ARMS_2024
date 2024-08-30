@@ -316,11 +316,7 @@ fun_venn_diag <- function(data_and_meta_clean){
  
   
   library(eulerr)
-  venn_counts <- list(
-    P50ARMS = rowSums(data == 1)[data$P50ARMS == 1],
-    RODARMS = rowSums(data == 1)[data$RODARMS == 1],
-    RUNARMS = rowSums(data == 1)[data$RUNARMS == 1]
-  )
+
   
   # Create the Euler diagram
   fit <- euler(c(
@@ -334,9 +330,12 @@ fun_venn_diag <- function(data_and_meta_clean){
   ))
   
   count <- fit$original.values
-  total <- nrow(data)
+  
+  total = sum(percentages)
   
   percentages <- (count/total)*100 
+  
+  sum(percentages)
   
   labels <- paste0(count, " (", round(percentages, 1), "%)")
   labels[1] <- paste0("P50ARMS \n",labels[1])
@@ -355,10 +354,8 @@ fun_venn_diag <- function(data_and_meta_clean){
   p50_msp <- data$msp[data["P50ARMS"] == 1]
   
   msp_reunion_rodrigues <- intersect(reunion_msp, rodrigues_msp)
-  
-  
+  msp_all <- intersect(msp_reunion_rodrigues, p50_msp)
   only_reunion_msp <- setdiff(reunion_msp, msp_reunion_rodrigues)
-  
   only_rodrigues_msp <- setdiff(rodrigues_msp, msp_reunion_rodrigues)
   
   #### return ####

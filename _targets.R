@@ -40,6 +40,8 @@ list(
    
   ,tar_target(beta_decomp, fun_decomp_betadiv(data_and_meta_clean = clean_data_metadata))
   
+  ,tar_target(permanova_simper, fun_permanova(data_and_meta_clean = clean_data_metadata))
+  
   ,tar_target(graph, fun_graph(data_and_meta_clean = clean_data_metadata))
   # 
   # ,tar_target(PCoA, fun_PCoA(data_and_meta_clean = clean_data_metadata))

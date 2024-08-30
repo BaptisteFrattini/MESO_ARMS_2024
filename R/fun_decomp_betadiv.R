@@ -663,8 +663,11 @@ fun_decomp_betadiv <- function(data_and_meta_clean){
   df <- rbind(V,W,X,Y,Z)
   
   my_comparisons <- list( c("V", "W"), c("V", "X"), c("V", "Y"), c("V","Z"), c("W","X"), c("W", "Y"), c("W","Z"), c("X","Y"), c("X","Z"), c("Y","Z"))
+  
+  
   library(ggplot2)
-  r1 <- ggboxplot(df, x = "comp", 
+  r1 <- ggboxplot(df, 
+                  x = "comp", 
                   y = "value",
                   add = "jitter", 
                   short.panel.labs = FALSE,
@@ -698,8 +701,10 @@ fun_decomp_betadiv <- function(data_and_meta_clean){
                   short.panel.labs = FALSE,
                   color = "comp",
                   palette = c("purple4" , "darkgreen", "blue3","aquamarine3", "black"),
-                  ylab = "Turnover") + 
-    theme_classic()
+                  ylab = "Turnover") +  # Change x-axis label 
+    scale_x_discrete(name = NULL, labels = NULL)+
+    theme(legend.position = "none")
+    
   
   # Ajouter les lettres pour montrer les différences significatives
   r1bis <- r1bis + geom_text(data = comp_means, aes(x = comp, y = 0.75, label = letters),
@@ -802,8 +807,9 @@ fun_decomp_betadiv <- function(data_and_meta_clean){
                      short.panel.labs = FALSE,
                      color = "comp",
                      palette = c("purple4" , "darkgreen", "blue3","aquamarine3", "black"),
-                     ylab = "Jaccard") + 
-    theme_classic()
+                     ylab = "Jaccard") +  # Change x-axis label 
+    scale_x_discrete(name = NULL, labels = NULL) +
+    theme(legend.position = "none")
   
   # Ajouter les lettres pour montrer les différences significatives
   s1bis <- s1bis + geom_text(data = comp_means, aes(x = comp, y = 0.78, label = letters),
@@ -870,6 +876,13 @@ fun_decomp_betadiv <- function(data_and_meta_clean){
   
   df <- rbind(V,W,X,Y,Z)
   
+  new_labels <- c("V" = paste0("Between RODARMS \n sites (Shallow) - N = ", nrow(V)),
+                  "W" = paste0("Between Islands \n (Shallow) - N = ", nrow(W)),
+                  "X" = paste0("Between RUNARMS \n sites (Mesophotic) - N = ", nrow(X)),
+                  "Y" = paste0("Between RUNARMS \n sites (Shallow) - N = ", nrow(Y)), 
+                  "Z" = paste0("Between depth within \n sites (RUNARMS) - N = ", nrow(Z)))
+  
+  
   my_comparisons <- list( c("V", "W"), c("V", "X"), c("V", "Y"), c("V","Z"), c("W","X"), c("W", "Y"), c("W","Z"), c("X","Y"), c("X","Z"), c("Y","Z"))
   library(ggplot2)
   t1 <- ggboxplot(df, x = "comp", 
@@ -907,7 +920,9 @@ fun_decomp_betadiv <- function(data_and_meta_clean){
                      color = "comp",
                      palette = c("purple4" , "darkgreen", "blue3","aquamarine3", "black"),
                      ylab = "Nestedness") + 
-    theme_classic()
+    scale_x_discrete(name = "Comparisons", labels = new_labels) +
+    theme(axis.text.x = element_text(size = 12, angle = 45, hjust = 1), legend.position = "none")
+
   
   # Ajouter les lettres pour montrer les différences significatives
   t1bis <- t1bis + geom_text(data = comp_means, aes(x = comp, y = 0.25, label = letters),
@@ -919,7 +934,7 @@ fun_decomp_betadiv <- function(data_and_meta_clean){
                             nrow = 3)
   
   path_to_boxplot_betadiv_XYZ_bis <- paste0("outputs/boxplot_beta_decomp_XYZ_bis.pdf")
-  ggsave(filename =  path_to_boxplot_betadiv_XYZ_bis, plot = fin, width = 7, height = 13)
+  ggsave(filename =  path_to_boxplot_betadiv_XYZ_bis, plot = fin, width = 7, height = 14.5)
   
   return(path_to_boxplot_betadiv)
 }
