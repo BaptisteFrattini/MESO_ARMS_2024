@@ -34,5 +34,7 @@ Imports:
     ggfortify,
     factoextra,
     BiodiversityR,
-    quarto
+    quarto,
+    igraph,
+    eulerr
     

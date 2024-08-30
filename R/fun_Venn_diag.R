@@ -249,6 +249,118 @@ fun_venn_diag <- function(data_and_meta_clean){
   
   ggsave(filename =  Venn_Reu_Rod_path, plot = Venn_Reu_Rod , width = 4, height = 4)
   
+  data_mean <- read.csv(data_and_meta_clean["path_data_mean"], row.names = 1)
+  meta_mean <- read.csv(data_and_meta_clean["path_meta_mean"], row.names = 1)
+  
+  data_mean_masc <- subset(data_mean, meta_mean$campain != "P50ARMS")
+  meta_mean_masc <- subset(meta_mean, meta_mean$campain != "P50ARMS")
+  
+  data_island <- data_mean_masc %>% 
+    group_by(meta_mean_masc$island) %>% 
+    summarise_all(mean, na.rm = TRUE)
+  
+  data_island <- as.data.frame(data_island)
+  row.names(data_island) <- data_island$`meta_mean$island`
+  data_island <- data_island[,-1]
+  
+  data_island_pa <- vegan::decostand(data_island, "pa")
+  
+  data_island_pa <- data.frame(t(data_island_pa))
+  data_island_pa <- data.frame(msp = rownames(data_island_pa),
+                              reunion = data_island_pa$X1,
+                              rodrigues = data_island_pa$X2)
+  
+  reunion_msp <- data_island_pa$msp[data_island_pa["reunion"] == 1]
+  rodrigues_msp <- data_island_pa$msp[data_island_pa["rodrigues"] == 1]
+  
+  # Trouver les MSP présentes dans les deux colonnes (intersection)
+  msp_reunion_rodrigues <- intersect(reunion_msp, rodrigues_msp)
+  
+  
+  only_reunion_msp <- setdiff(reunion_msp, msp_reunion_rodrigues)
+  
+  only_rodrigues_msp <- setdiff(rodrigues_msp, msp_reunion_rodrigues)
+  
+  
+  x <- list(Reunion = reunion_msp,
+            Rodrigues = rodrigues_msp)
+  
+  Venn_Reu_Rod_path <- here::here("outputs/Venn/Venn_island.png")
+  
+  library(ggvenn)
+  Venn_Reu_Rod <- ggvenn(x, fill_color = c("navy", "lightblue"), text_size = 5.5)
+  
+  ggsave(filename =  Venn_Reu_Rod_path, plot = Venn_Reu_Rod , width = 4, height = 4)
+  
+  
+  #### Entre les trois ####
+  
+  data_mean <- read.csv(data_and_meta_clean["path_data_mean"], row.names = 1)
+  meta_mean <- read.csv(data_and_meta_clean["path_meta_mean"], row.names = 1)
+  
+  
+  data <- data_mean %>% 
+    group_by(meta_mean$campain) %>% 
+    summarise_all(mean, na.rm = TRUE)
+  
+  data <- as.data.frame(data)
+  row.names(data) <- data$`meta_mean$campain`
+  data <- data[,-1]
+  
+  data_pa <- vegan::decostand(data, "pa")
+  
+  data_pa <- data.frame(t(data_pa))
+  data <- data_pa
+  
+  
+ 
+  
+  library(eulerr)
+  venn_counts <- list(
+    P50ARMS = rowSums(data == 1)[data$P50ARMS == 1],
+    RODARMS = rowSums(data == 1)[data$RODARMS == 1],
+    RUNARMS = rowSums(data == 1)[data$RUNARMS == 1]
+  )
+  
+  # Create the Euler diagram
+  fit <- euler(c(
+    "P50ARMS" = sum(data$P50ARMS == 1 & data$RODARMS == 0 & data$RUNARMS == 0),
+    "RODARMS" = sum(data$P50ARMS == 0 & data$RODARMS == 1 & data$RUNARMS == 0),
+    "RUNARMS" = sum(data$P50ARMS == 0 & data$RODARMS == 0 & data$RUNARMS == 1),
+    "P50ARMS&RODARMS" = sum(data$P50ARMS == 1 & data$RODARMS == 1 & data$RUNARMS == 0),
+    "P50ARMS&RUNARMS" = sum(data$P50ARMS == 1 & data$RODARMS == 0 & data$RUNARMS == 1),
+    "RODARMS&RUNARMS" = sum(data$P50ARMS == 0 & data$RODARMS == 1 & data$RUNARMS == 1),
+    "P50ARMS&RODARMS&RUNARMS" = sum(data$P50ARMS == 1 & data$RODARMS == 1 & data$RUNARMS == 1)
+  ))
+  
+  count <- fit$original.values
+  total <- nrow(data)
+  
+  percentages <- (count/total)*100 
+  
+  labels <- paste0(count, " (", round(percentages, 1), "%)")
+  labels[1] <- paste0("P50ARMS \n",labels[1])
+  labels[2] <- paste0("RODARMS \n",labels[2])
+  labels[3] <- paste0("RUNARMS \n",labels[3])
+  
+  venn_name <- paste0("Venn_full.pdf")
+  venn_path <- paste0("outputs/Venn/", venn_name)
+  pdf(file =  venn_path)
+  plot(fit, fills = list(fill = c("white", "white", "white")), labels = labels, main = "")
+  dev.off()
+  
+  data$msp <- rownames(data)
+  reunion_msp <- data$msp[data["RUNARMS"] == 1]
+  rodrigues_msp <- data$msp[data["RODARMS"] == 1]
+  p50_msp <- data$msp[data["P50ARMS"] == 1]
+  
+  msp_reunion_rodrigues <- intersect(reunion_msp, rodrigues_msp)
+  
+  
+  only_reunion_msp <- setdiff(reunion_msp, msp_reunion_rodrigues)
+  
+  only_rodrigues_msp <- setdiff(rodrigues_msp, msp_reunion_rodrigues)
+  
   #### return ####
   
   
