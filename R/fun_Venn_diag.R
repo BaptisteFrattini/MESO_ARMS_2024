@@ -331,7 +331,7 @@ fun_venn_diag <- function(data_and_meta_clean){
   
   count <- fit$original.values
   
-  total = sum(percentages)
+  total = sum(count)
   
   percentages <- (count/total)*100 
   
@@ -345,19 +345,67 @@ fun_venn_diag <- function(data_and_meta_clean){
   venn_name <- paste0("Venn_full.pdf")
   venn_path <- paste0("outputs/Venn/", venn_name)
   pdf(file =  venn_path)
-  plot(fit, fills = list(fill = c("white", "white", "white")), labels = labels, main = "")
+  plot(fit, fills = list(fill = c("dodgerblue2", "darkorange", "lightgreen")), labels = labels, main = "")
   dev.off()
   
   data$msp <- rownames(data)
+  
+  
   reunion_msp <- data$msp[data["RUNARMS"] == 1]
   rodrigues_msp <- data$msp[data["RODARMS"] == 1]
   p50_msp <- data$msp[data["P50ARMS"] == 1]
   
-  msp_reunion_rodrigues <- intersect(reunion_msp, rodrigues_msp)
-  msp_all <- intersect(msp_reunion_rodrigues, p50_msp)
-  only_reunion_msp <- setdiff(reunion_msp, msp_reunion_rodrigues)
-  only_rodrigues_msp <- setdiff(rodrigues_msp, msp_reunion_rodrigues)
+  # Calcul des différents ensembles
+  only_reunion <- setdiff(reunion_msp, union(rodrigues_msp, p50_msp))
+  only_rodrigues <- setdiff(rodrigues_msp, union(reunion_msp, p50_msp))
+  only_p50 <- setdiff(p50_msp, union(reunion_msp, rodrigues_msp))
   
+  reunion_rodrigues_only <- setdiff(intersect(reunion_msp, rodrigues_msp), p50_msp)
+  reunion_p50_only <- setdiff(intersect(reunion_msp, p50_msp), rodrigues_msp)
+  rodrigues_p50_only <- setdiff(intersect(rodrigues_msp, p50_msp), reunion_msp)
+  
+  intersection_all <- intersect(intersect(reunion_msp, rodrigues_msp), p50_msp)
+  
+  # Chargement de la librairie pour écrire dans un fichier Excel
+  install.packages("writexl")
+  library(writexl)
+  
+  # Création d'une liste de data frames pour chaque colonne
+  results <- list(
+    "Only Reunion" = only_reunion,
+    "Only Rodrigues" = only_rodrigues,
+    "Only P50" = only_p50,
+    "Reunion & Rodrigues (sans P50)" = reunion_rodrigues_only,
+    "Reunion & P50 (sans Rodrigues)" = reunion_p50_only,
+    "Rodrigues & P50 (sans Reunion)" = rodrigues_p50_only,
+    "Intersection All" = intersection_all
+  )
+  
+  # Créer un data frame avec des colonnes de longueur égale en remplissant avec des NA
+  max_length <- max(sapply(results, length))
+  df <- data.frame(lapply(results, function(x) { c(x, rep(NA, max_length - length(x))) }))
+  
+  # Écriture du data frame dans un fichier Excel
+  write_xlsx(df, "outputs/Venn/combinations_msp.xlsx")
+  
+  
+  
+  
+  
+  # MSP présente à la reunion ET à rodrigues
+  msp_reunion_rodrigues <- intersect(reunion_msp, rodrigues_msp)
+  # MSp présente à la reunion, a rodrigues, mais pas a P50
+  msp_reunion_rodrigues_seulement <- setdiff(msp_reunion_rodrigues, p50_msp)
+  
+  
+  # MSP présente à la reunion , à rodrigues et à P50
+  msp_all <- intersect(msp_reunion_rodrigues, p50_msp)
+  
+  
+  
+  
+  only_rodrigues_msp <- setdiff(rodrigues_msp, msp_reunion_rodrigues)
+
   #### return ####
   
   

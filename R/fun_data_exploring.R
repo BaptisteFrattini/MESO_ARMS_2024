@@ -30,18 +30,21 @@ fun_data_exploring <- function(data_and_meta_clean){
     geom_boxplot(fill =  c("lightblue", "lightblue3","darkblue")) +
     labs(title = "",
          x = "Depth",
-         y = "Average species richness in an ARMS") +
+         y = "Species richness in ARMS") +
     theme_classic()
   
   gg <- ggplot(data_div, aes(x = fct_relevel(triplicat, "RUNARMS1","RUNARMS5","RUNARMS9", "RODARMS1", "RODARMS2","RODARMS3", "P50ARMS1", "P50ARMS2", "P50ARMS3"), y = S)) +
     geom_boxplot(fill =  c(rep("lightblue",3),rep("lightblue3",3), rep("darkblue",3))) +
     labs(title = "",
          x = "Depth",
-         y = "Average species richness in an ARMS") +
+         y = "Species richness in ARMS") +
     theme_classic()
  
   ggsave("outputs/alpha_div(1).pdf", plot = ff, width = 9, height = 8)
   ggsave("outputs/alpha_div(2).pdf", plot = gg, width = 9, height = 8)
+  
+  
+  
   
   ####NMDS####
   #bray
@@ -87,7 +90,7 @@ fun_data_exploring <- function(data_and_meta_clean){
   
   div_alpha_name <- paste0("div_alpha_plate.pdf")
   div_alpha_path <- here::here("outputs/", div_alpha_name)
-  pdf(file =  div_alpha_path, width = 15, height = 5)
+  pdf(file =  div_alpha_path, width = 12, height = 4)
   
   par(mfrow = c(1, 3))
   
@@ -103,11 +106,12 @@ fun_data_exploring <- function(data_and_meta_clean){
        lwd=2,
        ci.lty=0,
        ci.col="lightblue",
-       xlab="Number of plates analysed",
-       ylab="# morpho-species detected in all 9 mesophotic ARMS",
-       ylim=c(1,100))
+       xlab="Number of plate faces analysed",
+       ylab="# MSPs detected in all 9 mesophotic ARMS",
+       ylim=c(1,100),
+       xlim=c(0,150))
   
-  boxplot(s, col="yellow", add=TRUE, pch="+")
+  # boxplot(s, col="yellow", add=TRUE, pch="+")
   
   
   text(80,
@@ -130,14 +134,15 @@ fun_data_exploring <- function(data_and_meta_clean){
        lwd=2,
        ci.lty=0,
        ci.col="lightblue",
-       xlab="Number of plates analysed",
-       ylab="# morpho-species detected in all 8 ARMS from Rodrigues",
-       ylim=c(1,100))
+       xlab="Number of plate faces analysed",
+       ylab="# MSPs detected in all 8 ARMS from Rodrigues",
+       ylim=c(1,100),
+       xlim=c(0,150))
   
-  boxplot(s, col="yellow", add=TRUE, pch="+")
+  # boxplot(s, col="yellow", add=TRUE, pch="+")
   
   
-  text(100,
+  text(75,
        10,
        paste("S = ", pool$Species, " ; \n Estimation of species richness (Chao) = ", round(pool$chao,2),"±",round(pool$chao.se,2)),
        cex = 0.85)
@@ -157,11 +162,12 @@ fun_data_exploring <- function(data_and_meta_clean){
        lwd=2,
        ci.lty=0,
        ci.col="lightblue",
-       xlab="Number of plates analysed",
-       ylab="# morpho-species detected in all 8 ARMS from Reunion",
-       ylim=c(1,100))
+       xlab="Number of plate faces analysed",
+       ylab="# MSPs detected in all 8 ARMS from Reunion",
+       ylim=c(1,100),
+       xlim=c(0,150))
   
-  boxplot(s, col="yellow", add=TRUE, pch="+")
+  # boxplot(s, col="yellow", add=TRUE, pch="+")
   
   
   text(80,

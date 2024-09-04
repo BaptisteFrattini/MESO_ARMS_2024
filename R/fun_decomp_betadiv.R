@@ -664,8 +664,11 @@ fun_decomp_betadiv <- function(data_and_meta_clean){
   
   my_comparisons <- list( c("V", "W"), c("V", "X"), c("V", "Y"), c("V","Z"), c("W","X"), c("W", "Y"), c("W","Z"), c("X","Y"), c("X","Z"), c("Y","Z"))
   
-  
+
   library(ggplot2)
+  
+  df$comp <- factor(df$comp, levels = c("X", "Y", "Z", "W", "V"))
+  
   r1 <- ggboxplot(df, 
                   x = "comp", 
                   y = "value",
@@ -695,12 +698,13 @@ fun_decomp_betadiv <- function(data_and_meta_clean){
   # Ajouter les lettres aux moyennes
   comp_means$letters <- letters[as.character(comp_means$comp)]
   
+  
   r1bis <- ggboxplot(df, x = "comp", 
                   y = "value",
                   add = "jitter", 
                   short.panel.labs = FALSE,
                   color = "comp",
-                  palette = c("purple4" , "darkgreen", "blue3","aquamarine3", "black"),
+                  palette = c("blue3", "aquamarine3", "black",  "darkgreen","purple4"),
                   ylab = "Turnover") +  # Change x-axis label 
     scale_x_discrete(name = NULL, labels = NULL)+
     theme(legend.position = "none")
@@ -771,6 +775,8 @@ fun_decomp_betadiv <- function(data_and_meta_clean){
   
   df <- rbind(V,W,X,Y,Z)
   
+  df$comp <- factor(df$comp, levels = c("X", "Y", "Z", "W", "V"))
+  
   my_comparisons <- list( c("V", "W"), c("V", "X"), c("V", "Y"), c("V","Z"), c("W","X"), c("W", "Y"), c("W","Z"), c("X","Y"), c("X","Z"), c("Y","Z"))
   library(ggplot2)
   s1 <- ggboxplot(df, x = "comp", 
@@ -778,7 +784,7 @@ fun_decomp_betadiv <- function(data_and_meta_clean){
                   add = "jitter", 
                   short.panel.labs = FALSE,
                   color = "comp",
-                  palette = c("purple4" , "darkgreen", "blue3","aquamarine3", "black"),
+                  palette = c("blue3", "aquamarine3", "black",  "darkgreen","purple4"),
                   ylab = "jaccard") + 
     stat_compare_means(comparisons = my_comparisons, method = "t.test", label = "p.signif") + 
     stat_compare_means(label.y = 1, method = "anova") + theme_classic()          
@@ -806,7 +812,7 @@ fun_decomp_betadiv <- function(data_and_meta_clean){
                      add = "jitter", 
                      short.panel.labs = FALSE,
                      color = "comp",
-                     palette = c("purple4" , "darkgreen", "blue3","aquamarine3", "black"),
+                     palette = c("blue3", "aquamarine3", "black",  "darkgreen","purple4"),
                      ylab = "Jaccard") +  # Change x-axis label 
     scale_x_discrete(name = NULL, labels = NULL) +
     theme(legend.position = "none")
@@ -885,12 +891,15 @@ fun_decomp_betadiv <- function(data_and_meta_clean){
   
   my_comparisons <- list( c("V", "W"), c("V", "X"), c("V", "Y"), c("V","Z"), c("W","X"), c("W", "Y"), c("W","Z"), c("X","Y"), c("X","Z"), c("Y","Z"))
   library(ggplot2)
+  
+  df$comp <- factor(df$comp, levels = c("X", "Y", "Z", "W", "V"))
+  
   t1 <- ggboxplot(df, x = "comp", 
                   y = "value",
                   add = "jitter", 
                   short.panel.labs = FALSE,
                   color = "comp",
-                  palette = c("purple4" , "darkgreen", "blue3","aquamarine3", "black"),
+                  palette =c("blue3", "aquamarine3", "black",  "darkgreen","purple4"),
                   ylab = "Nestedness") + 
     stat_compare_means(comparisons = my_comparisons, method = "t.test", label = "p.signif") + 
     stat_compare_means(label.y = 1, method = "anova") + theme_classic()          
@@ -918,7 +927,7 @@ fun_decomp_betadiv <- function(data_and_meta_clean){
                      add = "jitter", 
                      short.panel.labs = FALSE,
                      color = "comp",
-                     palette = c("purple4" , "darkgreen", "blue3","aquamarine3", "black"),
+                     palette = c("blue3", "aquamarine3", "black",  "darkgreen","purple4"),
                      ylab = "Nestedness") + 
     scale_x_discrete(name = "Comparisons", labels = new_labels) +
     theme(axis.text.x = element_text(size = 12, angle = 45, hjust = 1), legend.position = "none")
