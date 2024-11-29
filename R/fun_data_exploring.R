@@ -14,6 +14,32 @@ fun_data_exploring <- function(data_and_meta_clean){
   data_mean <- read.csv(data_and_meta_clean["path_data_mean"], row.names = 1)
   meta_mean <- read.csv(data_and_meta_clean["path_meta_mean"], row.names = 1)
   
+  #### sponge list ####
+  
+  data <- read.csv(data_and_meta_clean["path_data"], row.names = 1)
+  meta <- read.csv(data_and_meta_clean["path_meta"], row.names = 1)
+  
+  meta_P50 <- subset(meta, campain == "P50ARMS") 
+  data_P50 <- subset(data, meta$campain == "P50ARMS") 
+  
+  data_P50 <- data_P50[, colSums(data_P50) > 0]
+  
+  # data[, grepl("MSP40_SP", names(data))]
+  
+  data_P50_spon <- data_P50[, grepl("SPON", names(data_P50))]
+  indice_P50_spon <- rbind(colMeans(data_P50_spon), colSums(data_P50_spon))
+  
+  write.table(indice_P50_spon, file = "outputs/sponges.csv" , row.names = TRUE, sep = ";", dec = ",")
+  
+  meta_RODA <- subset(meta, campain == "RODARMS") 
+  data_RODA <- subset(data, meta$campain == "RODARMS") 
+  
+  data_RODA <- data_RODA[, colSums(data_RODA) > 0]
+  
+  data_RODA_spon <- data_RODA[, grepl("SPON", names(data_RODA))]
+  indice_RODA_spon <- rbind(colMeans(data_RODA_spon), colSums(data_RODA_spon))
+  
+  write.table(indice_RODA_spon, file = "outputs/sponges_RODA.csv" , row.names = TRUE, sep = ";", dec = ",")
   
   #### alpha diversity ####
   library(ggpubr)
