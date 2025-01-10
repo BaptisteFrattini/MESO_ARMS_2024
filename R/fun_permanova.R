@@ -12,26 +12,57 @@ fun_permanova <- function(data_and_meta_clean){
   data_mean <- read.csv(data_and_meta_clean["path_data_mean"], row.names = 1)
   meta_mean <- read.csv(data_and_meta_clean["path_meta_mean"], row.names = 1)
   
-  data_mean <- subset(data_mean, meta_mean$island == "Reunion")
-  meta_mean <- subset(meta_mean, meta_mean$island == "Reunion")
+  # PERMANOVA ####
+  ## Effet de la profondeur ####
   
-  matrix_bc <- vegan::vegdist(data_mean, "bray")
+  data_mean_RUN <- subset(data_mean, meta_mean$island == "Reunion")
+  meta_mean_RUN <- subset(meta_mean, meta_mean$island == "Reunion")
   
-  perm <- vegan::adonis2(data_mean ~ campain, strata = meta_mean$site, data = meta_mean, method = "bray", permutations = 99999)
+  matrix_bc <- vegan::vegdist(data_mean_RUN, "bray")
   
-  sp_contrib <- summary(vegan::simper(data_mean, meta_mean$campain))
-
+  perm <- vegan::adonis2(data_mean_RUN ~ campain, strata = meta_mean_RUN$site, data = meta_mean_RUN , method = "bray", permutations = 99999)
   
-  data_mean <- read.csv(data_and_meta_clean["path_data_mean"], row.names = 1)
-  meta_mean <- read.csv(data_and_meta_clean["path_meta_mean"], row.names = 1)
+  sp_contrib <- summary(vegan::simper(data_mean_RUN, meta_mean_RUN $campain))
   
-  data_mean <- data_mean[-c(1:9),]
-  meta_mean <- meta_mean[-c(1:9),]
+  ## Effet de l'ile ####
   
-  perm <- vegan::adonis2(data_mean ~ island, data = meta_mean, method = "bray", permutations = 99999)
+  data_mean_shallow <- data_mean[-c(1:9),]
+  meta_mean_shallow <- meta_mean[-c(1:9),]
   
-  sp_contrib <- summary(vegan::simper(data_mean, meta_mean$campain))
+  perm <- vegan::adonis2(data_mean_shallow ~ island, data = meta_mean_shallow, method = "bray", permutations = 99999)
   
+  sp_contrib <- summary(vegan::simper(data_mean_shallow, meta_mean_shallow$campain))
+  
+  # PERMDISP ####
+  
+  dis.bray <- vegan::vegdist(data_mean, "bray")
+  # dis.jacc <- vegan::vegdist(data_mean_pa, "jaccard")
+  
+  a <- vegan::betadisper(
+    dis.bray,
+    meta_mean$triplicat,
+    type = "median",
+    bias.adjust = FALSE,
+    sqrt.dist = FALSE,
+    add = TRUE
+  )
+  boxplot(a)
+  anova(a)
+  plot(a)
+  
+  ?vegan::betadisper
+  
+  b <- vegan::betadisper(
+    dis.bray,
+    meta_mean$campain,
+    type = "median",
+    bias.adjust = FALSE,
+    sqrt.dist = FALSE,
+    add = TRUE
+  )
+  boxplot(b)
+  
+  anova(b)
   
   return(NULL)
 }

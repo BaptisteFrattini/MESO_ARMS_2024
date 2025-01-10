@@ -1,0 +1,253 @@
+#' Temperature comparison
+#' 
+#'
+#' @return the path to the subseted raw data file
+#' @export
+#'
+fun_temperature_comparison <- function(temp_extraction, temp_in_situ){
+  # temp_extraction = targets::tar_read("temp_extraction")
+  # temp_in_situ = targets::tar_read("temp_in_situ")
+  library(ggplot2)
+  data_copernicus <- read.csv(temp_extraction)
+  data_copernicus$date <- as.Date(data_copernicus$date)
+  
+  
+  data_in_situ_shallow <- read.csv(temp_in_situ[grepl("shallow",temp_in_situ)])
+  data_in_situ_deep <- read.csv(temp_in_situ[grepl("deep",temp_in_situ)])
+  colnames(data_in_situ_deep) <- c("date", "T_1A", "T_1B", "T_2A", "T_2B", "T_3A", "T_3B")
+  data_in_situ_deep$date <- as.character(data_in_situ_deep$date)
+  data_copernicus$date <- as.character(data_copernicus$date)
+  
+  library(dplyr)
+  
+  combined_data <- left_join(data_copernicus, data_in_situ_shallow, by = "date", relationship = "many-to-many",  suffix = c(".coperni", ".insit"))
+  
+  p1_shallow <- ggplot(data_copernicus, aes(x = date)) +
+    geom_line(aes(y = RUNA1, col = "RUNA1"), linewidth = 1.1) +
+    geom_line(aes(y = RUNA5, col = "RUNA5"), linewidth = 1.1) +
+    geom_line(aes(y = RUNA9, col = "RUNA9"), linewidth = 1.1) +
+    ylab("Temperature mean (°C)") +
+    xlab("Time") +
+    scale_x_date(date_labels = "%m/%Y", date_breaks = "1 month") + # Affiche mois/année
+    theme_minimal() +
+    scale_color_manual(values = c(RUNA1 = "blue",  RUNA5 = "green", RUNA9 = "coral")) +
+    theme(
+      legend.position = "top", 
+      legend.title = element_blank(),
+      axis.text.x = element_text(angle = 45, hjust = 1) # Écrit les dates de biais
+    )
+  
+  
+  y_range <- range(c(
+    combined_data$RUNA1, combined_data$RUNA5, combined_data$RUNA9, 
+    combined_data$mean.RUNA1, combined_data$mean.RUNA2,
+    data_in_situ_deep$T_1A, data_in_situ_deep$T_2A, data_in_situ_deep$T_3A
+  ), na.rm = TRUE)
+  
+  combined_data$date <- as.Date(combined_data$date)
+  
+  p1_shallow_bis <- ggplot(combined_data, aes(x = date)) +
+    geom_line(aes(y = RUNA1, col = "RUNA1"), linewidth = 0.8, linetype = 2) +
+    geom_line(aes(y = RUNA5, col = "RUNA5"), linewidth = 0.8, linetype = 2) +
+    geom_line(aes(y = RUNA9, col = "RUNA9"), linewidth = 0.8, linetype = 2) +
+    geom_line(aes(y = mean.RUNA1, col = "RUNA9_in_situ"), linewidth = 1.1) +
+    geom_line(aes(y = mean.RUNA2, col = "RUNA1_in_situ"), linewidth = 1.1) +
+    ylab("Temperature mean (°C)") +
+    xlab("Time") +
+    scale_y_continuous(limits = y_range) +  # Set the Y-axis limits
+    scale_x_date(date_labels = "%m/%Y", date_breaks = "1 month") + # Affiche mois/année
+    theme_minimal() +
+    scale_color_manual(values = c(RUNA1 = "blue",  RUNA5 = "green", RUNA9 = "coral",RUNA1_in_situ = "blue",RUNA9_in_situ = "coral")) +
+    theme(
+      legend.position = "top", 
+      legend.title = element_blank(),
+      axis.text.x = element_text(angle = 45, hjust = 1) # Écrit les dates de biais
+    )
+  
+  data_in_situ_deep$date <- as.Date(data_in_situ_deep$date)
+  
+  p1_deep <- ggplot(data_in_situ_deep, aes(x = date)) +
+    geom_line(aes(y = T_1A, col = "P50A1"), linewidth = 1.1) +
+    geom_line(aes(y = T_2A, col = "P50A2"), linewidth = 1.1) +
+    geom_line(aes(y = T_3A, col = "P50A3"), linewidth = 1.1) +
+    ylab("Temperature mean (°C)") +
+    xlab("Time") +
+    scale_y_continuous(limits = y_range) +
+    scale_x_date(date_labels = "%m/%Y", date_breaks = "1 month") + # Affiche mois/année
+    theme_minimal() +
+    scale_color_manual(values = c(P50A1 = "blue4",  P50A2 = "green4", P50A3 = "orange")) +
+    theme(
+      legend.position = "top", 
+      legend.title = element_blank(),
+      axis.text.x = element_text(angle = 45, hjust = 1) # Écrit les dates de biais
+    )
+  
+  Temp_dev_path <- here::here("outputs/Temperature_comparison_graph(3).pdf")
+  
+  cow <- cowplot::plot_grid(p1_shallow_bis,
+                            p1_deep,
+                            labels = c("a", "b"),
+                            ncol = 1, 
+                            nrow = 2)
+  
+  ggsave(filename =  Temp_dev_path, plot = cow , width = 13, height = 7)
+  
+  ##############################################################
+  library(dplyr)
+  library(ggplot2)
+  
+  # Convert date columns to Date type if not already
+  data_in_situ_deep$date <- as.Date(data_in_situ_deep$date)
+  combined_data$date <- as.Date(combined_data$date)
+  
+  # Extract the seasons for each dataset
+  # For "data_in_situ_deep"
+  data_in_situ_deep$season <- ifelse(format(data_in_situ_deep$date, "%m") %in% c("01", "02", "03", "04"),
+                                     "cold", 
+                                     ifelse(format(data_in_situ_deep$date, "%m") %in% c("07", "08", "09", "10"), "warm", NA))
+  
+  # For "combined_data"
+  combined_data$season <- ifelse(format(combined_data$date, "%m") %in% c("01", "02", "03", "04"),
+                                 "cold", 
+                                 ifelse(format(combined_data$date, "%m") %in% c("07", "08", "09", "10"), "warm", NA))
+  
+  # Calculate the seasonal means for both datasets (for all sites mixed)
+  seasonal_means_in_situ <- data_in_situ_deep %>%
+    group_by(season) %>%
+    summarise(mean_temp = mean(c(T_1A, T_2A, T_3A), na.rm = TRUE))
+  seasonal_means_in_situ <- seasonal_means_in_situ[-3,]
+  
+  
+  seasonal_means_combined <- combined_data %>%
+    group_by(season) %>%
+    summarise(mean_temp = mean(c(RUNA1, RUNA5, RUNA9), na.rm = TRUE))
+  seasonal_means_combined <- seasonal_means_combined[-3,]
+  
+  
+  cold_season_start <- as.Date("2021-01-01")
+  cold_season_end <- as.Date("2021-04-01")
+  
+  warm_season_start <- as.Date("2021-07-01")
+  warm_season_end <- as.Date("2021-10-01")
+  
+  
+  # Create the plots with the mean lines for each season
+  p1_shallow_bis_2 <- ggplot(combined_data, aes(x = date)) +
+    geom_line(aes(y = RUNA1, col = "RUNA1"), linewidth = 0.8, linetype = 2) +
+    geom_line(aes(y = RUNA5, col = "RUNA5"), linewidth = 0.8, linetype = 2) +
+    geom_line(aes(y = RUNA9, col = "RUNA9"), linewidth = 0.8, linetype = 2) +
+    geom_line(aes(y = mean.RUNA1, col = "RUNA1_in_situ"), linewidth = 1.1) +
+    geom_line(aes(y = mean.RUNA9, col = "RUNA9_in_situ"), linewidth = 1.1) +
+    geom_hline(data = seasonal_means_combined, aes(yintercept = mean_temp, color = season), linetype = "dashed", size = 1) +
+    geom_text(data = seasonal_means_combined, aes(x = as.Date("2018-11-01"), y = mean_temp, label = paste("Mean:", round(mean_temp, 2))), 
+              color = "black", size = 3, vjust = -1) +
+    ylab("Temperature mean (°C)") +
+    xlab("Time") +
+    scale_y_continuous(limits = y_range) +
+    scale_x_date(date_labels = "%m/%Y", date_breaks = "1 month") + 
+    theme_minimal() +
+    scale_color_manual(values = c("RUNA1" = "blue4", "RUNA5" = "green4", "RUNA9" = "orange2", "RUNA1_in_situ" = "blue4", "RUNA9_in_situ" = "orange2")) +
+    theme(
+      legend.position = "top", 
+      legend.title = element_blank(),
+      axis.text.x = element_text(angle = 45, hjust = 1)
+    )
+  
+  # Create the deep plot with the mean lines for each season
+  p1_deep_bis_2 <- ggplot(data_in_situ_deep, aes(x = date)) +
+    geom_line(aes(y = T_1A, col = "P50A1"), linewidth = 1.1) +
+    geom_line(aes(y = T_2A, col = "P50A2"), linewidth = 1.1) +
+    geom_line(aes(y = T_3A, col = "P50A3"), linewidth = 1.1) +
+    geom_hline(data = seasonal_means_in_situ, aes(yintercept = mean_temp, color = season), linetype = "dashed", size = 1) +
+    geom_text(data = seasonal_means_in_situ, aes(x = as.Date("2021-11-01"), y = mean_temp, label = paste("Mean:", round(mean_temp, 2))), 
+              color = "black", size = 3, vjust = -1) +
+    ylab("Temperature mean (°C)") +
+    xlab("Time") +
+    scale_y_continuous(limits = y_range) +
+    scale_x_date(date_labels = "%m/%Y", date_breaks = "1 month") + 
+    theme_minimal() +
+    scale_color_manual(values = c("P50A1" = "blue4", "P50A2" = "green4", "P50A3" = "orange2")) +
+    theme(
+      legend.position = "top", 
+      legend.title = element_blank(),
+      axis.text.x = element_text(angle = 45, hjust = 1)
+    )
+  
+  # Save the combined plot
+  Temp_dev_path <- here::here("outputs/Temperature_comparison_graph(4).pdf")
+  cow <- cowplot::plot_grid(p1_shallow_bis_2, p1_deep_bis_2, labels = c("a", "b"), ncol = 1, nrow = 2)
+  ggsave(Temp_dev_path, cow, width = 13, height = 7)
+  
+  
+  ################################################################
+  
+  
+  data_in_situ_deep <- data_in_situ_deep[,c(1,2,4,6)]
+  data_ex_situ_shallow <- combined_data[,c(2,3,4,5)]
+  
+  
+  filter_season <- function(data, date_column, season) {
+    data <- data %>%
+      mutate(date = as.Date(!!sym(date_column))) %>%
+      filter(if (season == "cold") {
+        format(date, "%m-%d") >= "07-01" & format(date, "%m-%d") < "10-01"
+      } else if (season == "hot") {
+        format(date, "%m-%d") >= "01-01" & format(date, "%m-%d") < "04-01"
+      } else {
+        FALSE
+      })
+    return(data)
+  }
+  
+  # Filter datasets by season
+  hot_deep <- filter_season(data_in_situ_deep, "date", "hot")
+  cold_deep <- filter_season(data_in_situ_deep, "date", "cold")
+  
+  hot_shallow <- filter_season(data_ex_situ_shallow, "date", "hot")
+  cold_shallow <- filter_season(data_ex_situ_shallow, "date", "cold")
+  
+  deep_T <- data.frame(hot_deep_1 = c(mean(hot_deep$T_1A), sd(hot_deep$T_1A)),
+                       hot_deep_2 = c(mean(hot_deep$T_2A), sd(hot_deep$T_2A)),
+                       hot_deep_3 = c(mean(hot_deep$T_3A), sd(hot_deep$T_3A)),
+                       cold_deep_1 = c(mean(cold_deep$T_1A), sd(cold_deep$T_1A)),
+                       cold_deep_2 = c(mean(cold_deep$T_2A), sd(cold_deep$T_2A)),
+                       cold_deep_3 = c(mean(cold_deep$T_3A), sd(cold_deep$T_3A))
+  )
+  
+  rownames(deep_T) <- c("mean", "sd")
+  
+  Temp_summary_Hot <- data.frame(Cap_La_Houssaye = c(paste0(round(mean(hot_shallow$RUNA1), 2)," ± ", round(sd(hot_shallow$RUNA1), 2)),
+                                                 paste0(round(mean(hot_deep$T_1A), 2)," ± ", round(sd(hot_deep$T_1A), 2))),
+                             Saint_Leu = c(paste0(round(mean(hot_shallow$RUNA5), 2)," ± ", round(sd(hot_shallow$RUNA5), 2)),
+                                           paste0(round(mean(hot_deep$T_2A), 2)," ± ", round(sd(hot_deep$T_2A), 2))),
+                             Grand_Bois = c(paste0(round(mean(hot_shallow$RUNA9), 2)," ± ", round(sd(hot_shallow$RUNA9), 2)),
+                                            paste0(round(mean(hot_deep$T_3A), 2)," ± ", round(sd(hot_deep$T_3A), 2))))
+                          
+  
+  rownames(Temp_summary_Hot) <- c("Shallow", "Deep")
+  
+  Temp_summary_Cold <- data.frame(Cap_La_Houssaye = c(paste0(round(mean(cold_shallow$RUNA1), 2)," ± ", round(sd(cold_shallow$RUNA1), 2)),
+                                                     paste0(round(mean(cold_deep$T_1A), 2)," ± ", round(sd(cold_deep$T_1A), 2))),
+                                 Saint_Leu = c(paste0(round(mean(cold_shallow$RUNA5), 2)," ± ", round(sd(cold_shallow$RUNA5), 2)),
+                                               paste0(round(mean(cold_deep$T_2A), 2)," ± ", round(sd(cold_deep$T_2A), 2))),
+                                 Grand_Bois = c(paste0(round(mean(cold_shallow$RUNA9), 2)," ± ", round(sd(cold_shallow$RUNA9), 2)),
+                                                paste0(round(mean(cold_deep$T_3A), 2)," ± ", round(sd(cold_deep$T_3A), 2))))
+  
+  
+  rownames(Temp_summary_Cold) <- c("Shallow", "Deep")
+  
+  hist(hot_shallow$RUNA5)
+    
+  shapiro.test(hot_deep$T_1A)
+  
+  # Replace t-test with Wilcoxon test
+  wilcox_test_hot_RUNA1 <- wilcox.test(hot_deep$T_1A, hot_shallow$RUNA1, na.rm = TRUE)
+  wilcox_test_cold_RUNA1 <- wilcox.test(cold_deep$T_1A, cold_shallow$RUNA1, na.rm = TRUE)
+  wilcox_test_hot_RUNA5 <- wilcox.test(hot_deep$T_2A, hot_shallow$RUNA5, na.rm = TRUE)
+  wilcox_test_cold_RUNA5 <- wilcox.test(cold_deep$T_2A, cold_shallow$RUNA5, na.rm = TRUE)
+  wilcox_test_hot_RUNA9 <- wilcox.test(hot_deep$T_3A, hot_shallow$RUNA9, na.rm = TRUE)
+  wilcox_test_cold_RUNA9 <- wilcox.test(cold_deep$T_3A, cold_shallow$RUNA9, na.rm = TRUE)
+
+  
+  return(NULL) 
+}

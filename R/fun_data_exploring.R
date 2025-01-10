@@ -9,11 +9,17 @@
 fun_data_exploring <- function(data_and_meta_clean){
   # data_and_meta_clean = targets::tar_read("clean_data_metadata") 
   
-  data_and_meta_clean
+  library(iNEXT)
+  library(ggpubr)
+  library(forcats)
+  library(ggplot2)
+  library(wesanderson)
+
   
   data_mean <- read.csv(data_and_meta_clean["path_data_mean"], row.names = 1)
   meta_mean <- read.csv(data_and_meta_clean["path_meta_mean"], row.names = 1)
   
+
   #### sponge list ####
   
   data <- read.csv(data_and_meta_clean["path_data"], row.names = 1)
@@ -41,10 +47,10 @@ fun_data_exploring <- function(data_and_meta_clean){
   
   write.table(indice_RODA_spon, file = "outputs/sponges_RODA.csv" , row.names = TRUE, sep = ";", dec = ",")
   
+  # Species acc curves
+  
   #### alpha diversity ####
-  library(ggpubr)
-  library(forcats)
-  library(ggplot2)
+
   S <- vegan::specnumber(data_mean)
   
   data_div <- data.frame(s = S,
@@ -74,7 +80,7 @@ fun_data_exploring <- function(data_and_meta_clean){
   
   ####NMDS####
   #bray
-  library(wesanderson)
+  
   fit <-  vegan::metaMDS(data_mean, distance = "bray")
   col1 <- c(wesanderson::wes_palette("FantasticFox1", 5), wesanderson::wes_palette("Royal2", 1))
   col1 <- c("#DD8D29", "#E2D200", "#46ACC8", "#B40F20","darkblue", "#9A8822")
@@ -325,6 +331,7 @@ fun_data_exploring <- function(data_and_meta_clean){
   # 
   # dev.off()
   #### 
+
   
   return(div_alpha_path)
 }

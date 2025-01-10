@@ -1355,14 +1355,14 @@
     },
     "glue": {
       "Package": "glue",
-      "Version": "1.7.0",
+      "Version": "1.8.0",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
         "R",
         "methods"
       ],
-      "Hash": "e0b3a53876554bd45879e596cdb10a52"
+      "Hash": "5899f1eaa825580172bb56c08266f37c"
     },
     "gridExtra": {
       "Package": "gridExtra",
@@ -1380,7 +1380,7 @@
     },
     "gtable": {
       "Package": "gtable",
-      "Version": "0.3.5",
+      "Version": "0.3.6",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
@@ -1389,9 +1389,10 @@
         "glue",
         "grid",
         "lifecycle",
-        "rlang"
+        "rlang",
+        "stats"
       ],
-      "Hash": "e18861963cbc65a27736e02b3cd3c4a0"
+      "Hash": "de949855009e2d4d0e52a844e30617ae"
     },
     "gtools": {
       "Package": "gtools",
@@ -1554,7 +1555,7 @@
     },
     "igraph": {
       "Package": "igraph",
-      "Version": "2.1.1",
+      "Version": "2.1.2",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1573,7 +1574,7 @@
         "utils",
         "vctrs"
       ],
-      "Hash": "c03878b48737a0e2da3b772d7b2e22da"
+      "Hash": "9a93b743b2461ba06ba3b5df12011145"
     },
     "ini": {
       "Package": "ini",
@@ -2888,7 +2889,7 @@
     },
     "tarchetypes": {
       "Package": "tarchetypes",
-      "Version": "0.10.0",
+      "Version": "0.11.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -2905,11 +2906,11 @@
         "vctrs",
         "withr"
       ],
-      "Hash": "554afb784cbe615ae628dfed026cf77f"
+      "Hash": "cf140014f9d00f97f4bd22d961e20471"
     },
     "targets": {
       "Package": "targets",
-      "Version": "1.8.0",
+      "Version": "1.9.1",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -2933,7 +2934,7 @@
         "vctrs",
         "yaml"
       ],
-      "Hash": "021ef38b55dac09df3c2c75befe54e8f"
+      "Hash": "e543d1527ad26f8d6fd0f4f4b17bf39a"
     },
     "tcltk2": {
       "Package": "tcltk2",
@@ -3236,7 +3237,7 @@
     },
     "withr": {
       "Package": "withr",
-      "Version": "3.0.1",
+      "Version": "3.0.2",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
@@ -3244,7 +3245,7 @@
         "grDevices",
         "graphics"
       ],
-      "Hash": "07909200e8bbe90426fbfeb73e1e27aa"
+      "Hash": "cc2d62c76458d425210d1eb1478b30b4"
     },
     "writexl": {
       "Package": "writexl",
