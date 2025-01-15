@@ -71,7 +71,7 @@ fun_data_exploring_fullsites <- function(data_and_meta_clean_fullsites){
   # Extract species richness estimates from $AsyEst
   extrapolated_richness <- obj$AsyEst %>%
     filter(Diversity == "Species richness") %>%
-    select(Assemblage, Estimator)
+    select(Assemblage, Estimator, s.e.)
   
   print(extrapolated_richness)
 
@@ -98,15 +98,22 @@ fun_data_exploring_fullsites <- function(data_and_meta_clean_fullsites){
     theme_bw(base_size = 18) +
     theme(legend.position = "right") +
     annotate("text", label = paste0("Extrapolated richness = ", 
-                                    round(extrapolated_richness[2, 2], 1)), 
+                                    round(extrapolated_richness[2, 2], 1),
+                                    " ± ",
+                                    round(extrapolated_richness[2, 3], 1)), 
              x = 575, y = 130, size = 4, hjust = 0) +
     annotate("text", label = paste0("Extrapolated richness = ", 
-                                    round(extrapolated_richness[1, 2], 1)), 
+                                    round(extrapolated_richness[1, 2], 1),
+                                    " ± ",
+                                    round(extrapolated_richness[1, 3], 1)), 
              x = 575, y = 113, size = 4, hjust = 0) +
     annotate("text", label = paste0("Extrapolated richness = ", 
-                                    round(extrapolated_richness[3, 2], 1)), 
+                                          round(extrapolated_richness[3, 2], 1),
+                                          " ± ",
+                                          round(extrapolated_richness[3, 3], 1)), 
              x = 575, y = 93, size = 4, hjust = 0) +
-    labs(x = "Number of plate faces", y = "Morpho-species diversity") # Change the y-axis label here
+    labs(x = "Number of plate faces", y = "Morpho-species diversity")   +
+    scale_color_manual(values = c("P50" = "darkblue", "RODA" = "#DD8D29", "RUNA" = "#46ACC8")) # Change the y-axis label here
   
   
   # Show the plot
@@ -118,7 +125,45 @@ fun_data_exploring_fullsites <- function(data_and_meta_clean_fullsites){
   
   alpha_div_fullsites_path <- here::here("outputs/Species_acc_curves_fullsites.pdf")
   
-  ggsave(alpha_div_fullsites_path, v1_combined, width = 7, height = 4.5)
+  ggsave(alpha_div_fullsites_path, v1_combined, width = 9.5, height = 5.5)
+  
+  
+  # NMDS ####
+  
+  data_mean <- read.csv(data_and_meta_clean_fullsites["path_data_mean"], row.names = 1)
+  meta_mean <- read.csv(data_and_meta_clean_fullsites["path_meta_mean"], row.names = 1)
+  
+  fit <-  vegan::metaMDS(data_mean, distance = "bray")
+  col1 <- c(wesanderson::wes_palette("FantasticFox1", 5), wesanderson::wes_palette("Royal2", 1))
+  col1 <- c("darkblue","darkblue","darkblue", "#DD8D29","#DD8D29","#DD8D29", "#46ACC8", "#46ACC8", "#46ACC8", "#46ACC8", "#46ACC8", "#46ACC8", "#46ACC8", "#46ACC8", "#46ACC8")
+  mds_name <- paste0("NMDS_MESO_bay_2.pdf")
+  mds_path <- here::here("outputs/", mds_name)
+  pdf(file =  mds_path)
+  plot(fit)
+  vegan::ordihull(fit, meta_mean$triplicat, col=col1)
+  vegan::ordiellipse(fit, meta_mean$triplicat, col=col1, kind = "ehull", lwd=2)
+  vegan::ordispider(fit, meta_mean$triplicat, col=col1, cex = 0.5)
+  vegan::ordiellipse(fit, meta_mean$triplicat, col=col1, draw="polygon", label = FALSE)
+  # vegan::ordilabel(fit, display = "species", choices = c(1, 2), cex = 0.3, border = NA)
+  a <- paste0("stress = ",round(fit$stress, 3))
+  text(0.8,0.95, a)
+  dev.off()
+  #Jac
+  data_mean_pa <- vegan::decostand(data_mean, "pa")
+  fit2 <-  vegan::metaMDS(data_mean_pa, distance = "jaccard")
+  ?metaMDS
+  mds_name <- paste0("NMDS_MESO_jac_2.pdf")
+  mds_path <- here::here("outputs/", mds_name)
+  pdf(file =  mds_path)
+  plot(fit2)
+  vegan::ordihull(fit2, meta_mean$triplicat, col=col1)
+  vegan::ordiellipse(fit2, meta_mean$triplicat, col=col1, kind = "ehull", lwd=2)
+  vegan::ordispider(fit2, meta_mean$triplicat, col=col1, cex = 0.5)
+  vegan::ordiellipse(fit2, meta_mean$triplicat, col=col1, draw="polygon", label = FALSE)
+  # vegan::ordilabel(fit2, display = "species", choices = c(1, 2), cex = 0.3, border = NA)
+  a <- paste0("stress = ",round(fit2$stress, 3))
+  text(0.6,1.3, a)
+  dev.off()
   
   return(NULL)
 }

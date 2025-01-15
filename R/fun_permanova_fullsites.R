@@ -54,7 +54,7 @@ fun_permanova_fullsites <- function(data_and_meta_clean_fullsites){
       
       # Perform PERMANOVA
       adonis_result <- vegan::adonis2(sub_data ~ Depth, data = sub_meta, method = "jaccard")
-      anosim_results <- vegan::anosim(sub_data, sub_meta$Depth, distance = "jaccard")
+      # anosim_results <- vegan::anosim(sub_data, sub_meta$Depth, distance = "jaccard")
       
       # Store results
       list(
@@ -64,8 +64,8 @@ fun_permanova_fullsites <- function(data_and_meta_clean_fullsites){
         mean_permdisp_RUNA = a$group.distances[grepl("Shallow",names(a$group.distances))],
         mean_permdisp_P50A = a$group.distances[grepl("Deep",names(a$group.distances))],
         p_disp = mod$`Pr(>F)`,
-        anosim_R = anosim_results$statistic,
-        anosim_p = anosim_results$signif,
+        # anosim_R = anosim_results$statistic,
+        # anosim_p = anosim_results$signif,
         samples = sub_meta$Sample  # Capture sample names
       )
     }, simplify = FALSE)
@@ -79,8 +79,8 @@ fun_permanova_fullsites <- function(data_and_meta_clean_fullsites){
         mean_permdisp_RUNA = res$mean_permdisp_RUNA,
         mean_permdisp_P50A = res$mean_permdisp_P50A,
         p_disp = res$p_disp,
-        anosim_R = res$anosim_R,
-        anosim_p = res$anosim_p,
+        # anosim_R = res$anosim_R,
+        # anosim_p = res$anosim_p,
         samples = paste(res$samples, collapse = ", ")
       )
     }))
@@ -121,7 +121,7 @@ fun_permanova_fullsites <- function(data_and_meta_clean_fullsites){
       
       # Perform PERMANOVA
       adonis_result <- vegan::adonis2(sub_data ~ Depth, data = sub_meta, method = "bray")
-      anosim_results <- vegan::anosim(sub_data, sub_meta$Depth, distance = "bray")
+      # anosim_results <- vegan::anosim(sub_data, sub_meta$Depth, distance = "bray")
       
       # Store results
       list(
@@ -131,8 +131,8 @@ fun_permanova_fullsites <- function(data_and_meta_clean_fullsites){
         mean_permdisp_RUNA = a$group.distances[grepl("Shallow",names(a$group.distances))],
         mean_permdisp_P50A = a$group.distances[grepl("Deep",names(a$group.distances))],
         p_disp = mod$`Pr(>F)`,
-        anosim_R = anosim_results$statistic,
-        anosim_p = anosim_results$signif,
+        # anosim_R = anosim_results$statistic,
+        # anosim_p = anosim_results$signif,
         samples = sub_meta$Sample  # Capture sample names
       )
     }, simplify = FALSE)
@@ -146,8 +146,8 @@ fun_permanova_fullsites <- function(data_and_meta_clean_fullsites){
         mean_permdisp_RUNA = res$mean_permdisp_RUNA,
         mean_permdisp_P50A = res$mean_permdisp_P50A,
         p_disp = res$p_disp,
-        anosim_R = res$anosim_R,
-        anosim_p = res$anosim_p,
+        # anosim_R = res$anosim_R,
+        # anosim_p = res$anosim_p,
         samples = paste(res$samples, collapse = ", ")
       )
     }))
@@ -164,7 +164,8 @@ fun_permanova_fullsites <- function(data_and_meta_clean_fullsites){
   bootstrap_jacc_results <- bootstrap_permanova_jacc(data_mean_RUN_pa, meta_mean_RUN)
   bootstrap_bray_results <- bootstrap_permanova_bray(data_mean_RUN, meta_mean_RUN)
   
-  
+  write.csv(bootstrap_jacc_results, file = "outputs/table_bootstrap_permanova_jaccard.csv", row.names = TRUE)
+  write.csv(bootstrap_bray_results, file = "outputs/table_bootstrap_permanova_bray.csv", row.names = TRUE)
   #Dispersion
   
   dist <- vegan::vegdist(data_mean_RUN, "bray")

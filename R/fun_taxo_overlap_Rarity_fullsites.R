@@ -136,6 +136,8 @@ fun_taxo_overlap_rarity_fullsites <- function(data_and_meta_clean_fullsites){
       names_to = "Campaign",
       values_to = "Percentage"
     )
+
+  
   
   
   species_long <- species_long %>%
@@ -152,6 +154,8 @@ fun_taxo_overlap_rarity_fullsites <- function(data_and_meta_clean_fullsites){
       "Deep specialist",
       "Shallow specialist"
     )))
+  
+  
   
   g1 <- ggplot(species_long, aes(x = reorder(Species, -Percentage), y = Percentage, fill = Status)) +
     geom_bar(stat = "identity", position = "stack") +
@@ -274,6 +278,114 @@ fun_taxo_overlap_rarity_fullsites <- function(data_and_meta_clean_fullsites){
   
   ggsave("outputs/Cumul_hist_rarity_fullsites.pdf", cumulative_histogram, width = 8, height = 5 )
   
+  # Filter and create two separate tables
+  P50ARMS <- species_abundance %>%
+    filter(P50ARMS > 0) %>%
+    mutate(Campaign = "P50ARMS")
+  
+  RUNARMS <- species_abundance %>%
+    filter(RUNARMS > 0) %>%
+    mutate(Campaign = "RUNARMS")
+  
+  # Combine the two filtered tables
+  combined_tables <- bind_rows(
+    P50ARMS %>% select(Species, Status, Campaign),
+    RUNARMS %>% select(Species, Status, Campaign)
+  )
+  
+  # Compute percentages per status for each campaign
+  summary_table <- combined_tables %>%
+    group_by(Campaign, Status) %>%
+    summarise(Species_count = n(), .groups = "drop") %>%
+    group_by(Campaign) %>%
+    mutate(Percentage = (Species_count / sum(Species_count)) * 100)
+  
+  # View the summary table
+  print(summary_table)
+  
+  library(ggplot2)
+  
+  # Define the color scheme
+  status_colors <- c(
+    "Common deep exclusive" = "darkblue",
+    "Common shallow exclusive" = "darkgreen",
+    "Common generalist" = "grey41",
+    "Deep specialist" = "slateblue",
+    "Shallow specialist" = "mediumseagreen",
+    "Rare deep exclusive" = "skyblue",
+    "Rare shallow exclusive" = "olivedrab1",
+    "Rare generalist" = "grey"
+  )
+  
+  # Create pie plots for each campaign
+  a1 <- ggplot(summary_table, aes(x = "", y = Percentage, fill = Status)) +
+    geom_bar(stat = "identity", width = 1, color = "white") +
+    coord_polar(theta = "y") +
+    facet_wrap(~ Campaign) +
+    scale_fill_manual(values = status_colors) +
+    labs(
+      title = "Percentage of Species by Status per Campaign",
+      fill = "Status"
+    ) +
+    theme_minimal() +
+    theme(
+      axis.title = element_blank(),
+      axis.text = element_blank(),
+      panel.grid = element_blank()
+    )
+  
+  a1
+  ggsave("outputs/Camembert.pdf", a1, width = 12, height = 10 )
+  
+  # Filter and create two separate tables
+  P50ARMS <- species_abundance %>%
+    filter(P50ARMS > 0) %>%
+    mutate(Campaign = "P50ARMS")
+  
+  RUNARMS <- species_abundance %>%
+    filter(RUNARMS > 0) %>%
+    mutate(Campaign = "RUNARMS")
+  
+  # Combine the two filtered tables
+  combined_tables <- bind_rows(
+    P50ARMS %>% select(Species, Status, taxa, Campaign),
+    RUNARMS %>% select(Species, Status, taxa, Campaign)
+  )
+  
+  # Rebuild the summary table including `taxa`
+  summary_table <- combined_tables %>%
+    group_by(Campaign, taxa, Status) %>%
+    summarise(Species_count = n(), .groups = "drop") %>%
+    group_by(Campaign, taxa) %>%
+    mutate(Percentage = (Species_count / sum(Species_count)) * 100)
+  
+  # View the updated summary table
+  print(summary_table)
+  
+  # Filter the summary table for selected taxa
+  filtered_summary_table <- summary_table %>%
+    filter(taxa %in% c("Ascidiacea", "Porifera", "Bryozoa"))
+  
+  # Create pie plots for the selected taxa
+  a2 <- ggplot(filtered_summary_table, aes(x = "", y = Percentage, fill = Status)) +
+    geom_bar(stat = "identity", width = 1, color = "white") +
+    coord_polar(theta = "y") +
+    facet_grid(taxa ~ Campaign) +  # Separate by Taxa (rows) and Campaign (columns)
+    scale_fill_manual(values = status_colors) +
+    labs(
+      title = "Percentage of Species by Status for Selected Taxa",
+      fill = "Status"
+    ) +
+    theme_minimal() +
+    theme(
+      axis.title = element_blank(),
+      axis.text = element_blank(),
+      panel.grid = element_blank(),
+      strip.text = element_text(size = 10, face = "bold")  # Adjust facet label size
+    )
+  
+  a2
+  ggsave("outputs/Camembert_per_taxa.pdf", a2, width = 6, height = 12 )
   
   return(NULL)
 }
