@@ -6,11 +6,12 @@
 #' @return the path to the subseted raw data file
 #' @export
 #'
-fun_temperature_extraction <- function(data_temp_copernicus, gps_sites){
+fun_temperature_extraction <- function(data_temp_copernicus, data_temp_copernicus_2, gps_sites){
    # data_temp_copernicus = targets::tar_read("temp_copernicus")
+   # data_temp_copernicus_2 = targets::tar_read("temp_copernicus_2")
    # gps_sites = targets::tar_read("data_gps_sites")
 
-  
+
   data_gps <- read.csv(gps_sites, sep = ";", dec = ",", header = TRUE, row.names = 1)
   data_gps <- data_gps[7:15,]
   
@@ -119,13 +120,126 @@ fun_temperature_extraction <- function(data_temp_copernicus, gps_sites){
   
   T.RUNA9 <- as.data.frame(cbind(temp.moy, timeline))
   
-  data_copernicus_temperature <- as.data.frame(cbind(T.RUNA1$timeline, T.RUNA1$temp.moy, T.RUNA5$temp.moy, T.RUNA9$temp.moy))
-  colnames(data_copernicus_temperature) <- c("date", "RUNA1", "RUNA5", "RUNA9")
+  data_copernicus_temperature_shallow_2019_20 <- as.data.frame(cbind(T.RUNA1$timeline, T.RUNA1$temp.moy, T.RUNA5$temp.moy, T.RUNA9$temp.moy))
+  colnames(data_copernicus_temperature_shallow_2019_20) <- c("date", "RUNA1", "RUNA5", "RUNA9")
   
-  path_to_data_copernicus <- "data/derived-data/data_copernicus_temperature.csv"
+  path_to_data_copernicus_shallow_2019_20 <- "data/derived-data/data_copernicus_temperature_shallow_2019_20.csv"
   
-  write.csv(data_copernicus_temperature, path_to_data_copernicus)
+  write.csv(data_copernicus_temperature_shallow_2019_20, path_to_data_copernicus_shallow_2019_20)
 
+  
+  
+  #### import raster 2 ####
+  dat.ncfd <- ncdf4::nc_open(data_temp_copernicus_2)
+  
+  attributes(dat.ncfd$var)
+  attributes(dat.ncfd$dim)
+  lat <- ncdf4::ncvar_get(dat.ncfd, "latitude")
+  long <- ncdf4::ncvar_get(dat.ncfd, "longitude")
+  depth <- ncdf4::ncvar_get(dat.ncfd, "depth")
+  time <- ncdf4::ncvar_get(dat.ncfd, "time")
+  head(time)
+  tunits <- ncatt_get(dat.ncfd, "time", "units") #check units
+  nt <- dim(time)
+  lswt_array <- ncvar_get(dat.ncfd, "thetao")
+  dim(lswt_array)
+  time_obs <- as.POSIXct(time, origin = "1970-01-01", tz="GMT")
+  range(time_obs)
+  length(time_obs)
+  
+  
+  lonlattime <- as.matrix(expand.grid(long,lat,time_obs))
+  lswt_vec_long <- as.vector(lswt_array)
+  lswt_obs <- data.frame(cbind(lonlattime, lswt_vec_long))
+  colnames(lswt_obs) <- c("x","y","z","l")
+  lswt_obs$l <- as.numeric(lswt_obs$l)
+  lswt_obs_clean <- na.omit(lswt_obs)
+  
+  
+  n <- length(levels(as.factor(lswt_obs_clean$z)))
+  
+  ####curve RUNA1####
+  
+  DATE <- levels(as.factor(lswt_obs_clean$z))
+  temp.moy <- NULL
+  timeline <- NULL
+  
+  for (i in 1:n) {
+    
+    sub <- subset(lswt_obs_clean, z == DATE[i])
+    
+    moy <- aggregate(l~x+y, sub, mean)   
+    
+    rast.moy <- raster::rasterFromXYZ(moy, digits = 3)
+    
+    rast.temp <- raster::extract(rast.moy, data_gps_RUNA[1,], method = 'simple')
+    
+    temp.moy[i] <- rast.temp[1]
+    
+    timeline[i] <- DATE[i]  
+    
+  }
+  
+  T.RUNA1 <- as.data.frame(cbind(temp.moy, timeline))
+  
+  ####curve RUNA5####
+  DATE <- levels(as.factor(lswt_obs_clean$z))
+  temp.moy <- NULL
+  timeline <- NULL
+  
+  for (i in 1:n) {
+    
+    sub <- subset(lswt_obs_clean, z == DATE[i])
+    
+    moy <- aggregate(l~x+y, sub, mean)   
+    
+    rast.moy <- raster::rasterFromXYZ(moy, digits = 3)
+    
+    rast.temp <- raster::extract(rast.moy, data_gps_RUNA[5,], method = 'simple')
+    
+    temp.moy[i] <- rast.temp[1]
+    
+    timeline[i] <- DATE[i]  
+    
+  }
+  
+  T.RUNA5 <- as.data.frame(cbind(temp.moy, timeline))
+  
+  ####curve RUNA9####
+  DATE <- levels(as.factor(lswt_obs_clean$z))
+  temp.moy <- NULL
+  timeline <- NULL
+  
+  data_gps_RUNA[9,2] <- -21.38
+  
+  for (i in 1:n) {
+    
+    sub <- subset(lswt_obs_clean, z == DATE[i])
+    
+    moy <- aggregate(l~x+y, sub, mean)   
+    
+    rast.moy <- raster::rasterFromXYZ(moy, digits = 3)
+    
+    rast.temp <- raster::extract(rast.moy, data_gps_RUNA[9,], method = 'simple')
+    
+    temp.moy[i] <- rast.temp[1]
+    
+    timeline[i] <- DATE[i]  
+    
+  }
+  
+  T.RUNA9 <- as.data.frame(cbind(temp.moy, timeline))
+  
+  data_copernicus_temperature_shallow_2022_23 <- as.data.frame(cbind(T.RUNA1$timeline, T.RUNA1$temp.moy, T.RUNA5$temp.moy, T.RUNA9$temp.moy))
+  colnames(data_copernicus_temperature_shallow_2022_23) <- c("date", "RUNA1", "RUNA5", "RUNA9")
+  
+  path_to_data_copernicus_shallow_2022_23 <- "data/derived-data/data_copernicus_temperature_shallow_2022_23.csv"
+  
+  write.csv(data_copernicus_temperature_shallow_2022_23, path_to_data_copernicus_shallow_2022_23)
+  
+  path_to_data_copernicus <- c(path_to_data_copernicus_shallow_2019_20, path_to_data_copernicus_shallow_2022_23)
+  names(path_to_data_copernicus) <- c("data_copernicus_shallow_2019_20", "data_copernicus_shallow_2022_23")
+  
 return(path_to_data_copernicus)
 
 }

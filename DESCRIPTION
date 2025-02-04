@@ -39,5 +39,7 @@ Imports:
     eulerr,
     writexl,
     ncdf4,
-    iNEXT
+    iNEXT,
+    hrbrthemes,
+    adespatial
     

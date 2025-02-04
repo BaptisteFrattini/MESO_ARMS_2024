@@ -274,6 +274,63 @@ fun_taxo_overlap_rarity <- function(data_and_meta_clean){
   
   ggsave("outputs/Cumul_hist_rarity.pdf", cumulative_histogram, width = 8, height = 5 )
   
+  # Separated graphs ####
+  
+  species_p50arms <- species_long %>% filter(Campaign == "P50ARMS")
+  species_runarms <- species_long %>% filter(Campaign == "RUNARMS")
+  
+  
+  # Plot for P50ARMS
+  g3 <- ggplot(species_p50arms, aes(x = reorder(Species, Percentage), y = Percentage, fill = Status)) +
+    geom_bar(stat = "identity", position = "stack") +
+    coord_flip() +
+    scale_fill_manual(values = c(
+      "Common deep exclusive" = "darkblue",
+      "Common shallow exclusive" = "darkgreen",
+      "Common generalist" = "grey41",
+      "Deep specialist" = "slateblue",
+      "Shallow specialist" = "mediumseagreen",
+      "Rare deep exclusive" = "skyblue",
+      "Rare shallow exclusive" = "olivedrab1",
+      "Rare generalist" = "grey"
+    ), drop = FALSE) +
+    labs(
+      title = "Species Percent Presence in P50ARMS",
+      x = "Species",
+      y = "log(1 + Species occurrence percentage)"
+    ) +
+    theme_minimal()+
+  theme(legend.position = "none") 
+  
+  # Plot for RUNARMS
+  g4 <- ggplot(species_runarms, aes(x = reorder(Species, Percentage), y = Percentage, fill = Status)) +
+    geom_bar(stat = "identity", position = "stack") +
+    coord_flip() +
+    scale_fill_manual(values = c(
+      "Common deep exclusive" = "darkblue",
+      "Common shallow exclusive" = "darkgreen",
+      "Common generalist" = "grey41",
+      "Deep specialist" = "slateblue",
+      "Shallow specialist" = "mediumseagreen",
+      "Rare deep exclusive" = "skyblue",
+      "Rare shallow exclusive" = "olivedrab1",
+      "Rare generalist" = "grey"
+    ), drop = FALSE) +
+    labs(
+      title = "Species Percent Presence in RUNARMS",
+      x = "Species",
+      y = "log(1 + Species occurrence percentage)"
+    ) +
+    theme_minimal()+
+    theme(legend.position = "none") 
+  
+  
+  fin <- cowplot::plot_grid(g3, g4,
+                              ncol = 2,
+                              nrow = 1)
+  
+  ggsave("outputs/taxo_overlap_barplot_rarity_(2).pdf", fin, width = 10, height = 15 )
+  
   
   return(NULL)
 }

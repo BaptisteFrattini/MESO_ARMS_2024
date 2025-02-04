@@ -7,8 +7,11 @@
 fun_temperature_comparison <- function(temp_extraction, temp_in_situ){
   # temp_extraction = targets::tar_read("temp_extraction")
   # temp_in_situ = targets::tar_read("temp_in_situ")
+
+  # Comparaison shallow 2019-2020 / Deep 2022-2023 #### 
+  
   library(ggplot2)
-  data_copernicus <- read.csv(temp_extraction)
+  data_copernicus <- read.csv(temp_extraction[1])
   data_copernicus$date <- as.Date(data_copernicus$date)
   
   
@@ -247,7 +250,147 @@ fun_temperature_comparison <- function(temp_extraction, temp_in_situ){
   wilcox_test_cold_RUNA5 <- wilcox.test(cold_deep$T_2A, cold_shallow$RUNA5, na.rm = TRUE)
   wilcox_test_hot_RUNA9 <- wilcox.test(hot_deep$T_3A, hot_shallow$RUNA9, na.rm = TRUE)
   wilcox_test_cold_RUNA9 <- wilcox.test(cold_deep$T_3A, cold_shallow$RUNA9, na.rm = TRUE)
+  
+  # Comparaison shallow 2022-2023 / Deep 2022-2023 #### 
+  
+  library(ggplot2)
+  data_copernicus <- read.csv(temp_extraction[2])
+  data_copernicus$date <- as.Date(data_copernicus$date)
+  
+  data_in_situ_shallow <- read.csv(temp_in_situ[grepl("shallow",temp_in_situ)])
+  data_in_situ_deep <- read.csv(temp_in_situ[grepl("deep",temp_in_situ)])
+  colnames(data_in_situ_deep) <- c("date", "T_1A", "T_1B", "T_2A", "T_2B", "T_3A", "T_3B")
+  data_in_situ_deep$date <- as.character(data_in_situ_deep$date)
+  data_copernicus$date <- as.character(data_copernicus$date)
+  
+  library(dplyr)
+  
+  combined_data <- left_join(data_copernicus, data_in_situ_deep, by = "date", relationship = "one-to-one",  suffix = c(".coperni", ".insit"))
+  data_copernicus$date <- as.Date(data_copernicus$date)
+  
+  combined_data$date <- as.Date(combined_data$date)
+  
+  
+  # Extract the seasons for each dataset
+  
+  # For "combined_data"
+  combined_data$season <- ifelse(format(combined_data$date, "%m") %in% c("01", "02", "03", "04"),
+                                 "cold", 
+                                 ifelse(format(combined_data$date, "%m") %in% c("07", "08", "09", "10"), "warm", NA))
+  
+  # Calculate the seasonal means for both datasets (for all sites mixed)
+ 
+  # seasonal_means_combined <- combined_data %>%
+  #   group_by(season) %>%
+  #   summarise(mean_temp = mean(c(RUNA1, RUNA5, RUNA9), na.rm = TRUE))
+  # seasonal_means_combined <- seasonal_means_combined[-3,]
+  # 
+  # seasonal_sd_combined <- combined_data %>%
+  #   group_by(season) %>%
+  #   summarise(sd_temp = sd(c(RUNA1, RUNA5, RUNA9), na.rm = TRUE))
+  # seasonal_sd_combined <- seasonal_sd_combined[-3,]
+  # 
+  # seasonal_means_combined <- left_join(seasonal_means_combined,seasonal_sd_combined, by = "season" )
+  
+  p1_deep_bis_3 <- ggplot(combined_data, aes(x = date)) +
+    geom_line(aes(y = RUNA1, col = "RUNA1"), linewidth = 0.8, linetype = 2) +
+    geom_line(aes(y = RUNA5, col = "RUNA5"), linewidth = 0.8, linetype = 2) +
+    geom_line(aes(y = RUNA9, col = "RUNA9"), linewidth = 0.8, linetype = 2) +
+    geom_line(aes(y = T_1A, col = "P50A1"), linewidth = 1.1) +
+    geom_line(aes(y = T_2A, col = "P50A2"), linewidth = 1.1) +
+    geom_line(aes(y = T_3A, col = "P50A3"), linewidth = 1.1) +
+    # geom_hline(data = seasonal_means_combined, aes(yintercept = mean_temp, color = season), linetype = "dashed", size = 1) +
+    # geom_text(data = seasonal_means_combined, aes(x = as.Date("2021-11-01"), y = mean_temp, label = paste("Mean:", round(mean_temp, 2),"±",round(sd_temp, 2))), 
+    #           color = "black", size = 3, vjust = -1) +
+    ylab("Temperature mean (°C)") +
+    xlab("Time") +
+    scale_y_continuous(limits = y_range) +
+    scale_x_date(date_labels = "%m/%Y", date_breaks = "1 month") + # Affiche mois/année
+    theme_minimal() +
+    scale_color_manual(values = c(RUNA1 = "blue",  RUNA5 = "green", RUNA9 = "coral", "P50A1" = "blue4", "P50A2" = "green4", "P50A3" = "orange2")) +
+    theme(
+      legend.position = "top", 
+      legend.title = element_blank(),
+      axis.text.x = element_text(angle = 45, hjust = 1) # Écrit les dates de biais
+    )
+  
+  combined_data$date <- as.Date(combined_data$date)
+  
+  data_in_situ_deep$date <- as.Date(data_in_situ_deep$date)
 
+  Temp_dev_path <- here::here("outputs/Temperature_comparison_graph(5).pdf")
+  
+  cow <- cowplot::plot_grid(p1_shallow_bis,
+                            p1_deep_bis_3,
+                            labels = c("a", "b"),
+                            ncol = 1, 
+                            nrow = 2)
+  
+  ggsave(Temp_dev_path, cow, width = 13, height = 7)
+  
+  combined_data$season <- ifelse(format(combined_data$date, "%m") %in% c("01", "02", "03", "04"),
+                                     "hot", 
+                                     ifelse(format(combined_data$date, "%m") %in% c("07", "08", "09", "10"), "cool", NA))
+ 
+  
+  filter_season <- function(data, date_column, season) {
+    # Convert the specified column to Date
+    data <- data %>%
+      mutate(date = as.Date(.data[[date_column]]))
+    
+    # Define season-specific filtering logic
+    if (season == "cold") {
+      filtered_data <- data %>%
+        filter(format(date, "%m-%d") >= "07-01" & format(date, "%m-%d") < "10-01")
+    } else if (season == "hot") {
+      filtered_data <- data %>%
+        filter(format(date, "%m-%d") >= "01-01" & format(date, "%m-%d") < "04-01")
+    } else {
+      stop("Invalid season. Please choose 'cold' or 'hot'.")
+    }
+    
+    return(filtered_data)
+  }
+  
+  # combined_data$date <- as.Date(combined_data$date)
+  # Filter datasets by season
+  hot <- filter_season(combined_data, "date", "hot")
+  cold <- filter_season(combined_data, "date", "cold")
+  
+
+  rownames(deep_T) <- c("mean", "sd")
+  
+  Temp_summary_Hot <- data.frame(Cap_La_Houssaye = c(paste0(round(mean(hot$RUNA1), 2)," ± ", round(sd(hot$RUNA1), 2)),
+                                                     paste0(round(mean(hot$T_1A), 2)," ± ", round(sd(hot$T_1A), 2))),
+                                 Saint_Leu = c(paste0(round(mean(hot$RUNA5), 2)," ± ", round(sd(hot$RUNA5), 2)),
+                                               paste0(round(mean(hot$T_2A), 2)," ± ", round(sd(hot$T_2A), 2))),
+                                 Grand_Bois = c(paste0(round(mean(hot$RUNA9), 2)," ± ", round(sd(hot$RUNA9), 2)),
+                                                paste0(round(mean(hot$T_3A), 2)," ± ", round(sd(hot$T_3A), 2))))
+  
+  
+  rownames(Temp_summary_Hot) <- c("Shallow", "Deep")
+  
+  Temp_summary_Cold <- data.frame(Cap_La_Houssaye = c(paste0(round(mean(cold$RUNA1), 2)," ± ", round(sd(cold$RUNA1), 2)),
+                                                      paste0(round(mean(cold$T_1A), 2)," ± ", round(sd(cold$T_1A), 2))),
+                                  Saint_Leu = c(paste0(round(mean(cold$RUNA5), 2)," ± ", round(sd(cold$RUNA5), 2)),
+                                                paste0(round(mean(cold$T_2A), 2)," ± ", round(sd(cold$T_2A), 2))),
+                                  Grand_Bois = c(paste0(round(mean(cold$RUNA9), 2)," ± ", round(sd(cold$RUNA9), 2)),
+                                                 paste0(round(mean(cold$T_3A), 2)," ± ", round(sd(cold$T_3A), 2))))
+  
+  
+  rownames(Temp_summary_Cold) <- c("Shallow", "Deep")
+  
+  hist(hot$RUNA5)
+  
+  shapiro.test(hot$T_1A)
+  
+  # Replace t-test with Wilcoxon test
+  wilcox_test_hot_RUNA1 <- wilcox.test(hot$T_1A, hot$RUNA1, na.rm = TRUE)
+  wilcox_test_cold_RUNA1 <- wilcox.test(cold$T_1A, cold$RUNA1, na.rm = TRUE)
+  wilcox_test_hot_RUNA5 <- wilcox.test(hot$T_2A, hot$RUNA5, na.rm = TRUE)
+  wilcox_test_cold_RUNA5 <- wilcox.test(cold$T_2A, cold$RUNA5, na.rm = TRUE)
+  wilcox_test_hot_RUNA9 <- wilcox.test(hot$T_3A, hot$RUNA9, na.rm = TRUE)
+  wilcox_test_cold_RUNA9 <- wilcox.test(cold$T_3A, cold$RUNA9, na.rm = TRUE)
   
   return(NULL) 
 }

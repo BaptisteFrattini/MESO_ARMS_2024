@@ -58,6 +58,8 @@ fun_data_exploring_fullsites <- function(data_and_meta_clean_fullsites){
   # Rename the list elements with appropriate names (if needed)
   names(dat_processed) <- c("RODA", "P50", "RUNA")
   
+  # Testing alpha diversity using jacknife ####
+  
   # Check the structure of the processed data
   str(dat_processed)
   t <- seq(1, 1000, by=10)
@@ -126,6 +128,122 @@ fun_data_exploring_fullsites <- function(data_and_meta_clean_fullsites){
   alpha_div_fullsites_path <- here::here("outputs/Species_acc_curves_fullsites.pdf")
   
   ggsave(alpha_div_fullsites_path, v1_combined, width = 9.5, height = 5.5)
+  
+  # Testing alpha diversity differences using bootstrap ####
+  meta <- meta %>%
+    mutate(
+      clust = case_when(
+        triplicat == "RUNARMS1" ~ 1,
+        triplicat %in% c("RUNARMS2", "RUNARMS3") ~ 2,
+        triplicat %in% c("RUNARMS4", "RUNARMS5", "RUNARMS6") ~ 3,
+        triplicat %in% c("RUNARMS7", "RUNARMS8", "RUNARMS9") ~ 4,
+        TRUE ~ NA_integer_
+      )
+    )
+  
+
+  
+  # Function to check if all clusters are represented
+  is_valid_sample <- function(sampled_data) {
+    all(1:4 %in% sampled_data$clust)
+  }
+  
+  # Bootstrap alpha diversity function
+  bootstrap_alpha_div <- function(data, metadata, num_bootstraps = 1000) {
+    # Filter shallow metadata
+    shallow_meta <- metadata %>%
+      filter(campain == "RUNARMS")
+    deep_meta <- metadata %>%
+      filter(campain == "P50ARMS")
+    rodri_meta <- metadata %>%
+      filter(campain == "RODARMS")
+    
+    
+    # Bootstrap loop
+    results <- replicate(num_bootstraps, {
+      valid_sample <- NULL
+      
+      # Generate a valid sample containing all clusters
+      while (is.null(valid_sample)) {
+        seq <- sample(unique(shallow_meta$arms), 9) # Randomly sample arms
+        sampled <- shallow_meta %>%
+          filter(arms %in% seq)
+        
+        # Check if all clusters are represented
+        if (is_valid_sample(sampled)) {
+          valid_sample <- sampled
+        }
+      }
+      
+      # Get indices for the valid sample
+      shallow_names <- valid_sample$name
+      deep_names <- deep_meta$name
+      rodri_names <- rodri_meta$name
+      
+      full_names <- c(shallow_names, deep_names, rodri_names)
+      
+      sub_data <- data[full_names,]
+      rownames(meta) <- meta$name
+      sub_meta <- meta[full_names,]
+  
+      
+      # Calculate species richness
+      richness <- specnumber(sub_data, groups = sub_meta$campain)
+      
+      # Return results
+      list(
+        Richness_P50A = richness["P50ARMS"],
+        Richness_RODA = richness["RODARMS"],
+        Richness_RUNA = richness["RUNARMS"]
+      )
+    }, simplify = FALSE)
+    
+    # Combine results into a data frame
+    result_df <- do.call(rbind, lapply(results, function(res) {
+      data.frame(
+        Richness_P50A = res$Richness_P50A,
+        Richness_RODA = res$Richness_RODA,
+        Richness_RUNA = res$Richness_RUNA
+      )
+    }))
+    
+    return(result_df)
+  }
+  
+  # Example usage
+  bootstrap_alpha_results <- bootstrap_alpha_div(data, metadata)
+  
+
+  
+  
+  hist(bootstrap_alpha_results$Richness_RUNA, main = "Bootstrap Distribution of Total Richness", xlab = "Richness")
+  mean_richness <- mean(bootstrap_alpha_results$Richness_RUNA)
+  sd_richness <- sd(bootstrap_alpha_results$Richness_RUNA)
+
+  # Plot the histogram with ggplot2
+  alph <- ggplot(bootstrap_alpha_results, aes(x = Richness_RUNA)) +
+    geom_histogram(binwidth = 1, fill = "coral", color = "black", alpha = 0.7) +
+    geom_vline(xintercept = mean_richness, color = "red", linetype = "dashed", size = 1) +
+    geom_vline(xintercept = mean_richness, color = "red", linetype = "dashed", size = 1) +
+    geom_vline(xintercept = 85, color = "red", linetype = "dashed", size = 1) +
+    geom_vline(xintercept = 86, color = "red", linetype = "dashed", size = 1) +
+    annotate("text", x = mean_richness - 10, y = 40, 
+             label = paste0("Mean: ", round(mean_richness, 2)), 
+             color = "black", hjust = 0) +
+    annotate("text", x = mean_richness - 10, y = 35, 
+             label = paste0("SD: ", round(sd_richness, 2)), 
+             color = "black", hjust = 0) +
+    labs(
+      title = "Bootstrap Distribution of Total Richness",
+      x = "Richness",
+      y = "Frequency"
+    ) +
+    theme_minimal()
+  
+  
+  alpha_div_bootstrap_path <- here::here("outputs/Species_richness_bootstrap_fullsites.pdf")
+  
+  ggsave(alpha_div_bootstrap_path, alph, width = 9, height = 9)
   
   
   # NMDS ####

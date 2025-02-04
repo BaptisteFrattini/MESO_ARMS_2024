@@ -36,7 +36,10 @@ list(
   
   ,tar_target(temp_copernicus, "data/raw-data/Temperature/cmems_mod_glo_phy_my_0.083deg_P1D-m_1735902316351.nc", format = "file")
   
+  ,tar_target(temp_copernicus_2, "data/raw-data/Temperature/cmems_mod_glo_phy_myint_0.083deg_P1D-m_1737626858552.nc", format = "file")
+  
   ,tar_target(temp_extraction, fun_temperature_extraction(data_temp_copernicus = temp_copernicus,
+                                                          data_temp_copernicus_2 = temp_copernicus_2,
                                                           gps_sites = data_gps_sites))
   
   ,tar_target(temp_comparison, fun_temperature_comparison(temp_extraction = temp_extraction,
