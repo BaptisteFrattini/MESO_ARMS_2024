@@ -33,7 +33,7 @@ fun_temp <- function(temp_1A,
   data_temp_3A <- read.csv(temp_3A, row.names = 1, sep = ";", dec = ",")
   data_temp_3B <- read.csv(temp_3B, row.names = 1, sep = ";", dec = ",")
 
-  
+   
   # data_temp_1A$Date=strptime(as.Date(data_temp_1A$Date, tz = "UTC"), format="%Y-%m-%d")
   
   P50ARMS=list(data_temp_1A,data_temp_1B,data_temp_2A,data_temp_2B,data_temp_3A,data_temp_3B)

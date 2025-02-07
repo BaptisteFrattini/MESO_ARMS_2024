@@ -38,8 +38,14 @@ list(
   
   ,tar_target(temp_copernicus_2, "data/raw-data/Temperature/cmems_mod_glo_phy_myint_0.083deg_P1D-m_1737626858552.nc", format = "file")
   
+  ,tar_target(temp_copernicus_rodrigues, "data/raw-data/Temperature/cmems_mod_glo_phy_my_0.083deg_P1D-m_1738770214961.nc", format = "file")
+  
+  ,tar_target(temp_copernicus_rodrigues_2, "data/raw-data/Temperature/cmems_mod_glo_phy_myint_0.083deg_P1D-m_1738676877692.nc", format = "file")
+  
   ,tar_target(temp_extraction, fun_temperature_extraction(data_temp_copernicus = temp_copernicus,
                                                           data_temp_copernicus_2 = temp_copernicus_2,
+                                                          data_temp_copernicus_rodrigues = temp_copernicus_rodrigues,
+                                                          data_temp_copernicus_rodrigues_2 = temp_copernicus_rodrigues_2,
                                                           gps_sites = data_gps_sites))
   
   ,tar_target(temp_comparison, fun_temperature_comparison(temp_extraction = temp_extraction,
@@ -91,5 +97,7 @@ list(
   ,tar_target(taxo_overlap_rarity_fullsites, fun_taxo_overlap_rarity_fullsites(data_and_meta_clean_fullsites = clean_data_metadata_fullsites))
   
   ,tar_target(data_exploring_fullsites, fun_data_exploring_fullsites(data_and_meta_clean_fullsites = clean_data_metadata_fullsites))
+  
+  ,tar_target(LCBD_fullsites, fun_LCBD_fullsites(data_and_meta_clean_fullsites = clean_data_metadata_fullsites))
   
   )

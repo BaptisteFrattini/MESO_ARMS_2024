@@ -6,7 +6,7 @@
 #' @return the path to...
 #' @export
 #'
-fun_decomp_betadiv <- function(data_and_meta_clean){
+fun_LCBD_fullsites <- function(data_and_meta_clean_fullsites){
 
   library(betapart)
   library(reshape2)

@@ -10,7 +10,7 @@ fun_temperature_comparison <- function(temp_extraction, temp_in_situ){
 
   # Comparaison shallow 2019-2020 / Deep 2022-2023 #### 
   
-  library(ggplot2)
+  library(ggplot2) 
   data_copernicus <- read.csv(temp_extraction[1])
   data_copernicus$date <- as.Date(data_copernicus$date)
   
@@ -24,7 +24,7 @@ fun_temperature_comparison <- function(temp_extraction, temp_in_situ){
   library(dplyr)
   
   combined_data <- left_join(data_copernicus, data_in_situ_shallow, by = "date", relationship = "many-to-many",  suffix = c(".coperni", ".insit"))
-  
+  data_copernicus$date <- as.Date(data_copernicus$date)
   p1_shallow <- ggplot(data_copernicus, aes(x = date)) +
     geom_line(aes(y = RUNA1, col = "RUNA1"), linewidth = 1.1) +
     geom_line(aes(y = RUNA5, col = "RUNA5"), linewidth = 1.1) +
@@ -48,6 +48,7 @@ fun_temperature_comparison <- function(temp_extraction, temp_in_situ){
   ), na.rm = TRUE)
   
   combined_data$date <- as.Date(combined_data$date)
+  y_range = c(22,31)
   
   p1_shallow_bis <- ggplot(combined_data, aes(x = date)) +
     geom_line(aes(y = RUNA1, col = "RUNA1"), linewidth = 0.8, linetype = 2) +
@@ -243,6 +244,7 @@ fun_temperature_comparison <- function(temp_extraction, temp_in_situ){
     
   shapiro.test(hot_deep$T_1A)
   
+  
   # Replace t-test with Wilcoxon test
   wilcox_test_hot_RUNA1 <- wilcox.test(hot_deep$T_1A, hot_shallow$RUNA1, na.rm = TRUE)
   wilcox_test_cold_RUNA1 <- wilcox.test(cold_deep$T_1A, cold_shallow$RUNA1, na.rm = TRUE)
@@ -252,6 +254,10 @@ fun_temperature_comparison <- function(temp_extraction, temp_in_situ){
   wilcox_test_cold_RUNA9 <- wilcox.test(cold_deep$T_3A, cold_shallow$RUNA9, na.rm = TRUE)
   
   # Comparaison shallow 2022-2023 / Deep 2022-2023 #### 
+  
+  data_copernicus <- read.csv(temp_extraction[1])
+  data_copernicus$date <- as.Date(data_copernicus$date)
+  
   
   library(ggplot2)
   data_copernicus <- read.csv(temp_extraction[2])
@@ -391,6 +397,104 @@ fun_temperature_comparison <- function(temp_extraction, temp_in_situ){
   wilcox_test_cold_RUNA5 <- wilcox.test(cold$T_2A, cold$RUNA5, na.rm = TRUE)
   wilcox_test_hot_RUNA9 <- wilcox.test(hot$T_3A, hot$RUNA9, na.rm = TRUE)
   wilcox_test_cold_RUNA9 <- wilcox.test(cold$T_3A, cold$RUNA9, na.rm = TRUE)
+  
+  
+  ## Graph pour montrer toutes les infos dispo ####
+  data_rodrigues_22_23 <- read.csv(temp_extraction["data_copernicus_rodrigues_2022_2023"])
+  data_rodrigues_22_23$date <- as.Date(data_rodrigues_22_23$date)
+  colnames(data_rodrigues_22_23) <- c("X", "date", "RODA1", "RODA2","RODA3")
+  
+  data_rodrigues_16_17 <- read.csv(temp_extraction["data_copernicus_rodrigues_2016_2017"])
+  data_rodrigues_16_17$date <- as.Date(data_rodrigues_16_17$date)
+  colnames(data_rodrigues_16_17) <- c("X", "date", "RODA1", "RODA2","RODA3")
+  
+  combined_data <- left_join(data_copernicus, data_in_situ_deep,by = "date", relationship = "one-to-one",  suffix = c(".coperni", ".insit"))
+  data_copernicus$date <- as.Date(data_copernicus$date)
+  
+  combined_data_roda <- left_join(combined_data, data_rodrigues_22_23,by = "date", relationship = "one-to-one",  suffix = c(".reunion", ".rodri"))
+  combined_data_roda$date <- as.Date(combined_data_roda$date)
+  
+  library(dplyr)
+  library(ggplot2)
+  
+  # Convert date columns to Date type if not already
+  data_in_situ_deep$date <- as.Date(data_in_situ_deep$date)
+  combined_data_roda$date <- as.Date(combined_data_roda$date)
+  
+  y_range <- range(c(
+    combined_data_roda$RUNA1, 
+    combined_data_roda$RUNA5, 
+    combined_data_roda$RUNA9,  
+    combined_data_roda$T_1A, 
+    combined_data_roda$T_2A, 
+    combined_data_roda$T_3A, 
+    combined_data_roda$RODA1, 
+    combined_data_roda$RODA2, 
+    combined_data_roda$RODA3,
+    data_rodrigues_16_17$RODA1,
+    data_rodrigues_16_17$RODA2,
+    data_rodrigues_16_17$RODA3
+  ), na.rm = TRUE)
+  
+  y_range = c(22,31)
+  
+  # Create the plots with the mean lines for each season
+    p2 <- ggplot(combined_data_roda, aes(x = date)) +
+    geom_line(aes(y = RUNA1, col = "RUNA1"), linewidth = 0.8, linetype = 2) +
+    geom_line(aes(y = RUNA5, col = "RUNA5"), linewidth = 0.8, linetype = 2) +
+    geom_line(aes(y = RUNA9, col = "RUNA9"), linewidth = 0.8, linetype = 2) +
+    geom_line(aes(y = T_1A, col = "P50A1"), linewidth = 1.1) +
+    geom_line(aes(y = T_2A, col = "P50A2"), linewidth = 1.1) +
+    geom_line(aes(y = T_3A, col = "P50A3"), linewidth = 1.1) +
+    geom_line(aes(y = RODA1, col = "RODA1"), linewidth = 1.1, linetype = 2) +
+    geom_line(aes(y = RODA2, col = "RODA2"), linewidth = 1.1, linetype = 2) +
+    geom_line(aes(y = RODA3, col = "RODA3"), linewidth = 1.1, linetype = 2) +
+    # geom_hline(data = seasonal_means_combined, aes(yintercept = mean_temp, color = season), linetype = "dashed", size = 1) +
+    # geom_text(data = seasonal_means_combined, aes(x = as.Date("2021-11-01"), y = mean_temp, label = paste("Mean:", round(mean_temp, 2),"±",round(sd_temp, 2))), 
+    #           color = "black", size = 3, vjust = -1) +
+    ylab("Temperature mean (°C)") +
+    xlab("Time") +
+    scale_y_continuous(limits = y_range) +
+    scale_x_date(date_labels = "%m/%Y", date_breaks = "1 month") + # Affiche mois/année
+    theme_minimal() +
+    scale_color_manual(values = c(RUNA1 = "blue",  RUNA5 = "green", RUNA9 = "coral", "P50A1" = "blue4", "P50A2" = "green4", "P50A3" = "orange2", "RODA1" =  "#BC7AF9", "RODA2" = "#8B48BF", "RODA3" = "#5A189A")) +
+    theme(
+      legend.position = "top", 
+      legend.title = element_blank(),
+      axis.text.x = element_text(angle = 45, hjust = 1) # Écrit les dates de biais
+    )
+    
+    p3 <- ggplot(data_rodrigues_16_17, aes(x = date)) +
+      geom_line(aes(y = RODA1, col = "RODA1"), linewidth = 1.1, linetype = 2) +
+      geom_line(aes(y = RODA2, col = "RODA2"), linewidth = 1.1, linetype = 2) +
+      geom_line(aes(y = RODA3, col = "RODA3"), linewidth = 1.1, linetype = 2) +
+      # geom_hline(data = seasonal_means_combined, aes(yintercept = mean_temp, color = season), linetype = "dashed", size = 1) +
+      # geom_text(data = seasonal_means_combined, aes(x = as.Date("2021-11-01"), y = mean_temp, label = paste("Mean:", round(mean_temp, 2),"±",round(sd_temp, 2))), 
+      #           color = "black", size = 3, vjust = -1) +
+      ylab("Temperature mean (°C)") +
+      xlab("Time") +
+      scale_y_continuous(limits = y_range) +
+      scale_x_date(date_labels = "%m/%Y", date_breaks = "1 month") + # Affiche mois/année
+      theme_minimal() +
+      scale_color_manual(values = c("RODA1" = "#BC7AF9", "RODA2" = "#8B48BF", "RODA3" = "#5A189A")) +
+      theme(
+        legend.position = "top", 
+        legend.title = element_blank(),
+        axis.text.x = element_text(angle = 45, hjust = 1) # Écrit les dates de biais
+      )
+  
+    cow <- cowplot::plot_grid(p3,
+                              p1_shallow_bis,
+                              p2,
+                              labels = c("a", "b","c"),
+                              ncol = 1, 
+                              nrow = 3)
+    
+    Temp_dev_path <- here::here("outputs/Temperature_comparison_graph(6).pdf")
+    
+    ggsave(Temp_dev_path, cow, width = 14, height = 11)
+  
+
   
   return(NULL) 
 }

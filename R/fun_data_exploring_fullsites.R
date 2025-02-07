@@ -210,16 +210,14 @@ fun_data_exploring_fullsites <- function(data_and_meta_clean_fullsites){
     return(result_df)
   }
   
-  # Example usage
-  bootstrap_alpha_results <- bootstrap_alpha_div(data, metadata)
   
-
-  
+  bootstrap_alpha_results <- bootstrap_alpha_div(data, meta)
   
   hist(bootstrap_alpha_results$Richness_RUNA, main = "Bootstrap Distribution of Total Richness", xlab = "Richness")
   mean_richness <- mean(bootstrap_alpha_results$Richness_RUNA)
   sd_richness <- sd(bootstrap_alpha_results$Richness_RUNA)
 
+  
   # Plot the histogram with ggplot2
   alph <- ggplot(bootstrap_alpha_results, aes(x = Richness_RUNA)) +
     geom_histogram(binwidth = 1, fill = "coral", color = "black", alpha = 0.7) +
