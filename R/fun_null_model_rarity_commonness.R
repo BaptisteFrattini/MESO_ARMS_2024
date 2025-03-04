@@ -128,7 +128,9 @@ null_model_rarity_commonness <- function(data_and_meta_clean){
     theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
     labs(title = "Distribution of Species Frequencies", x = "Frequency Interval", y = "Number of Species")
   
+  (sum(null_distribution_df$Count*1000)/4)/1000
   
+  null_distribution_df
   # plot a grid of SAD for each unique site ####
   
   

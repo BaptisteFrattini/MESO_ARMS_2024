@@ -82,6 +82,8 @@ list(
   
   ,tar_target(taxo_overlap_quartile, fun_taxo_overlap_quart(data_and_meta_clean = clean_data_metadata))
   
+  ,tar_target(LCBD, fun_LCBD(data_and_meta_clean = clean_data_metadata))
+  
   
   # 
   # ,tar_target(PCoA, fun_PCoA(data_and_meta_clean = clean_data_metadata))
