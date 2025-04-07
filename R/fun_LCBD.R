@@ -6,7 +6,7 @@
 #' @return the path to...
 #' @export
 #'
-fun_LCBD <- function(data_and_meta_clean_fullsites){
+fun_LCBD <- function(data_and_meta_clean){
   
   # data_and_meta_clean = targets::tar_read("clean_data_metadata") 
   library(betapart)
@@ -18,6 +18,7 @@ fun_LCBD <- function(data_and_meta_clean_fullsites){
   library(ggsignif)
   library(ggpubr)
   library(adespatial)
+  library(tidyr)
   
   data_mean <- read.csv(data_and_meta_clean["path_data_mean"], row.names = 1)
   meta_mean <- read.csv(data_and_meta_clean["path_meta_mean"], row.names = 1)

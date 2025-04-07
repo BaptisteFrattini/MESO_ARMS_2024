@@ -58,7 +58,7 @@ fun_data_exploring_fullsites <- function(data_and_meta_clean_fullsites){
   # Rename the list elements with appropriate names (if needed)
   names(dat_processed) <- c("RODA", "P50", "RUNA")
   
-  # Testing alpha diversity using jacknife ####
+  # Testing gamma diversity using jacknife ####
   
   # Check the structure of the processed data
   str(dat_processed)
@@ -129,7 +129,7 @@ fun_data_exploring_fullsites <- function(data_and_meta_clean_fullsites){
   
   ggsave(alpha_div_fullsites_path, v1_combined, width = 9.5, height = 5.5)
   
-  # Testing alpha diversity differences using bootstrap ####
+  # Testing gamma diversity differences using bootstrap ####
   meta <- meta %>%
     mutate(
       clust = case_when(
@@ -221,8 +221,7 @@ fun_data_exploring_fullsites <- function(data_and_meta_clean_fullsites){
   # Plot the histogram with ggplot2
   alph <- ggplot(bootstrap_alpha_results, aes(x = Richness_RUNA)) +
     geom_histogram(binwidth = 1, fill = "coral", color = "black", alpha = 0.7) +
-    geom_vline(xintercept = mean_richness, color = "red", linetype = "dashed", size = 1) +
-    geom_vline(xintercept = mean_richness, color = "red", linetype = "dashed", size = 1) +
+    geom_vline(xintercept = mean_richness, color = "black", linetype = "dashed", size = 1) +
     geom_vline(xintercept = 85, color = "red", linetype = "dashed", size = 1) +
     geom_vline(xintercept = 86, color = "red", linetype = "dashed", size = 1) +
     annotate("text", x = mean_richness - 10, y = 40, 
@@ -280,6 +279,15 @@ fun_data_exploring_fullsites <- function(data_and_meta_clean_fullsites){
   a <- paste0("stress = ",round(fit2$stress, 3))
   text(0.6,1.3, a)
   dev.off()
+  
+  
+  # Computing alpha _diversity ####
+  
+  data <- read.csv(data_and_meta_clean_fullsites["path_data"], row.names = 1)
+  meta <- read.csv(data_and_meta_clean_fullsites["path_meta"], row.names = 1)
+  
+  s = specnumber(data, groups = meta$triplicat)
+  barplot(s)
   
   return(NULL)
 }

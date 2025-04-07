@@ -168,8 +168,34 @@ null_model_rarity_commonness <- function(data_and_meta_clean){
     labs(title = "Histogram of Species Occurrence Frequencies per Site",
          x = "Occurrence Frequency",
          y = "Number of Species") +
-    theme_minimal()
+    theme_minimal() +
+    ylim(0, 20)
   
+  
+  # Define bin width
+  bin_width <- 0.02
+  bins <- seq(0, 1, by = bin_width)  # Define bin edges
+  
+  # Create custom interval labels
+  interval_labels <- paste0("[", head(bins, -1), "-", tail(bins, -1), "]")
+  
+  # Compute null_distribution_df for each site
+  distribution_df <- df_all %>%
+    mutate(Interval = cut(Frequency, breaks = bins, include.lowest = TRUE, right = FALSE, labels = interval_labels)) %>%
+    group_by(Site, Interval) %>%
+    summarise(Count = n(), .groups = "drop") %>%
+    complete(Site, Interval = interval_labels, fill = list(Count = 0)) %>%
+    mutate(Interval = factor(Interval, levels = interval_labels))  # Ensure correct ordering
+  
+  # Plot the histogram for each site with standardized Y-axis (0 to 20)
+  ggplot(distribution_df, aes(x = Interval, y = Count)) +
+    geom_bar(stat = "identity", fill = "steelblue") +
+    facet_wrap(~ Site) +  # Create separate plots per site
+    theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+    ylim(0, 20) +  # Standardize Y-axis from 0 to 20
+    labs(title = "Distribution of Species Frequencies per Site",
+         x = "Frequency Interval",
+         y = "Number of Species")
   
   
   # Essai sur la base des ARMS plutot que face de plaques ####

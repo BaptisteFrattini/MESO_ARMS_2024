@@ -10,6 +10,14 @@ list(
   
   ,tar_target(data_gps_sites, "data/raw-data/GPS/Site_location_long_lat.csv", format = "file")
   
+  ,tar_target(map_runa, "data/raw-data/Map/Reunion_2015_region.shp", format = "file")
+  
+  ,tar_target(map_roda, "data/raw-data/Map/gadm41_MUS_0.shp", format = "file")
+  
+  ,tar_target(reef_runa, "data/raw-data/Map/runa_reef.shp", format = "file")
+  
+  ,tar_target(reef_roda, "data/raw-data/Map/roda_reef.shp", format = "file")
+  
   # Temperature ####
   
   ,tar_target(temp_data_1A, "data/raw-data/Temperature/P50ARMS1A.csv", format = "file")
@@ -101,5 +109,12 @@ list(
   ,tar_target(data_exploring_fullsites, fun_data_exploring_fullsites(data_and_meta_clean_fullsites = clean_data_metadata_fullsites))
   
   ,tar_target(LCBD_fullsites, fun_LCBD_fullsites(data_and_meta_clean_fullsites = clean_data_metadata_fullsites))
+  
+  ,tar_target(mapping_indices, fun_map(data_and_meta_clean_fullsites = clean_data_metadata_fullsites,
+                                       gps_sites = data_gps_sites,
+                                       runa_map = map_runa,
+                                       roda_map = map_roda,
+                                       runa_reef = reef_runa,
+                                       roda_reef = reef_roda))
   
   )

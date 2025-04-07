@@ -233,6 +233,19 @@ fun_data_cleaning_fullsites <- function(raw_data){
     ))
   
   meta_dataROD <- meta_dataROD %>%
+    mutate(triplicat = case_when(
+      triplicat %in% c("RODARMS1") ~ "RODARMS1",
+      triplicat %in% c("RODARMS2") ~ "RODARMS1",
+      triplicat %in% c("RODARMS3") ~ "RODARMS1",
+      triplicat %in% c("RODARMS4") ~ "RODARMS2",
+      triplicat %in% c("RODARMS5") ~ "RODARMS2",
+      triplicat %in% c("RODARMS6") ~ "RODARMS2",
+      triplicat %in% c("RODARMS7") ~ "RODARMS3",
+      triplicat %in% c("RODARMS8") ~ "RODARMS3",
+      TRUE ~ "Autre"  # Vous pouvez spécifier une valeur par défaut si aucune condition n'est satisfaite
+    ))
+  
+    meta_dataROD <- meta_dataROD %>%
     mutate(plate_number = case_when(
       plate_number %in% c("0") ~ "10",
       TRUE ~ plate_number
@@ -247,9 +260,9 @@ fun_data_cleaning_fullsites <- function(raw_data){
   
   meta_dataROD <- meta_dataROD %>%
     mutate(site_names = case_when(
-      triplicat %in% c("RODARMS1", "RODARMS2", "RODARMS3") ~ "Rivière_Banane",
-      triplicat %in% c("RODARMS4", "RODARMS5", "RODARMS6") ~ "Ile_aux_Fous",
-      triplicat %in% c("RODARMS7", "RODARMS8") ~ "Grand_Pate",
+      triplicat %in% c("RODARMS1") ~ "Rivière_Banane",
+      triplicat %in% c("RODARMS2") ~ "Ile_aux_Fous",
+      triplicat %in% c("RODARMS3") ~ "Grand_Pate",
       TRUE ~ "Autre"  # Vous pouvez spécifier une valeur par défaut si aucune condition n'est satisfaite
     ))
   
