@@ -1,4 +1,4 @@
-# ' plot values of LCBD and rarity on map
+# ' plot values of LCBD and rarity on map by campain
 #'
 #' @param data_and_meta_clean the path to the clean data
 #' 
@@ -6,7 +6,7 @@
 #' @return the path to...
 #' @export
 #'
-fun_map <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, roda_map, runa_reef, roda_reef){
+fun_map_campain <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, roda_map, runa_reef, roda_reef){
   # data_and_meta_clean_fullsites = targets::tar_read("clean_data_metadata_fullsites")
   # gps_sites = targets::tar_read("data_gps_sites")
   # runa_map = targets::tar_read("map_runa")
@@ -76,109 +76,118 @@ fun_map <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, roda_map
         TRUE ~ "Other"  # Pour toutes les autres espèces
       )
     )
-
-  #### Compute Rarity threshold ####  
-  #Ascidians
-  ascidiacea_species <- corr_taxa$Species[corr_taxa$taxa == "Ascidiacea"]
-  data_ascidiacea <- data_filtered_pa[, colnames(data_filtered_pa) %in% ascidiacea_species]
   
-  species_occurence <- colSums(data_ascidiacea)/nrow(data_ascidiacea)
-  species_occurence <- species_occurence[species_occurence != 0]
-  species_occurence <- data.frame(f = species_occurence,
-                                  Species = names(species_occurence))
-  threshold_asc <- quantile(species_occurence$f, 0.25)
-  
-  #Porifera
-  porifera_species <- corr_taxa$Species[corr_taxa$taxa == "Porifera"]
-  data_porifera <- data_filtered_pa[, colnames(data_filtered_pa) %in% porifera_species]
-  
-  species_occurence <- colSums(data_porifera)/nrow(data_porifera)
-  species_occurence <- species_occurence[species_occurence != 0]
-  species_occurence <- data.frame(f = species_occurence,
-                                  Species = names(species_occurence))
-  threshold_por <- quantile(species_occurence$f, 0.25)
-  
-  #Bryozoa
-  bryozoa_species <- corr_taxa$Species[corr_taxa$taxa == "Bryozoa"]
-  data_bryozoa <- data_filtered_pa[, colnames(data_filtered_pa) %in% bryozoa_species]
-  
-  species_occurence <- colSums(data_bryozoa)/nrow(data_bryozoa)
-  species_occurence <- species_occurence[species_occurence != 0]
-  species_occurence <- data.frame(f = species_occurence,
-                                  Species = names(species_occurence))
-  threshold_bry <- quantile(species_occurence$f, 0.25)
-  
-  #all_species
-  species_occurence <- colSums(data_filtered_pa)/nrow(data_filtered_pa)
-  species_occurence <- species_occurence[species_occurence != 0]
-  species_occurence <- data.frame(f = species_occurence,
-                                  Species = names(species_occurence))
-  threshold_all_species <- quantile(species_occurence$f, 0.25)
-  
-  
-  # Fonction pour calculer la rareté pour un groupe
-  compute_rarity <- function(species_list, group_name, threshold) {
-    df <- data_filtered_pa[, colnames(data_filtered_pa) %in% species_list]
-    freq <- colSums(df) / nrow(df)
-    freq <- freq[freq != 0]
-    out <- data.frame(Species = names(freq), f = freq)
-    out$taxa <- group_name
-    out$threshold <- threshold
-    out$rarity <- ifelse(out$f <= threshold, "rare", "common")
-    return(out)
+  campagne_name = "RODARMS"
+  # 2. Fonction pour calculer recap_rarity par campagne
+  compute_recap_rarity_per_campagne <- function(campagne_name) {
+    
+    # Filtrer les données pour la campagne
+    
+    data_campagne <- subset(data_filtered_pa, meta$campain == campagne_name)
+    
+    # Ascidiacea
+    asc_species <- corr_taxa$Species[corr_taxa$taxa == "Ascidiacea"]
+    data_asc <- data_campagne[, colnames(data_campagne) %in% asc_species]
+    occ_asc <- colSums(data_asc)
+    occ_asc <- occ_asc[occ_asc != 0] / nrow(data_campagne)
+    threshold_asc <- quantile(occ_asc, 0.25)
+    out_asc <- data.frame(Species = names(occ_asc),
+                          f = occ_asc, taxa = "Ascidiacea",
+                          threshold = threshold_asc)
+    
+    # Porifera
+    por_species <- corr_taxa$Species[corr_taxa$taxa == "Porifera"]
+    data_por <- data_campagne[, colnames(data_campagne) %in% por_species]
+    occ_por <- colSums(data_por)
+    occ_por <- occ_por[occ_por != 0] / nrow(data_campagne)
+    threshold_por <- quantile(occ_por, 0.25)
+    out_por <- data.frame(Species = names(occ_por), 
+                          f = occ_por, taxa = "Porifera", 
+                          threshold = threshold_por)
+    
+    # Bryozoa
+    bry_species <- corr_taxa$Species[corr_taxa$taxa == "Bryozoa"]
+    data_bry <- data_campagne[, colnames(data_campagne) %in% bry_species]
+    occ_bry <- colSums(data_bry)
+    occ_bry <- occ_bry[occ_bry != 0] / nrow(data_campagne)
+    threshold_bry <- quantile(occ_bry, 0.25)
+    out_bry <- data.frame(Species = names(occ_bry), 
+                          f = occ_bry, taxa = "Bryozoa", 
+                          threshold = threshold_bry)
+    
+    # Autres (We compute a threshold based on every msp to use with the other)
+    other_species <- corr_taxa$Species
+    data_oth <- data_campagne[, colnames(data_campagne) %in% other_species]
+    occ_oth <- colSums(data_oth)
+    occ_oth <- occ_oth[occ_oth != 0] / nrow(data_campagne)
+    threshold_oth <- quantile(occ_oth, 0.25)
+    out_oth <- data.frame(Species = names(occ_oth), f = occ_oth, taxa = "Other", threshold = threshold_oth)
+    
+    # Fusionner
+    recap <- bind_rows(out_asc, out_por, out_bry, out_oth) %>%
+      mutate(rarity = ifelse(f <= threshold, "rare", "common"))
+    
+    # Ajouter campagne
+    recap$campagne <- campagne_name
+    return(recap)
   }
   
-  # Par groupe avec seuils spécifiques
-  out_asc <- compute_rarity(ascidiacea_species, "Ascidiacea", threshold_asc)
-  out_por <- compute_rarity(porifera_species, "Porifera", threshold_por)
-  out_bry <- compute_rarity(bryozoa_species, "Bryozoa", threshold_bry)
+  # 3. Appliquer pour chaque campagne
+  campagnes <- unique(meta$campain)
   
-  # Pour les autres groupes → on applique le seuil général
-  autres_groupes <- corr_taxa %>%
-    filter(!taxa %in% c("Ascidiacea", "Porifera", "Bryozoa")) %>%
-    pull(Species)
+  recap_rarity_all <- lapply(campagnes, compute_recap_rarity_per_campagne) %>%
+    bind_rows()
+ 
   
-  out_others <- compute_rarity(autres_groupes, "Other", threshold_all_species)
+  # 4. Optionnel : split en 3 objets pour RUNA, P50A, RODA
+  recap_rarity_runa <- recap_rarity_all %>% filter(campagne == "RUNARMS")
+  recap_rarity_p50a <- recap_rarity_all %>% filter(campagne == "P50ARMS")
+  recap_rarity_roda <- recap_rarity_all %>% filter(campagne == "RODARMS")
   
-  # Combiner tous les résultats
-  recap_rarity <- bind_rows(out_asc, out_por, out_bry, out_others)
-  
-  recap_rarity <- left_join(recap_rarity, corr_taxa, by = "Species") %>%
-    mutate(taxa = ifelse(taxa.x == "Other", taxa.y, taxa.x)) %>%
-    select(Species, taxa, f, threshold, rarity)
-  
-  # S'assurer que les noms de lignes sont bien les mêmes
-  data_filtered_pa$name <- rownames(data_filtered_pa)
-  
-  # Fusion avec les métadonnées
-  data_with_meta <- left_join(data_filtered_pa, meta, by = "name")
-
   # Espèces rares
-  rare_species <- recap_rarity %>%
+  rare_species_runa <- recap_rarity_runa %>%
     filter(rarity == "rare") %>%
     pull(Species)
   
-  # Ajouter le nom des échantillons
-  data_filtered_pa$name <- rownames(data_filtered_pa)
+  rare_species_p50a <- recap_rarity_p50a %>%
+    filter(rarity == "rare") %>%
+    pull(Species)
   
-  # Fusion avec les métadonnées
-  data_with_meta <- left_join(data_filtered_pa, meta, by = "name")
+  rare_species_roda <- recap_rarity_roda %>%
+    filter(rarity == "rare") %>%
+    pull(Species)
   
-  # Liste des colonnes espèces uniquement
-  species_cols <- colnames(data_filtered_pa)[!colnames(data_filtered_pa) %in% c("name")]
+
+  # Richness
   
-  # Calcul avec vegan::specnumber()
-  # On commence par isoler la matrice espèces seule
-  mat_species <- data_with_meta[, species_cols]
-  
-  # Calcul de la richesse par triplicat
-  richesse <- specnumber(mat_species, groups = data_with_meta$triplicat)
+  richesse <- specnumber(data_filtered_pa, groups = meta$triplicat)
   
   # Calcul du nombre d'espèces rares par triplicat
-  nb_rare_df <- data_with_meta %>%
-    select(all_of(rare_species), triplicat) %>%
+  
+  data_with_meta <- cbind(data_filtered_pa, meta)
+  
+  data_with_meta_runa <- subset(data_with_meta, campain ==  "RUNARMS")
+  
+  nb_rare_df_runa <- data_with_meta_runa %>%
+    select(all_of(rare_species_runa), triplicat) %>%
     group_by(triplicat) %>%
     summarise(nb_rare = sum(colSums(across(everything())) > 0), .groups = "drop")
+  
+  data_with_meta_p50a <- subset(data_with_meta, campain ==  "P50ARMS")
+  
+  nb_rare_df_p50a <- data_with_meta_p50a %>%
+    select(all_of(rare_species_p50a), triplicat) %>%
+    group_by(triplicat) %>%
+    summarise(nb_rare = sum(colSums(across(everything())) > 0), .groups = "drop")
+  
+  data_with_meta_roda <- subset(data_with_meta, campain ==  "RODARMS")
+  
+  nb_rare_df_roda <- data_with_meta_roda %>%
+    select(all_of(rare_species_roda), triplicat) %>%
+    group_by(triplicat) %>%
+    summarise(nb_rare = sum(colSums(across(everything())) > 0), .groups = "drop")
+  
+  nb_rare_df <- data.frame(rbind(nb_rare_df_runa, nb_rare_df_p50a, nb_rare_df_roda))
   
   # Mise en tableau final
   indice_rareté <- data.frame(
@@ -194,20 +203,12 @@ fun_map <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, roda_map
   meta_mean <- read.csv(data_and_meta_clean_fullsites["path_meta_mean"], row.names = 1)
   
   data_mean_filtered <- data_mean[, msp_list_filter]
-  
   matrix.jacc <- vegan::vegdist(data_mean_filtered, method = "jaccard")
   spe.beta <- adespatial::LCBD.comp( matrix.jacc, sqrt.D = TRUE)
-
   spe.beta$LCBD
-  
   names(spe.beta$LCBD) <- rownames(data_mean_filtered)
   
-  data_gps <- read.csv(gps_sites, sep = ";", dec = ",", header = TRUE)
-  
-  
-  # Read the shapefile
-  runa_map <- st_read(runa_map)
-  roda_map <- st_read(roda_map)
+
   
   # Aggregate beta diversity by site (mean of the replicates)
   
@@ -217,10 +218,19 @@ fun_map <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, roda_map
     group_by(site) %>%
     summarise(LCBD = mean(LCBD))
   
+  #### Import the GPS data ####
+  data_gps <- read.csv(gps_sites, sep = ";", dec = ",", header = TRUE)
+  
   # Merge with site coordinates
   map_data <- as.data.frame(cbind(data_gps, beta_agg))
   
+  
+  
   ## Mapping the indices ####
+  
+  #### Import the map shapefiles ####
+  runa_map <- st_read(runa_map)
+  roda_map <- st_read(roda_map)
   
   map_data_runa <- map_data[grepl("RUNA", map_data$Site),]
   
@@ -229,13 +239,13 @@ fun_map <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, roda_map
   st_crs(map_data_runa_sf) <- 4326  
   
   runa_map <- st_transform(runa_map, crs = 4326)
-
+  
   
   
   map_data_runa_sf <- st_transform(map_data_runa_sf, st_crs(runa_map))
   st_crs(runa_map)
   st_crs(map_data_runa_sf)
-
+  
   map_data_runa_sf <- map_data_runa_sf %>%
     mutate(Longitude = st_coordinates(.)[,1],
            Latitude = st_coordinates(.)[,2])
@@ -248,7 +258,7 @@ fun_map <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, roda_map
   
   scale_lcbd <- scale_size_continuous(name = "LCBD", range = c(2, 10), limits = c(min_LCBD, max_LCBD))
   
-  # importer les reef
+  #### Import the reef shapefiles ####
   
   runa_reef <- st_read(runa_reef)
   roda_reef <- st_read(roda_reef)
@@ -256,6 +266,7 @@ fun_map <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, roda_map
   runa_reef <- st_transform(runa_reef, crs = 4326)
   roda_reef <- st_transform(roda_reef, crs = 4326)
   
+  #### RUNA map settings ####
   map_data_p50a <- map_data[grepl("P50A", map_data$Site),]
   map_data_p50a_sf <- st_as_sf(map_data_p50a, coords = c("Longitude", "Latitude"), crs = 4326)
   st_crs(map_data_p50a_sf) <- 4326  
@@ -266,6 +277,7 @@ fun_map <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, roda_map
     mutate(Longitude = st_coordinates(.)[,1],
            Latitude = st_coordinates(.)[,2])
   
+  #### RODA map settings ####
   map_data_roda <- map_data[grepl("RODA", map_data$Site),]
   map_data_roda_sf <- st_as_sf(map_data_roda, coords = c("Longitude", "Latitude"), crs = 4326)
   st_crs(roda_map)
@@ -275,28 +287,15 @@ fun_map <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, roda_map
            Latitude = st_coordinates(.)[,2])
   
   
-  # Harmoniser les noms de colonnes
+  
+  # -- Harmoniser les noms de colonnes
   indice_rareté <- indice_rareté %>% rename(site = triplicat)
-  # Modifier les noms de sites dans data_gps
-  data_gps$site <- gsub("^RODA", "RODARMS", data_gps$Site)
-  data_gps$site <- gsub("^RUNA", "RUNARMS", data_gps$site)
-  rarity_lcbd_map_data <- left_join(indice_rareté, beta_agg, by = "site") %>%
-    left_join(data_gps, by = "site")
   
-  # -- Créer l'objet sf principal --
-  map_data_sf <- st_as_sf(rarity_lcbd_map_data, coords = c("Longitude", "Latitude"), crs = 4326)
-  map_data_sf <- st_transform(map_data_sf, st_crs(runa_map)) %>%
-    mutate(Longitude = st_coordinates(.)[,1],
-           Latitude = st_coordinates(.)[,2])
-  
-  
-  # -- Ajuster les coordonnées pour éviter les chevauchements --
-
-  
-  # Modifier les noms de sites dans data_gps
+  # -- Modifier les noms de sites dans data_gps
   data_gps$site <- gsub("^RODA", "RODARMS", data_gps$Site)
   data_gps$site <- gsub("^RUNA", "RUNARMS", data_gps$site)
   
+  # -- Creer le tableau des informations à génerer sur la carte
   rarity_lcbd_map_data <- left_join(indice_rareté, beta_agg, by = "site") %>%
     left_join(data_gps, by = "site")
   
@@ -327,7 +326,7 @@ fun_map <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, roda_map
         TRUE ~ Longitude
       )
     )
-  
+  # -- Renommer certain site
   map_data_sf <- map_data_sf %>%
     mutate(
       label = case_when(
@@ -352,7 +351,7 @@ fun_map <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, roda_map
     limits = c(min(rarity_lcbd_map_data$LCBD, na.rm = TRUE), max(rarity_lcbd_map_data$LCBD, na.rm = TRUE))
   )
   
-  # -- RUNA --
+  # -- Map the RUNA data --
   map_data_runa_sf <- map_data_sf[grepl("RUNARMS", map_data_sf$site),]
   
   uu <- ggplot() +
@@ -382,7 +381,7 @@ fun_map <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, roda_map
                            pad_x = unit(0.1, "in"), pad_y = unit(0.2, "in"),
                            style = north_arrow_fancy_orienteering)
   
-  # -- P50A --
+  # -- Map the P50A data --
   map_data_p50a_sf <- map_data_sf[grepl("P50ARMS", map_data_sf$site),]
   
   vv <- ggplot() +
@@ -412,7 +411,7 @@ fun_map <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, roda_map
                            pad_x = unit(0.1, "in"), pad_y = unit(0.2, "in"),
                            style = north_arrow_fancy_orienteering)
   
-  # -- RODA --
+  # -- Map the RODA data --
   map_data_roda_sf <- map_data_sf[grepl("RODARMS", map_data_sf$site),]
   
   ww <- ggplot() +
@@ -442,18 +441,19 @@ fun_map <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, roda_map
                            pad_x = unit(0.1, "in"), pad_y = unit(0.2, "in"),
                            style = north_arrow_fancy_orienteering)
   
-  # -- Combinaison finale avec guides partagés --
-
+  # -- Combinaison finale --
+  
   
   tt <- (uu | vv | ww) +
     plot_layout(guides = "collect") &
     theme(legend.position = "bottom")
   
   
-# Separate taxa maps ####
- 
-  group_name <- "Ascidiacea"
-  rare_species_df <- recap_rarity
+  # ########################################################################## #
+  
+  # Separate taxa maps ####
+  # group_name <- "Ascidiacea"
+  # rare_species_df <- recap_rarity_all
   
   make_maps_for_group <- function(group_name, rare_species_df) {
     # --- 1. Sélection des espèces du groupe ---
@@ -473,8 +473,14 @@ fun_map <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, roda_map
       summarise(LCBD = mean(LCBD), .groups = "drop")
     
     # --- 3. Sélection des espèces rares du groupe ---
-    rare_species <- rare_species_df %>%
-      filter(rarity == "rare", taxa == group_name) %>%
+    rare_species_runa <- rare_species_df %>%
+      filter(rarity == "rare", taxa == group_name, campagne == "RUNARMS") %>%
+      pull(Species)
+    rare_species_p50a <- rare_species_df %>%
+      filter(rarity == "rare", taxa == group_name, campagne == "P50ARMS") %>%
+      pull(Species)
+    rare_species_roda <- rare_species_df %>%
+      filter(rarity == "rare", taxa == group_name, campagne == "RODARMS") %>%
       pull(Species)
     
     # --- 4. Calcul richesse spécifique du groupe ---
@@ -482,10 +488,28 @@ fun_map <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, roda_map
     richesse <- specnumber(mat_group, groups = data_with_meta$triplicat)
     
     # --- 5. Calcul du nombre d'espèces rares présentes par site ---
-    nb_rare_df <- data_with_meta %>%
-      select(all_of(rare_species), triplicat) %>%
+    data_with_meta_runa <- subset(data_with_meta, campain ==  "RUNARMS")
+    
+    nb_rare_df_runa <- data_with_meta_runa %>%
+      select(all_of(rare_species_runa), triplicat) %>%
       group_by(triplicat) %>%
       summarise(nb_rare = sum(colSums(across(everything())) > 0), .groups = "drop")
+    
+    data_with_meta_p50a <- subset(data_with_meta, campain ==  "P50ARMS")
+    
+    nb_rare_df_p50a <- data_with_meta_p50a %>%
+      select(all_of(rare_species_p50a), triplicat) %>%
+      group_by(triplicat) %>%
+      summarise(nb_rare = sum(colSums(across(everything())) > 0), .groups = "drop")
+    
+    data_with_meta_roda <- subset(data_with_meta, campain ==  "RODARMS")
+    
+    nb_rare_df_roda <- data_with_meta_roda %>%
+      select(all_of(rare_species_roda), triplicat) %>%
+      group_by(triplicat) %>%
+      summarise(nb_rare = sum(colSums(across(everything())) > 0), .groups = "drop")
+    
+    nb_rare_df <- data.frame(rbind(nb_rare_df_runa, nb_rare_df_p50a, nb_rare_df_roda))
     
     # --- 6. Calcul de l'indice R ---
     indice_rareté <- data.frame(
@@ -620,18 +644,18 @@ fun_map <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, roda_map
   
   ### Make the maps ####
   
-  xx <- make_maps_for_group("Ascidiacea", recap_rarity)
-  yy <- make_maps_for_group("Porifera", recap_rarity)
-  zz <-make_maps_for_group("Bryozoa", recap_rarity)
+  xx <- make_maps_for_group("Ascidiacea", recap_rarity_all)
+  yy <- make_maps_for_group("Porifera", recap_rarity_all)
+  zz <-make_maps_for_group("Bryozoa", recap_rarity_all)
+  
   
   final_plot <- (tt / xx / yy / zz) +
     plot_layout(guides = "collect")
   
+  ggsave("outputs/Cartes - LCBD_Rarity/final_map_plot_campain.pdf", plot = final_plot, width = 0.75*18, height = 18)
   
-  ggsave("outputs/Cartes - LCBD_Rarity/final_map_plot.pdf", plot = final_plot, width = 0.75*18, height = 18)
+ 
   
-  
-  return(NULL)
+  return(NULL) 
 }
-
   

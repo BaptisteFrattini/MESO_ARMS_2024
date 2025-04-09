@@ -9,16 +9,18 @@
 fun_taxo_overlap_rarity_fullsites <- function(data_and_meta_clean_fullsites){
   
   # data_and_meta_clean_fullsites = targets::tar_read("clean_data_metadata_fullsites") 
-  data <- read.csv(data_and_meta_clean_fullsites["path_data"], row.names = 1)
-  meta <- read.csv(data_and_meta_clean_fullsites["path_meta"], row.names = 1)
-  data <- subset(data, meta$island == "Reunion")
-  meta <- subset(meta, meta$island == "Reunion")
-  
   # Load necessary libraries
   library(dplyr)
   library(tidyr)
   library(ggplot2)
   library(tibble)
+  
+  data <- read.csv(data_and_meta_clean_fullsites["path_data"], row.names = 1)
+  meta <- read.csv(data_and_meta_clean_fullsites["path_meta"], row.names = 1)
+  data <- subset(data, meta$island == "Reunion")
+  meta <- subset(meta, meta$island == "Reunion")
+  
+  data <- data[,!colSums(data) == 0]
   
   # Step 3: Filter the rows in `data_mean` corresponding to each campaign
   p50arms_data <- subset(data, meta$campain == "P50ARMS")

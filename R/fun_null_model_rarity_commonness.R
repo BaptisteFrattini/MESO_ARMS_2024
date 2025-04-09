@@ -56,7 +56,7 @@ null_model_rarity_commonness <- function(data_and_meta_clean){
   df <- data.frame(Frequency = f_log)
   
   # Plot histogram
-  ggplot(df, aes(x = Frequency)) +
+  aa <- ggplot(df, aes(x = Frequency)) +
     geom_histogram(binwidth = 0.02, fill = "steelblue", color = "black", alpha = 0.7) +
     labs(title = "Histogram of Species Occurrence Frequencies",
          x = "Occurrence Frequency",
@@ -74,7 +74,7 @@ null_model_rarity_commonness <- function(data_and_meta_clean){
   df <- data.frame(Frequency = f_RUNA8  )
   
   # Plot histogram
-  ggplot(df, aes(x = Frequency)) +
+  bb <- ggplot(df, aes(x = Frequency)) +
     geom_histogram(binwidth = 0.02, fill = "steelblue", color = "black", alpha = 0.7) +
     labs(title = "Histogram of Species Occurrence Frequencies",
          x = "Occurrence Frequency",
@@ -123,7 +123,7 @@ null_model_rarity_commonness <- function(data_and_meta_clean){
   
   # Optional: Plot histogram of species counts per interval
 
-  ggplot(null_distribution_df, aes(x = Interval, y = Count)) +
+  cc <- ggplot(null_distribution_df, aes(x = Interval, y = Count)) +
     geom_bar(stat = "identity", fill = "steelblue") +
     theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
     labs(title = "Distribution of Species Frequencies", x = "Frequency Interval", y = "Number of Species")
@@ -162,15 +162,15 @@ null_model_rarity_commonness <- function(data_and_meta_clean){
   df_all <- bind_rows(df_list)
   
   # Plot histograms for all sites using facet_wrap()
-  ggplot(df_all, aes(x = Frequency)) +
-    geom_histogram(binwidth = 0.02, fill = "steelblue", color = "black", alpha = 0.7) +
-    facet_wrap(~ Site, scales = "free_y") +  # Create a grid of plots
-    labs(title = "Histogram of Species Occurrence Frequencies per Site",
-         x = "Occurrence Frequency",
-         y = "Number of Species") +
-    theme_minimal() +
-    ylim(0, 20)
-  
+  # ggplot(df_all, aes(x = Frequency)) +
+  #   geom_histogram(binwidth = 0.02, fill = "steelblue", color = "black", alpha = 0.7) +
+  #   facet_wrap(~ Site, scales = "free_y") +  # Create a grid of plots
+  #   labs(title = "Histogram of Species Occurrence Frequencies per Site",
+  #        x = "Occurrence Frequency",
+  #        y = "Number of Species") +
+  #   theme_minimal() +
+  #   ylim(0, 20)
+  # 
   
   # Define bin width
   bin_width <- 0.02
@@ -188,7 +188,7 @@ null_model_rarity_commonness <- function(data_and_meta_clean){
     mutate(Interval = factor(Interval, levels = interval_labels))  # Ensure correct ordering
   
   # Plot the histogram for each site with standardized Y-axis (0 to 20)
-  ggplot(distribution_df, aes(x = Interval, y = Count)) +
+  dd <- ggplot(distribution_df, aes(x = Interval, y = Count)) +
     geom_bar(stat = "identity", fill = "steelblue") +
     facet_wrap(~ Site) +  # Create separate plots per site
     theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
@@ -215,7 +215,7 @@ null_model_rarity_commonness <- function(data_and_meta_clean){
   df <- data.frame(Frequency = f_ARMS)
   
   # Plot histogram
-  ggplot(df, aes(x = Frequency)) +
+  ee <- ggplot(df, aes(x = Frequency)) +
     geom_histogram(binwidth = 0.02, fill = "steelblue", color = "black", alpha = 0.7) +
     labs(title = "Histogram of Species Occurrence Frequencies",
          x = "Occurrence Frequency",
@@ -244,7 +244,7 @@ null_model_rarity_commonness <- function(data_and_meta_clean){
   df <- data.frame(Frequency = f_ARMS)
   
   # Plot histogram
-  ggplot(df, aes(x = Frequency)) +
+  ff <- ggplot(df, aes(x = Frequency)) +
     geom_histogram(binwidth = 0.05, fill = "steelblue", color = "black", alpha = 0.7) +
     labs(title = "Histogram of Species Occurrence Frequencies",
          x = "Occurrence Frequency",
@@ -313,9 +313,51 @@ null_model_rarity_commonness <- function(data_and_meta_clean){
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
     scale_fill_brewer(palette = "Set3")  # Choose a color palette
   
+  #### Kolmogorov smirnov ####
   
+  # Reconstruct simulated frequency values from null_distribution_df
+  intervals <- seq(0, 1, by = 0.02)
+  interval_labels <- paste0("[", head(intervals, -1), "-", tail(intervals, -1), "]")
   
+  # Midpoint of each interval
+  midpoints <- (head(intervals, -1) + tail(intervals, -1)) / 2
   
-  return(NULL)
+  # Repeat midpoints according to count (rounded to nearest integer just in case)
+  null_freq_values <- rep(midpoints, times = round(null_distribution_df$Count))
+  
+  # Fréquences observées pour un site donné
+  site_name <- "RUNARMS8"
+  observed_freq <- df_all %>%
+    filter(Site == site_name) %>%
+    pull(Frequency)
+  
+  ks_result <- ks.test(observed_freq, null_freq_values)
+  print(ks_result)
+  
+  ks_results <- lapply(unique(df_all$Site), function(site_name) {
+    observed_freq <- df_all %>%
+      filter(Site == site_name) %>%
+      pull(Frequency)
+    
+    res <- ks.test(observed_freq, null_freq_values)
+    data.frame(Site = site_name, D = res$statistic, p.value = res$p.value)
+  })
+  
+  ks_results_df <- do.call(rbind, ks_results)
+  print(ks_results_df)
+  
+  library(ggplot2)
+  
+  ggplot(ks_results_df, aes(x = Site, y = D)) +
+    geom_bar(stat = "identity", fill = "tomato", color = "black") +
+    labs(title = "Statistique D du test de Kolmogorov-Smirnov par site",
+         x = "Site",
+         y = "D (écart maximal entre distributions)") +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  
+  mean(ks_results_df$D)
+  
+  return(ks_results_df)
 }
   
