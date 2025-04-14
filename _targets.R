@@ -117,4 +117,18 @@ list(
                                        runa_reef = reef_runa,
                                        roda_reef = reef_roda))
   
+  ,tar_target(mapping_indices_campain, fun_map_campain(data_and_meta_clean_fullsites = clean_data_metadata_fullsites,
+                                       gps_sites = data_gps_sites,
+                                       runa_map = map_runa,
+                                       roda_map = map_roda,
+                                       runa_reef = reef_runa,
+                                       roda_reef = reef_roda))
+  
+  ,tar_target(mapping_alpha, fun_map_alpha(data_and_meta_clean_fullsites = clean_data_metadata_fullsites,
+                                       gps_sites = data_gps_sites,
+                                       runa_map = map_runa,
+                                       roda_map = map_roda,
+                                       runa_reef = reef_runa,
+                                       roda_reef = reef_roda))
+  
   )
