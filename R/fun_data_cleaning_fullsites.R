@@ -296,6 +296,38 @@ fun_data_cleaning_fullsites <- function(raw_data){
       TRUE ~ "Autre"  # Vous pouvez spécifier une valeur par défaut si aucune condition n'est satisfaite
     ))
   
+  #### remove the extra plate faces at rodrigues sites 1 and 2 ####
+  
+  rodrigues_to_filter <- meta_data %>%
+    filter(island == "Rodrigues",
+           (orientation == "B" & open_close == "o") |
+             (orientation == "T" & open_close == "o"))
+  
+  
+  rows_to_remove <- rodrigues_to_filter %>%
+    filter(triplicat %in% c("RODARMS1", "RODARMS2")) %>%  # <-- Ajout ici
+    group_by(arms) %>%
+    arrange(plate_number) %>%
+    group_modify(~ {
+      b_o <- .x %>% filter(orientation == "B", open_close == "o") %>% slice_head(n = 2)
+      t_o <- .x %>% filter(orientation == "T", open_close == "o") %>% slice_head(n = 1)
+      bind_rows(b_o, t_o)
+    }) %>%
+    ungroup()
+  
+  
+  meta_filtered <- anti_join(meta_data, rows_to_remove)
+  
+  nrow(meta_data)  # = 710
+  nrow(meta_filtered) # = 728 --> Le filtre a fonctionné
+  
+  data <- data[meta_filtered$name,]
+  meta_data <- meta_filtered 
+  
+  
+  #### Saving the data and meta data ####
+  
+  
   path <- "data/derived-data/" 
   
   name_data <- "data_clean_fullsites.csv" 

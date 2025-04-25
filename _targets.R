@@ -70,6 +70,7 @@ list(
   ,tar_target(explore_data, fun_data_exploring(data_and_meta_clean = clean_data_metadata))
 
   ,tar_target(stack_c_chart, fun_stack_c_chart(data_and_meta_clean = clean_data_metadata))
+  
 
   ,tar_target(venn_diag, fun_venn_diag(data_and_meta_clean = clean_data_metadata))
    
@@ -104,11 +105,15 @@ list(
   
   ,tar_target(permanova_simper_fullsites, fun_permanova_fullsites(data_and_meta_clean_fullsites = clean_data_metadata_fullsites))
   
+  ,tar_target(stack_c_chart_fullsites, fun_stack_c_chart_fullsites(data_and_meta_clean_fullsites = clean_data_metadata_fullsites))
+  
   ,tar_target(taxo_overlap_rarity_fullsites, fun_taxo_overlap_rarity_fullsites(data_and_meta_clean_fullsites = clean_data_metadata_fullsites))
   
   ,tar_target(data_exploring_fullsites, fun_data_exploring_fullsites(data_and_meta_clean_fullsites = clean_data_metadata_fullsites))
   
   ,tar_target(LCBD_fullsites, fun_LCBD_fullsites(data_and_meta_clean_fullsites = clean_data_metadata_fullsites))
+  
+  ,tar_target(rarity_per_taxa_per_habitat_fullsites, fun_rarity_per_taxa_per_habitat_fullsites(data_and_meta_clean_fullsites = clean_data_metadata_fullsites))
   
   ,tar_target(mapping_indices, fun_map(data_and_meta_clean_fullsites = clean_data_metadata_fullsites,
                                        gps_sites = data_gps_sites,
@@ -125,10 +130,18 @@ list(
                                        roda_reef = reef_roda))
   
   ,tar_target(mapping_alpha, fun_map_alpha(data_and_meta_clean_fullsites = clean_data_metadata_fullsites,
-                                       gps_sites = data_gps_sites,
-                                       runa_map = map_runa,
-                                       roda_map = map_roda,
-                                       runa_reef = reef_runa,
-                                       roda_reef = reef_roda))
+                                           gps_sites = data_gps_sites,
+                                           runa_map = map_runa,
+                                           roda_map = map_roda,
+                                           runa_reef = reef_runa,
+                                           roda_reef = reef_roda))
+  
+  ,tar_target(mapping_indices_arms_scale, fun_map_arms_scale(data_and_meta_clean_fullsites = clean_data_metadata_fullsites,
+                                                             gps_sites = data_gps_sites,
+                                                             runa_map = map_runa,
+                                                             roda_map = map_roda,
+                                                             runa_reef = reef_runa,
+                                                             roda_reef = reef_roda))
+                                           
   
   )

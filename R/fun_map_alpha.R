@@ -28,6 +28,8 @@ fun_map_alpha <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, ro
   library(patchwork)
   library(ggspatial)
   library(vegan)
+  library(dplyr)
+  library(iNEXT)
   
   # All taxa map ####
   ## Computing indices ####
@@ -35,10 +37,58 @@ fun_map_alpha <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, ro
   
   data <- read.csv(data_and_meta_clean_fullsites["path_data"], row.names = 1)
   meta <- read.csv(data_and_meta_clean_fullsites["path_meta"], row.names = 1)
+
+  data_pa <- vegan::decostand(data, "pa")
   
-  S <- vegan::specnumber(data, groups = meta$triplicat)
+  S <- vegan::specnumber(data_pa, groups = meta$triplicat)
   
-  # Mapping the indices ####
+  
+  triplicat_name = "RODARMS2"
+  
+  fun_plot_iNEXT_triplicat <- function(triplicat_name, data, meta) {
+
+    
+    # Filtrage
+    meta_sel <- subset(meta, triplicat == triplicat_name)
+    data_sel <- subset(data_pa, meta$triplicat == triplicat_name)
+    
+    
+    # Créer la liste pour iNEXT
+    data_list <- list(sel = t(data_sel))
+    
+    # Appliquer iNEXT
+    out <- iNEXT(data_list, q = 0, datatype = "incidence_raw")
+    
+    # Plot
+    ggiNEXT(out, type = 1, color.var = "Order.q") +
+      ggtitle(paste("Courbe d'accumulation pour", triplicat_name))
+  
+    estimates <- out$iNextEst
+    
+    
+    # Filtrer pour 48 unités d'effort
+    richness_48 <- lapply(estimates, function(df) {
+      df %>%
+        filter(t == 48) %>%
+        select(Method, Order.q, t, qD, qD.LCL, qD.UCL)
+    })
+    
+    # Affichage
+    richness_48 
+    
+    #Rchesse estimé à 48 faces de plaque pour RODARMS3 : qD = 54.10615
+    
+    }
+  
+  # Utilisation
+  fun_plot_iNEXT_triplicat("RODARMS3", data, meta)
+  
+  
+  S["RODARMS3"] <- 54
+  
+
+  
+  #specpool# Mapping the indices ####
   data_gps <- read.csv(gps_sites, sep = ";", dec = ",", header = TRUE)
   
   map_data <- data.frame(site = names(S),

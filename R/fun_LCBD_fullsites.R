@@ -42,16 +42,17 @@ fun_LCBD_fullsites <- function(data_and_meta_clean_fullsites){
   
   data_mean_filtered <- data_mean[, msp_list_filter]
   
-  # data_mean_filtered_pa <- vegan::decostand(data_mean_filtered, "pa")
-  # data_mean_pa <- vegan::decostand(data_mean, "pa")
-  
-  # spe.beta <- adespatial::beta.div(data_mean_filtered_pa, method = "hellinger", nperm = 9999)
-  # ?adespatial::beta.div()
+  data_mean_filtered_pa <- vegan::decostand(data_mean_filtered, "pa")
+  data_mean_pa <- vegan::decostand(data_mean, "pa")
+
+  spe.beta <- adespatial::beta.div(data_mean_filtered_pa, method = "jaccard", nperm = 9999)
+  ?adespatial::beta.div()
   
   # LCBD ####
   
+  
   matrix.bray <- vegan::vegdist(data_mean_filtered, method = "bray")
-  spe.beta <- adespatial::LCBD.comp( matrix.bray, sqrt.D = TRUE)
+  # spe.beta <- adespatial::LCBD.comp( matrix.bray, sqrt.D = TRUE)
   
   names(spe.beta$LCBD) <- rownames(data_mean_filtered)
   

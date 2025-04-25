@@ -16,6 +16,8 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
   library(forcats)
   library(ggsignif)
   library(ggpubr)
+  library(car)
+  library(ggplot2)
   
   data_mean <- read.csv(data_and_meta_clean_fullsites["path_data_mean"], row.names = 1)
   meta_mean <- read.csv(data_and_meta_clean_fullsites["path_meta_mean"], row.names = 1)
@@ -94,7 +96,22 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
   my_comparisons <- list( c("V", "W"), c("V", "X"), c("V", "Y"), c("V","Z"), c("W","X"), c("W", "Y"), c("W","Z"), c("X","Y"), c("X","Z"), c("Y","Z"))
   
   
-  library(ggplot2)
+  # ANOVA
+  anova_res <- aov(value ~ comp, data = df)
+  summary(anova_res)
+  
+  # Extraire les résidus
+  residus <- residuals(anova_res)
+  
+  # Test de Shapiro-Wilk
+  shapiro.test(residus)
+  
+  # Graphiques diagnostiques de l'ANOVA
+  par(mfrow = c(2, 2))  # Affiche 4 graphiques à la suite
+  plot(anova_res)
+  
+  
+  bartlett.test(residus ~ comp, data = df)
   
   df$comp <- factor(df$comp, levels = c("X", "Y", "Z", "W", "V"))
   
@@ -106,14 +123,15 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
                   color = "comp",
                   palette = c("purple4" , "darkgreen", "blue3","aquamarine3", "black"),
                   ylab = "Bray-Curtis") + 
-    stat_compare_means(comparisons = my_comparisons, method = "t.test", label = "p.signif") + 
-    stat_compare_means(label.y = 1, method = "anova") + theme_classic()          
+    stat_compare_means(comparisons = my_comparisons, method = "wilcox.test", label = "p.signif") + 
+    stat_compare_means(label.y = 1, method = "kruskal.test") + theme_classic()          
+  ?stat_compare_means
   
   
   q1 
   
   # Calcul des comparaisons post-hoc avec t.test
-  comp_results <- compare_means(value ~ comp, data = df, method = "t.test", p.adjust.method = "bonferroni")
+  comp_results <- compare_means(value ~ comp, data = df, method = "wilcox.test", p.adjust.method = "bonferroni")
   
   # Extraction des p-values ajustées
   pvals <- comp_results$p.adj
@@ -226,14 +244,14 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
                   color = "comp",
                   palette = c("purple4" , "darkgreen", "blue3","aquamarine3", "black"),
                   ylab = "Turnover") + 
-    stat_compare_means(comparisons = my_comparisons, method = "t.test", label = "p.signif") + 
-    stat_compare_means(label.y = 1, method = "anova") + theme_classic()          
+    stat_compare_means(comparisons = my_comparisons, method = "wilcox.test", label = "p.signif") + 
+    stat_compare_means(label.y = 1, method = "kruskal.test") + theme_classic()          
   
   
   r1 
   
   # Calcul des comparaisons post-hoc avec t.test
-  comp_results <- compare_means(value ~ comp, data = df, method = "t.test", p.adjust.method = "bonferroni")
+  comp_results <- compare_means(value ~ comp, data = df, method = "wilcox.test", p.adjust.method = "bonferroni")
   
   # Extraction des p-values ajustées
   pvals <- comp_results$p.adj
@@ -367,14 +385,14 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
                   color = "comp",
                   palette = c("blue3", "aquamarine3", "black",  "darkgreen","purple4"),
                   ylab = "jaccard") + 
-    stat_compare_means(comparisons = my_comparisons, method = "t.test", label = "p.signif") + 
-    stat_compare_means(label.y = 1, method = "anova") + theme_classic()          
+    stat_compare_means(comparisons = my_comparisons, method = "wilcox.test", label = "p.signif") + 
+    stat_compare_means(label.y = 1, method = "kruskal.test") + theme_classic()          
   
   
   s1 
   
   # Calcul des comparaisons post-hoc avec t.test
-  comp_results <- compare_means(value ~ comp, data = df, method = "t.test", p.adjust.method = "bonferroni")
+  comp_results <- compare_means(value ~ comp, data = df, method = "wilcox.test", p.adjust.method = "bonferroni")
   
   # Extraction des p-values ajustées
   pvals <- comp_results$p.adj
@@ -488,14 +506,14 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
                   color = "comp",
                   palette =c("blue3", "aquamarine3", "black",  "darkgreen","purple4"),
                   ylab = "Nestedness") + 
-    stat_compare_means(comparisons = my_comparisons, method = "t.test", label = "p.signif") + 
-    stat_compare_means(label.y = 1, method = "anova") + theme_classic()          
+    stat_compare_means(comparisons = my_comparisons, method = "wilcox.test", label = "p.signif") + 
+    stat_compare_means(label.y = 1, method = "kruskal.test") + theme_classic()          
   
   
   t1 
   
   # Calcul des comparaisons post-hoc avec t.test
-  comp_results <- compare_means(value ~ comp, data = df, method = "t.test", p.adjust.method = "bonferroni")
+  comp_results <- compare_means(value ~ comp, data = df, method = "wilcox.test", p.adjust.method = "bonferroni")
   
   # Extraction des p-values ajustées
   pvals <- comp_results$p.adj

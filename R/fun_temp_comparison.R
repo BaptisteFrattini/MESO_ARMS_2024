@@ -492,7 +492,7 @@ fun_temperature_comparison <- function(temp_extraction, temp_in_situ){
     
     Temp_dev_path <- here::here("outputs/Temperature_comparison_graph(6).pdf")
     
-    ggsave(Temp_dev_path, cow, width = 14, height = 11)
+    ggsave(Temp_dev_path, cow, width = 9, height = 13)
   
 
   
