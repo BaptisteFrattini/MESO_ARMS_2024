@@ -209,15 +209,16 @@ fun_map_alpha <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, ro
   # -- Scales communes --
   scale_S <- scale_size_continuous(
     name = "Indice de Richesse spécifique (S)", 
-    range = c(2, 10),
-    limits = c(min(map_data$S, na.rm = TRUE), max(map_data$S, na.rm = TRUE))
+    range = c(1, 10),
+    limits = c(min(map_data$S, na.rm = TRUE)-1, max(map_data$S, na.rm = TRUE))
   )
 
   uu <- ggplot() +
     geom_sf(data = runa_map, fill = "grey85", color = "black") +
     geom_sf(data = runa_reef, fill = "darkcyan", color = "darkcyan", alpha = 0.5) +
     geom_point(data = map_data_runa_sf,
-               aes(x = Longitude, y = Latitude, size = S, fill = "coral"),
+               aes(x = Longitude, y = Latitude, size = S),
+               fill = "coral",
                shape = 21, stroke = 0.6) +
     geom_text_repel(
       data = map_data_runa_sf,
@@ -244,7 +245,8 @@ fun_map_alpha <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, ro
     geom_sf(data = runa_map, fill = "grey85", color = "black") +
     geom_sf(data = runa_reef, fill = "darkcyan", color = "darkcyan", alpha = 0.5) +
     geom_point(data = map_data_p50a_sf,
-               aes(x = Longitude, y = Latitude, size = S, fill = "coral"),
+               aes(x = Longitude, y = Latitude, size = S), 
+               fill = "coral",
                shape = 21, color = "black", stroke = 0.6) +
     geom_text_repel(
       data = map_data_p50a_sf,
@@ -271,7 +273,8 @@ fun_map_alpha <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, ro
     geom_sf(data = roda_map, fill = "grey85", color = "black") +
     geom_sf(data = roda_reef, fill = "darkcyan", color = "darkcyan", alpha = 0.5) +
     geom_point(data = map_data_roda_sf,
-               aes(x = Longitude, y = Latitude, size = S, fill = "coral"),
+               aes(x = Longitude, y = Latitude, size = S),
+               fill = "coral",
                shape = 21, color = "black", stroke = 0.6) +
     geom_text_repel(
       data = map_data_roda_sf,
