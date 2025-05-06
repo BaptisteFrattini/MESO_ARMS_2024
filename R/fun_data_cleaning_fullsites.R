@@ -11,6 +11,7 @@ fun_data_cleaning_fullsites <- function(raw_data){
   
   library(dplyr)
   library(vegan)
+  library(ggplot2)
   
   dat_path <- here::here(raw_data)
   data_raw <- read.table(dat_path, 
@@ -296,33 +297,42 @@ fun_data_cleaning_fullsites <- function(raw_data){
       TRUE ~ "Autre"  # Vous pouvez spécifier une valeur par défaut si aucune condition n'est satisfaite
     ))
   
+  meta_data$comb <- paste0(meta_data$plate_number, meta_data$orientation, meta_data$open_close)
+  
   #### remove the extra plate faces at rodrigues sites 1 and 2 ####
-  
-  rodrigues_to_filter <- meta_data %>%
-    filter(island == "Rodrigues",
-           (orientation == "B" & open_close == "o") |
-             (orientation == "T" & open_close == "o"))
+  meta_data_filtered <- meta_data[!(meta_data$campain == "RODARMS" & meta_data$comb %in% c("1To", "1Bo", "2Bo")), ]
   
   
-  rows_to_remove <- rodrigues_to_filter %>%
-    filter(triplicat %in% c("RODARMS1", "RODARMS2")) %>%  # <-- Ajout ici
-    group_by(arms) %>%
-    arrange(plate_number) %>%
-    group_modify(~ {
-      b_o <- .x %>% filter(orientation == "B", open_close == "o") %>% slice_head(n = 2)
-      t_o <- .x %>% filter(orientation == "T", open_close == "o") %>% slice_head(n = 1)
-      bind_rows(b_o, t_o)
-    }) %>%
-    ungroup()
+  # Créer une variable combinée pour l'ouverture et l'orientation
+  meta_data_filtered <- meta_data_filtered %>%
+    mutate(orientation_type = paste0(orientation, "_", open_close))
+  
+  # Compter le nombre de faces par île, site, orientation et ouverture
+  face_counts <- meta_data_filtered %>%
+    group_by(campain, triplicat, orientation, orientation_type, open_close) %>%
+    summarise(n_faces = n(), .groups = "drop")
   
   
-  meta_filtered <- anti_join(meta_data, rows_to_remove)
+  # Graphique : nombre de faces par orientation et ouverture, par île et site
+  aa <- ggplot(face_counts, aes(x = interaction(orientation, open_close), y = n_faces, fill = orientation_type)) +
+    geom_bar(stat = "identity", position = position_dodge()) +
+    facet_grid(campain ~ triplicat, scales = "free_x", space = "free_x") +
+    labs(
+      x = "Orientation et Ouverture",
+      y = "Nombre de faces",
+      fill = "Ouverture",
+      title = "Déséquilibre d'échantillonnage des ARMS par orientation et ouverture"
+    ) +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) + ylim(0, 20)
   
-  nrow(meta_data)  # = 710
-  nrow(meta_filtered) # = 728 --> Le filtre a fonctionné
+
   
-  data <- data[meta_filtered$name,]
-  meta_data <- meta_filtered 
+  nrow(meta_data)  # = 728
+  nrow(meta_data_filtered) # = 704 --> Le filtre a fonctionné
+  
+  data <- data[meta_data_filtered$name,]
+  meta_data <- meta_data_filtered 
   
   
   #### Saving the data and meta data ####

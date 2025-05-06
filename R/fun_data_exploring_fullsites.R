@@ -79,14 +79,11 @@ fun_data_exploring_fullsites <- function(data_and_meta_clean_fullsites){
 
   estimates <- obj$iNextEst
   
-  richness_171 <- lapply(estimates, function(df) {
-    df %>%
-      filter(t == 171) %>%
-      select(Method, Assemblage, Order.q, t, qD, qD.LCL, qD.UCL)
-  })
+  estimates_RODA <- subset(estimates$size_based, Assemblage == "RODA")
   
-  richness_171 <- richness_171$size_based[1,5]
-  richness_171 <- round(richness_171,0)
+  richness_144 <- estimates_RODA[estimates_RODA$t == 141,]
+  
+  richness_144_RODA <- round(richness_144[1,5],0)
   
   
   # Add labels for extrapolated species richness
@@ -234,7 +231,7 @@ fun_data_exploring_fullsites <- function(data_and_meta_clean_fullsites){
     geom_histogram(binwidth = 1, fill = "coral", color = "black", alpha = 0.7) +
     geom_vline(xintercept = mean_richness, color = "black", linetype = "dashed", size = 1) +
     geom_vline(xintercept = 85, color = "red", linetype = "dashed", size = 1) + # Richness of P50A
-    geom_vline(xintercept = richness_171, color = "red", linetype = "dashed", size = 1) + # Richness of RODA extrapolated for the same number of plates
+    geom_vline(xintercept = richness_144_RODA, color = "red", linetype = "dashed", size = 1) + # Richness of RODA extrapolated for the same number of plates
     annotate("text", x = mean_richness - 10, y = 40, 
              label = paste0("Mean: ", round(mean_richness, 2)), 
              color = "black", hjust = 0) +

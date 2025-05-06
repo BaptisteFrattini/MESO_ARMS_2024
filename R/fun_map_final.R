@@ -6,7 +6,7 @@
 #' @return the path to...
 #' @export
 #'
-fun_map_campain_arms_scale <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, roda_map, runa_reef, roda_reef){
+fun_map_final <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, roda_map, runa_reef, roda_reef){
   # data_and_meta_clean_fullsites = targets::tar_read("clean_data_metadata_fullsites")
   # gps_sites = targets::tar_read("data_gps_sites")
   # runa_map = targets::tar_read("map_runa")
@@ -36,8 +36,8 @@ fun_map_campain_arms_scale <- function(data_and_meta_clean_fullsites, gps_sites,
   data_LCBD <- read.csv(data_and_meta_clean_fullsites["path_data_mean"], row.names = 1)
   meta_LCBD <- read.csv(data_and_meta_clean_fullsites["path_meta_mean"], row.names = 1)
   
-  data <- read.csv(data_and_meta_clean_fullsites["path_data_mean"], row.names = 1)
-  meta <- read.csv(data_and_meta_clean_fullsites["path_meta_mean"], row.names = 1)
+  data <- read.csv(data_and_meta_clean_fullsites["path_data"], row.names = 1)
+  meta <- read.csv(data_and_meta_clean_fullsites["path_meta"], row.names = 1)
   
   msp_list <- names(data) 
   msp_list_filter <- msp_list[!msp_list %in% c("Bivalvia",
@@ -81,13 +81,14 @@ fun_map_campain_arms_scale <- function(data_and_meta_clean_fullsites, gps_sites,
       )
     )
   
-  campagne_name = "RODARMS"
+  campagne_name = "P50ARMS"
   # 2. Fonction pour calculer recap_rarity par campagne
   compute_recap_rarity_per_campagne <- function(campagne_name) {
     
     # Filtrer les données pour la campagne
     
     data_campagne <- subset(data_filtered_pa, meta$campain == campagne_name)
+    meta_campagne <- subset(meta, meta$campain == campagne_name)
     
     # Ascidiacea
     asc_species <- corr_taxa$Species[corr_taxa$taxa == "Ascidiacea"]
@@ -95,9 +96,25 @@ fun_map_campain_arms_scale <- function(data_and_meta_clean_fullsites, gps_sites,
     occ_asc <- colSums(data_asc)
     occ_asc <- occ_asc[occ_asc != 0] / nrow(data_campagne)
     threshold_asc <- quantile(occ_asc, 0.25)
+    
+    asc_species <- asc_species[colSums(data_asc) > 0]
+    data_asc$triplicat <- meta_campagne$triplicat
+    
+    result <- sapply(asc_species, function(espece) {
+      subset <- data_asc[data_asc[[espece]] == 1, ]
+      n_triplicats <- length(unique(subset$triplicat))
+      if (n_triplicats <= 1) {
+        return("Un seul triplicat")
+      } else {
+        return("Plusieurs triplicats")
+      }
+    })
+    
     out_asc <- data.frame(Species = names(occ_asc),
                           f = occ_asc, taxa = "Ascidiacea",
-                          threshold = threshold_asc)
+                          threshold = threshold_asc,
+                          repartition = result
+                          )
     
     # Porifera
     por_species <- corr_taxa$Species[corr_taxa$taxa == "Porifera"]
@@ -105,9 +122,25 @@ fun_map_campain_arms_scale <- function(data_and_meta_clean_fullsites, gps_sites,
     occ_por <- colSums(data_por)
     occ_por <- occ_por[occ_por != 0] / nrow(data_campagne)
     threshold_por <- quantile(occ_por, 0.25)
-    out_por <- data.frame(Species = names(occ_por), 
-                          f = occ_por, taxa = "Porifera", 
-                          threshold = threshold_por)
+    
+    por_species <- por_species[colSums(data_por) > 0]
+    data_por$triplicat <- meta_campagne$triplicat
+    
+    result <- sapply(por_species, function(espece) {
+      subset <- data_por[data_por[[espece]] == 1, ]
+      n_triplicats <- length(unique(subset$triplicat))
+      if (n_triplicats <= 1) {
+        return("Un seul triplicat")
+      } else {
+        return("Plusieurs triplicats")
+      }
+    })
+    
+    out_por <- data.frame(Species = names(occ_por),
+                          f = occ_por, taxa = "Porifera",
+                          threshold = threshold_por,
+                          repartition = result
+    )
     
     # Bryozoa
     bry_species <- corr_taxa$Species[corr_taxa$taxa == "Bryozoa"]
@@ -115,21 +148,56 @@ fun_map_campain_arms_scale <- function(data_and_meta_clean_fullsites, gps_sites,
     occ_bry <- colSums(data_bry)
     occ_bry <- occ_bry[occ_bry != 0] / nrow(data_campagne)
     threshold_bry <- quantile(occ_bry, 0.25)
-    out_bry <- data.frame(Species = names(occ_bry), 
-                          f = occ_bry, taxa = "Bryozoa", 
-                          threshold = threshold_bry)
+    
+    bry_species <- bry_species[colSums(data_bry) > 0]
+    data_bry$triplicat <- meta_campagne$triplicat
+    
+    result <- sapply(bry_species, function(espece) {
+      subset <- data_bry[data_bry[[espece]] == 1, ]
+      n_triplicats <- length(unique(subset$triplicat))
+      if (n_triplicats <= 1) {
+        return("Un seul triplicat")
+      } else {
+        return("Plusieurs triplicats")
+      }
+    })
+    
+    out_bry <- data.frame(Species = names(occ_bry),
+                          f = occ_bry, taxa = "Bryozoa",
+                          threshold = threshold_bry,
+                          repartition = result
+    )
     
     # Autres (We compute a threshold based on every msp to use with the other)
-    other_species <- corr_taxa$Species
-    data_oth <- data_campagne[, colnames(data_campagne) %in% other_species]
+    oth_species <- corr_taxa$Species
+    data_oth <- data_campagne[, colnames(data_campagne) %in% oth_species]
     occ_oth <- colSums(data_oth)
     occ_oth <- occ_oth[occ_oth != 0] / nrow(data_campagne)
     threshold_oth <- quantile(occ_oth, 0.25)
-    out_oth <- data.frame(Species = names(occ_oth), f = occ_oth, taxa = "Other", threshold = threshold_oth)
     
+    oth_species <- oth_species[colSums(data_oth) > 0]
+    data_oth$triplicat <- meta_campagne$triplicat
+    
+    result <- sapply(oth_species, function(espece) {
+      subset <- data_oth[data_oth[[espece]] == 1, ]
+      n_triplicats <- length(unique(subset$triplicat))
+      if (n_triplicats <= 1) {
+        return("Un seul triplicat")
+      } else {
+        return("Plusieurs triplicats")
+      }
+    })
+    
+    out_oth <- data.frame(Species = names(occ_oth),
+                          f = occ_oth, taxa = "Other",
+                          threshold = threshold_oth,
+                          repartition = result
+    )
     # Fusionner
-    recap <- bind_rows(out_asc, out_por, out_bry, out_oth) %>%
-      mutate(rarity = ifelse(f <= threshold, "rare", "common"))
+    recap <- bind_rows(out_asc, out_por, out_bry, out_oth) 
+    
+    # Créer la nouvelle colonne "rarete"
+    recap$rarity <- ifelse(recap$f <= recap$threshold & recap$repartition == "Un seul triplicat", "rare", "common")
     
     # Ajouter campagne
     recap$campagne <- campagne_name
@@ -200,11 +268,11 @@ fun_map_campain_arms_scale <- function(data_and_meta_clean_fullsites, gps_sites,
   ) %>%
     left_join(nb_rare_df, by = "triplicat") %>%
     mutate(R = nb_rare / richesse)
-    # mutate(R = nb_rare)
+  # mutate(R = nb_rare)
   
   #### Compute LCBD ####
   
-
+  
   matrix.bray <- vegan::vegdist(data_LCBD, method = "bray")
   spe.beta <- adespatial::LCBD.comp( matrix.bray, sqrt.D = TRUE)
   spe.beta$LCBD
@@ -348,7 +416,7 @@ fun_map_campain_arms_scale <- function(data_and_meta_clean_fullsites, gps_sites,
   )
   
   scale_lcbd <- scale_fill_gradientn(
-    colours = rev(viridis::magma(10)),
+    colours = rev(viridis::viridis(10)),
     name = "LCBD",
     limits = c(min(rarity_lcbd_map_data$LCBD, na.rm = TRUE), max(rarity_lcbd_map_data$LCBD, na.rm = TRUE)),
     guide = guide_colorbar(
@@ -555,8 +623,8 @@ fun_map_campain_arms_scale <- function(data_and_meta_clean_fullsites, gps_sites,
       left_join(nb_rare_df, by = "triplicat") %>%
       mutate(R = nb_rare / richesse,
              site = triplicat)
-      # mutate(R = nb_rare,
-      #      site = triplicat)
+    # mutate(R = nb_rare,
+    #      site = triplicat)
     
     # --- 7. Préparation des données de cartographie ---
     rarity_lcbd_map_data <- indice_rareté %>%
@@ -600,7 +668,7 @@ fun_map_campain_arms_scale <- function(data_and_meta_clean_fullsites, gps_sites,
     )
     
     scale_lcbd <- scale_fill_gradientn(
-      colours = rev(viridis::magma(10)),
+      colours = rev(viridis::viridis(10)),
       name = "LCBD",
       limits = c(min(rarity_lcbd_map_data$LCBD, na.rm = TRUE), max(rarity_lcbd_map_data$LCBD, na.rm = TRUE)),
       guide = guide_colorbar(
@@ -719,7 +787,7 @@ fun_map_campain_arms_scale <- function(data_and_meta_clean_fullsites, gps_sites,
   final_plot <- (tt / xx / yy / zz) +
     plot_layout(guides = "collect")
   
-  ggsave("outputs/Cartes - LCBD_Rarity/final_map_plot_campain_arms_scale.pdf", plot = final_plot, width = 0.75*18, height = 18)
+  ggsave("outputs/Cartes - LCBD_Rarity/final_map.pdf", plot = final_plot, width = 0.75*18, height = 18)
   
   
   

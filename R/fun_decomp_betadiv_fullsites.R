@@ -567,7 +567,7 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
   
   
   # Ajouter les lettres pour montrer les différences significatives
-  t1bis_2 <- t1bis_2 + geom_text(data = comp_means, aes(x = comp, y = 0.25, label = letters),
+  t1bis_2 <- t1bis_2 + geom_text(data = comp_means, aes(x = comp, y = 0.30, label = letters),
                                  color = "black", vjust = 0)
   
   

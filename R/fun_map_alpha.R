@@ -13,7 +13,7 @@ fun_map_alpha <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, ro
   # roda_map = targets::tar_read("map_roda")
   # runa_reef = targets::tar_read("reef_runa")
   # roda_reef = targets::tar_read("reef_roda")
-  
+
   library(betapart)
   library(reshape2)
   library(stringr)
@@ -37,13 +37,13 @@ fun_map_alpha <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, ro
   
   data <- read.csv(data_and_meta_clean_fullsites["path_data"], row.names = 1)
   meta <- read.csv(data_and_meta_clean_fullsites["path_meta"], row.names = 1)
-
+  
   data_pa <- vegan::decostand(data, "pa")
   
   S <- vegan::specnumber(data_pa, groups = meta$triplicat)
   
   
-  triplicat_name = "RODARMS2"
+  triplicat_name = "RODARMS3"
   
   fun_plot_iNEXT_triplicat <- function(triplicat_name, data, meta) {
 
@@ -67,24 +67,25 @@ fun_map_alpha <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, ro
     
     
     # Filtrer pour 48 unités d'effort
-    richness_48 <- lapply(estimates, function(df) {
+    richness_47 <- lapply(estimates, function(df) {
       df %>%
-        filter(t == 48) %>%
+        filter(t == 47) %>%
         select(Method, Order.q, t, qD, qD.LCL, qD.UCL)
     })
     
     # Affichage
-    richness_48 
+    richness_47 
     
     #Rchesse estimé à 48 faces de plaque pour RODARMS3 : qD = 54.10615
     
     }
   
   # Utilisation
-  fun_plot_iNEXT_triplicat("RODARMS3", data, meta)
+  S_RODA3 <- fun_plot_iNEXT_triplicat("RODARMS3", data_pa, meta)
   
+  S_RODA3 <- round(S_RODA3$size_based$qD, 0)
   
-  S["RODARMS3"] <- 54
+  S["RODARMS3"] <- S_RODA3
   
 
   
@@ -210,9 +211,30 @@ fun_map_alpha <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, ro
   scale_S <- scale_size_continuous(
     name = "Indice de Richesse spécifique (S)", 
     range = c(1, 10),
-    limits = c(min(map_data$S, na.rm = TRUE)-1, max(map_data$S, na.rm = TRUE))
+    limits = c(min(map_data$S, na.rm = TRUE)-6, max(map_data$S, na.rm = TRUE)+2)
   )
 
+  
+  # Define common width and height
+  map_width <- 0.45
+  map_height <- 0.4
+  
+  # Center coordinates for each map
+  center_p50a <- c(x = mean(c(55.15, 55.6)), y = mean(c(-21.4, -21)))
+  center_roda <- c(x = mean(c(63.20, 63.58)), y = mean(c(-19.90, -19.58)))
+  # (Add RUNA similarly if needed)
+  
+  # Create coordinate limits
+  p50a_xlim <- c(center_p50a['x'] - map_width / 2, center_p50a['x'] + map_width / 2)
+  p50a_ylim <- c(center_p50a['y'] - map_height / 2, center_p50a['y'] + map_height / 2)
+  
+  roda_xlim <- c(center_roda['x'] - map_width / 2, center_roda['x'] + map_width / 2)
+  roda_ylim <- c(center_roda['y'] - map_height / 2, center_roda['y'] + map_height / 2)
+  
+  # Then apply in each coord_sf:
+  coord_sf(xlim = p50a_xlim, ylim = p50a_ylim, expand = FALSE)
+  coord_sf(xlim = roda_xlim, ylim = roda_ylim, expand = FALSE)
+  
   uu <- ggplot() +
     geom_sf(data = runa_map, fill = "grey85", color = "black") +
     geom_sf(data = runa_reef, fill = "darkcyan", color = "darkcyan", alpha = 0.5) +
@@ -232,7 +254,8 @@ fun_map_alpha <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, ro
       segment.size = 0.2,        # Taille du segment
       segment.color = "grey30"   # Couleur du trait
     ) +
-    coord_sf(xlim = c(55.15, 55.6), ylim = c(-21.4, -21), expand = FALSE) +
+    coord_sf(xlim = p50a_xlim, ylim = p50a_ylim, expand = FALSE) +
+    # coord_sf(xlim = c(55.15, 55.6), ylim = c(-21.4, -21), expand = FALSE) +
     theme_minimal() +
     labs(title = "RUNA") +
     scale_S +
@@ -260,7 +283,8 @@ fun_map_alpha <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, ro
       segment.size = 0.2,        # Taille du segment
       segment.color = "grey30"   # Couleur du trait
     ) +
-    coord_sf(xlim = c(55.15, 55.6), ylim = c(-21.4, -21), expand = FALSE) +
+    coord_sf(xlim = p50a_xlim, ylim = p50a_ylim, expand = FALSE) +
+    # coord_sf(xlim = c(55.15, 55.6), ylim = c(-21.4, -21), expand = FALSE) +
     theme_minimal() +
     labs(title = "P50A") +
     scale_S +
@@ -288,7 +312,8 @@ fun_map_alpha <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, ro
       segment.size = 0.2,        # Taille du segment
       segment.color = "grey30"   # Couleur du trait
     ) +
-    coord_sf(xlim = c(63.25, 63.55), ylim = c(-19.85, -19.62), expand = FALSE) +
+    coord_sf(xlim = roda_xlim, ylim = roda_ylim, expand = FALSE) +
+    # coord_sf(xlim = c(63.20, 63.58), ylim = c(-19.90, -19.58), expand = FALSE) +
     theme_minimal() +
     labs(title = "RODA") +
     scale_S +
@@ -305,6 +330,96 @@ fun_map_alpha <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, ro
   
   ggsave("outputs/Cartes - Richness.png", plot = tt, width = 12, height = 7)
   
+  ## just a map for ppt ####
+  
+  xx <- ggplot() +
+    geom_sf(data = runa_map, fill = "grey85", color = "black") +
+    geom_sf(data = runa_reef, fill = "darkcyan", color = "darkcyan", alpha = 0.5) +
+    geom_point(data = map_data_runa_sf,
+               aes(x = Longitude, y = Latitude),
+               fill = "black",
+               shape = 20, stroke = 0.6) +
+    geom_text_repel(
+      data = map_data_runa_sf,
+      aes(x = Longitude, y = Latitude, label = label),
+      size = 4,
+      fontface = "bold",
+      color = "black",
+      box.padding = 0.8,         # Distance entre point et étiquette (en "lines")
+      max.overlaps = Inf,        # Ne jamais supprimer d’étiquettes
+      force = 1.5,               # Force de répulsion
+      segment.size = 0.2,        # Taille du segment
+      segment.color = "grey30"   # Couleur du trait
+    ) +
+    coord_sf(xlim = p50a_xlim, ylim = p50a_ylim, expand = FALSE) +
+    # coord_sf(xlim = c(55.15, 55.6), ylim = c(-21.4, -21), expand = FALSE) +
+    theme_minimal() +
+    labs(title = "RUNA") +
+    annotation_scale(location = "bl", width_hint = 0.25) +
+    annotation_north_arrow(location = "tr", which_north = "true",
+                           pad_x = unit(0.1, "in"), pad_y = unit(0.2, "in"),
+                           style = north_arrow_fancy_orienteering)  
+  
+  yy <- ggplot() +
+    geom_sf(data = runa_map, fill = "grey85", color = "black") +
+    geom_sf(data = runa_reef, fill = "darkcyan", color = "darkcyan", alpha = 0.5) +
+    geom_point(data = map_data_p50a_sf,
+               aes(x = Longitude, y = Latitude), 
+               fill = "black",
+               shape = 20, color = "black", stroke = 0.6) +
+    geom_text_repel(
+      data = map_data_p50a_sf,
+      aes(x = Longitude, y = Latitude, label = label),
+      size = 4,
+      fontface = "bold",
+      color = "black",
+      box.padding = 0.8,         # Distance entre point et étiquette (en "lines")
+      max.overlaps = Inf,        # Ne jamais supprimer d’étiquettes
+      force = 1.5,               # Force de répulsion
+      segment.size = 0.2,        # Taille du segment
+      segment.color = "grey30"   # Couleur du trait
+    ) +
+    coord_sf(xlim = p50a_xlim, ylim = p50a_ylim, expand = FALSE) +
+    # coord_sf(xlim = c(55.15, 55.6), ylim = c(-21.4, -21), expand = FALSE) +
+    theme_minimal() +
+    labs(title = "P50A") +
+    annotation_scale(location = "bl", width_hint = 0.25) +
+    annotation_north_arrow(location = "tr", which_north = "true",
+                           pad_x = unit(0.1, "in"), pad_y = unit(0.2, "in"),
+                           style = north_arrow_fancy_orienteering)
+  
+  zz <- ggplot() +
+    geom_sf(data = roda_map, fill = "grey85", color = "black") +
+    geom_sf(data = roda_reef, fill = "darkcyan", color = "darkcyan", alpha = 0.5) +
+    geom_point(data = map_data_roda_sf,
+               aes(x = Longitude, y = Latitude),
+               fill = "black",
+               shape = 20, color = "black", stroke = 0.6) +
+    geom_text_repel(
+      data = map_data_roda_sf,
+      aes(x = Longitude, y = Latitude, label = label),
+      size = 4,
+      fontface = "bold",
+      color = "black",
+      box.padding = 0.8,         # Distance entre point et étiquette (en "lines")
+      max.overlaps = Inf,        # Ne jamais supprimer d’étiquettes
+      force = 1.5,               # Force de répulsion
+      segment.size = 0.2,        # Taille du segment
+      segment.color = "grey30"   # Couleur du trait
+    ) +
+    coord_sf(xlim = roda_xlim, ylim = roda_ylim, expand = FALSE) +
+    # coord_sf(xlim = c(63.20, 63.58), ylim = c(-19.90, -19.58), expand = FALSE) +
+    theme_minimal() +
+    labs(title = "RODA") +
+    annotation_scale(location = "bl", width_hint = 0.25) +
+    annotation_north_arrow(location = "tr", which_north = "true",
+                           pad_x = unit(0.1, "in"), pad_y = unit(0.2, "in"),
+                           style = north_arrow_fancy_orienteering)
+  
+  aa <- (xx | yy | zz) +
+    plot_layout(guides = "collect") 
+  
+  ggsave("outputs/Cartes_des_sitess.png", plot = aa, width = 12, height = 7)
   
   return(NULL)
 }

@@ -18,8 +18,8 @@ fun_rarity_per_taxa_per_habitat_fullsites <- function(data_and_meta_clean_fullsi
   library(officer)
   library(scales)
   
-  data <- read.csv(data_and_meta_clean_fullsites["path_data_mean"], row.names = 1)
-  meta <- read.csv(data_and_meta_clean_fullsites["path_meta_mean"], row.names = 1)
+  data <- read.csv(data_and_meta_clean_fullsites["path_data"], row.names = 1)
+  meta <- read.csv(data_and_meta_clean_fullsites["path_meta"], row.names = 1)
   data <- subset(data, meta$island == "Reunion")
   meta <- subset(meta, meta$island == "Reunion")
   
@@ -75,6 +75,9 @@ fun_rarity_per_taxa_per_habitat_fullsites <- function(data_and_meta_clean_fullsi
   p50arms_presence <- subset(data_filtered_pa, meta$campain == "P50ARMS")
   runarms_presence <- subset(data_filtered_pa, meta$campain == "RUNARMS")
 
+  p50arms_meta <- subset(meta, meta$campain == "P50ARMS")
+  runarms_meta <- subset(meta, meta$campain == "RUNARMS")
+  
   #### Step 4: Compute Rarity threshold taxa par taxa ####  
   
   #Ascidians - p50a
@@ -149,18 +152,39 @@ fun_rarity_per_taxa_per_habitat_fullsites <- function(data_and_meta_clean_fullsi
                                   Species = names(species_occurence))
   threshold_all_species_runa <- quantile(species_occurence$f, 0.25)
   
-  
+  # species_list <- ascidiacea_species
+  # group_name <- "Ascidiacea"
+  # threshold <- threshold_asc_p50a
   
   #### Step 5: Fonctions  pour calculer la rareté pour chaque groupe ####
   compute_rarity_p50a <- function(species_list, group_name, threshold) {
     df <- p50arms_presence[, colnames(p50arms_presence) %in% species_list]
     freq <- colSums(df) / nrow(df)
     # freq <- freq[freq != 0]
-    out <- data.frame(Species = names(freq), f = freq)
+    
+    df$triplicat <- p50arms_meta$triplicat
+      
+    result <- sapply(species_list, function(espece) {
+      subset <- df[df[[espece]] == 1, ]
+      n_triplicats <- length(unique(subset$triplicat))
+      if (n_triplicats <= 1) {
+        return("Un seul triplicat")
+      } else {
+        return("Plusieurs triplicats")
+      }
+    })
+    
+    out <- data.frame(Species = names(freq), f = freq, n_trip = result)
     out$taxa <- group_name
     out$threshold <- threshold
-    out$status <- ifelse(out$f == 0, "absent",
-                         ifelse(out$f <= threshold, "rare", "common"))
+    
+    out <- out %>%
+      mutate(status = case_when(
+        f == 0 ~ "absent",
+        f <= threshold & n_trip == "Un seul triplicat" ~ "rare",
+        TRUE ~ "common"
+      ))
+    
     return(out)
   }
   
@@ -168,11 +192,29 @@ fun_rarity_per_taxa_per_habitat_fullsites <- function(data_and_meta_clean_fullsi
     df <- runarms_presence[, colnames(runarms_presence) %in% species_list]
     freq <- colSums(df) / nrow(df)
     # freq <- freq[freq != 0]
-    out <- data.frame(Species = names(freq), f = freq)
+    
+    df$triplicat <- runarms_meta$triplicat
+    
+    result <- sapply(species_list, function(espece) {
+      subset <- df[df[[espece]] == 1, ]
+      n_triplicats <- length(unique(subset$triplicat))
+      if (n_triplicats <= 1) {
+        return("Un seul triplicat")
+      } else {
+        return("Plusieurs triplicats")
+      }
+    })
+    
+    out <- data.frame(Species = names(freq), f = freq, n_trip = result)
     out$taxa <- group_name
     out$threshold <- threshold
-    out$status <- ifelse(out$f == 0, "absent",
-                         ifelse(out$f <= threshold, "rare", "common"))
+    out <- out %>%
+      mutate(status = case_when(
+        f == 0 ~ "absent",
+        f <= threshold & n_trip == "Un seul triplicat" ~ "rare",
+        TRUE ~ "common"
+      ))
+    
     return(out)
   }
   
@@ -247,64 +289,40 @@ fun_rarity_per_taxa_per_habitat_fullsites <- function(data_and_meta_clean_fullsi
   
   #### Step 7: décompter le nombre d'espèce rare ou pas dans les habitats ####
  
-  # Count number of species per taxon per category combination
-  summary_table <- species_rarity_clean %>%
+  
+  # Calcul du nombre d'espèces par combinaison (shallow, mesophotic, taxon_group)
+  summary_counts <- species_rarity_clean %>%
     group_by(shallow, mesophotic, taxon_group) %>%
-    summarise(n = n(), .groups = "drop") %>%
+    summarise(count = n(), .groups = "drop")
+  
+  # Calcul du total par groupe taxonomique (pour calculer les % par colonne)
+  totals_by_group <- summary_counts %>%
+    group_by(taxon_group) %>%
+    summarise(total = sum(count), .groups = "drop")
+  
+  # Jointure et calcul des pourcentages
+  summary_table <- summary_counts %>%
+    left_join(totals_by_group, by = "taxon_group") %>%
+    mutate(formatted = paste0(count, " (", round(100 * count / total), "%)")) %>%
+    select(-count, -total) %>%
     pivot_wider(
       names_from = taxon_group,
-      values_from = n,
-      values_fill = 0,
-      names_prefix = "Number_of_"
-    ) %>%
-    mutate(
-      Total_number_of_species = rowSums(select(., starts_with("Number_of_")))
-    ) %>%
-    select(shallow, mesophotic,
-           Number_of_Ascidiacea,
-           Number_of_Porifera,
-           Number_of_Bryozoa,
-           Number_of_Other,
-           Total_number_of_species) %>%
-    arrange(factor(shallow, levels = c("Rare", "Not rare", "Exclusive", "Absent")),
-            factor(mesophotic, levels = c("Rare", "Not rare", "Exclusive", "Absent")))
-  
-  total_per_taxon <- species_rarity_clean %>%
-    count(taxon_group, name = "total")
-  
-  summary_table <- species_rarity_clean %>%
-    group_by(shallow, mesophotic, taxon_group) %>%
-    summarise(n = n(), .groups = "drop") %>%
-    left_join(total_per_taxon, by = "taxon_group") %>%
-    mutate(pct = n / total) %>%
-    mutate(n_pct = paste0(n, " (", percent(pct, accuracy = 1), ")")) %>%
-    select(shallow, mesophotic, taxon_group, n_pct) %>%
-    pivot_wider(
-      names_from = taxon_group,
-      values_from = n_pct,
+      values_from = formatted,
       values_fill = "-"
-    ) %>%
-    rename(
-      Number_of_Ascidiacea = Ascidiacea,
-      Number_of_Porifera = Porifera,
-      Number_of_Bryozoa = Bryozoa,
-      Number_of_Other = Other
-    ) %>%
-    mutate(
-      Total_number_of_species = rowSums(
-        across(c(Number_of_Ascidiacea, Number_of_Porifera, Number_of_Bryozoa, Number_of_Other),
-               ~ as.numeric(gsub(" .*", "", .))),
-        na.rm = TRUE
-      )
-    ) %>%
-    select(shallow, mesophotic,
-           Number_of_Ascidiacea,
-           Number_of_Porifera,
-           Number_of_Bryozoa,
-           Number_of_Other,
-           Total_number_of_species) %>%
-    arrange(factor(shallow, levels = c("Rare", "Not rare", "Exclusive", "Absent")),
-            factor(mesophotic, levels = c("Rare", "Not rare", "Exclusive", "Absent")))
+    )
+  
+  # Ajout du total du nombre d'espèces pour chaque combinaison
+  total_species <- species_rarity_clean %>%
+    group_by(shallow, mesophotic) %>%
+    summarise(Total_number_of_species = n(), .groups = "drop")
+  
+  # Fusion finale
+  summary_table_final <- summary_table %>%
+    left_join(total_species, by = c("shallow", "mesophotic")) %>%
+    select(shallow, mesophotic, Ascidiacea, Porifera, Bryozoa, Other, Total_number_of_species)
+  
+  # Affichage
+  print(summary_table_final)
 
   #### Step 8: Enregistrer le tableau ####
   
@@ -312,7 +330,7 @@ fun_rarity_per_taxa_per_habitat_fullsites <- function(data_and_meta_clean_fullsi
   # Ici on part du dataframe `summary_table`
   
   # Créer le flextable
-  ft <- flextable(summary_table)
+  ft <- flextable(summary_table_final)
   ft <- autofit(ft)
   ft <- align(ft, align = "center", part = "all")
   ft <- set_table_properties(ft, layout = "autofit")

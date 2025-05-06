@@ -61,37 +61,37 @@ list(
   
   # Cleaning data ####
   
-  ,tar_target(clean_data_metadata, fun_data_cleaning(raw_data = raw_data))
+  # ,tar_target(clean_data_metadata, fun_data_cleaning(raw_data = raw_data))
   
   ,tar_target(clean_data_metadata_fullsites, fun_data_cleaning_fullsites(raw_data = raw_data))
   
   # Data Analysis ####
   
-  ,tar_target(explore_data, fun_data_exploring(data_and_meta_clean = clean_data_metadata))
+  # ,tar_target(explore_data, fun_data_exploring(data_and_meta_clean = clean_data_metadata))
 
-  ,tar_target(stack_c_chart, fun_stack_c_chart(data_and_meta_clean = clean_data_metadata))
+  # ,tar_target(stack_c_chart, fun_stack_c_chart(data_and_meta_clean = clean_data_metadata))
   
 
-  ,tar_target(venn_diag, fun_venn_diag(data_and_meta_clean = clean_data_metadata))
+  # ,tar_target(venn_diag, fun_venn_diag(data_and_meta_clean = clean_data_metadata))
    
-  ,tar_target(beta_decomp, fun_decomp_betadiv(data_and_meta_clean = clean_data_metadata))
+  # ,tar_target(beta_decomp, fun_decomp_betadiv(data_and_meta_clean = clean_data_metadata))
   
-  ,tar_target(permanova_simper, fun_permanova(data_and_meta_clean = clean_data_metadata))
+  # ,tar_target(permanova_simper, fun_permanova(data_and_meta_clean = clean_data_metadata))
   
-  ,tar_target(mantel_test, fun_mantel(data_and_meta_clean = clean_data_metadata,
-                                              gps_sites = data_gps_sites))
+  # ,tar_target(mantel_test, fun_mantel(data_and_meta_clean = clean_data_metadata,
+                                              # gps_sites = data_gps_sites))
   
-  ,tar_target(graph, fun_graph(data_and_meta_clean = clean_data_metadata))
+  # ,tar_target(graph, fun_graph(data_and_meta_clean = clean_data_metadata))
   
-  ,tar_target(taxo_overlap, fun_taxo_overlap(data_and_meta_clean = clean_data_metadata))
+  # ,tar_target(taxo_overlap, fun_taxo_overlap(data_and_meta_clean = clean_data_metadata))
   
-  ,tar_target(taxo_overlap_perc, fun_taxo_overlap_perc(data_and_meta_clean = clean_data_metadata))
+  # ,tar_target(taxo_overlap_perc, fun_taxo_overlap_perc(data_and_meta_clean = clean_data_metadata))
  
-  ,tar_target(taxo_overlap_rarity, fun_taxo_overlap_rarity(data_and_meta_clean = clean_data_metadata))
+  # ,tar_target(taxo_overlap_rarity, fun_taxo_overlap_rarity(data_and_meta_clean = clean_data_metadata))
   
-  ,tar_target(taxo_overlap_quartile, fun_taxo_overlap_quart(data_and_meta_clean = clean_data_metadata))
+  # ,tar_target(taxo_overlap_quartile, fun_taxo_overlap_quart(data_and_meta_clean = clean_data_metadata))
   
-  ,tar_target(LCBD, fun_LCBD(data_and_meta_clean = clean_data_metadata))
+  # ,tar_target(LCBD, fun_LCBD(data_and_meta_clean = clean_data_metadata))
   
   
   # 
@@ -137,6 +137,13 @@ list(
                                            roda_reef = reef_roda))
   
   ,tar_target(mapping_indices_arms_scale, fun_map_arms_scale(data_and_meta_clean_fullsites = clean_data_metadata_fullsites,
+                                                             gps_sites = data_gps_sites,
+                                                             runa_map = map_runa,
+                                                             roda_map = map_roda,
+                                                             runa_reef = reef_runa,
+                                                             roda_reef = reef_roda))
+  
+  ,tar_target(map_final, fun_map_final(data_and_meta_clean_fullsites = clean_data_metadata_fullsites,
                                                              gps_sites = data_gps_sites,
                                                              runa_map = map_runa,
                                                              roda_map = map_roda,

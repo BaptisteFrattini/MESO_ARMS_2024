@@ -57,7 +57,7 @@ null_model_rarity_commonness <- function(data_and_meta_clean){
   
   # Plot histogram
   aa <- ggplot(df, aes(x = Frequency)) +
-    geom_histogram(binwidth = 0.02, fill = "steelblue", color = "black", alpha = 0.7) +
+    geom_histogram(binwidth = 0.002, fill = "steelblue", color = "black", alpha = 0.7) +
     labs(title = "Histogram of Species Occurrence Frequencies",
          x = "Occurrence Frequency",
          y = "Number of Species") +
@@ -75,7 +75,7 @@ null_model_rarity_commonness <- function(data_and_meta_clean){
   
   # Plot histogram
   bb <- ggplot(df, aes(x = Frequency)) +
-    geom_histogram(binwidth = 0.02, fill = "steelblue", color = "black", alpha = 0.7) +
+    geom_histogram(binwidth = 0.002, fill = "steelblue", color = "black", alpha = 0.7) +
     labs(title = "Histogram of Species Occurrence Frequencies",
          x = "Occurrence Frequency",
          y = "Number of Species") +
@@ -88,7 +88,7 @@ null_model_rarity_commonness <- function(data_and_meta_clean){
   community_size <- 16 * 3  # Each simulated community has 48 sites
   
   # Define frequency intervals
-  intervals <- seq(0, 1, by = 0.02)
+  intervals <- seq(0, 1, by = 0.002)
   interval_labels <- paste0("[", head(intervals, -1), "-", tail(intervals, -1), "]")
   
   # Initialize a table to count species in each interval
@@ -97,10 +97,19 @@ null_model_rarity_commonness <- function(data_and_meta_clean){
   # Loop over simulations
   for (i in 1:n_simulations) {
     # Generate a simulated presence-absence matrix for one community
-    sim_matrix <- replicate(community_size, rbinom(length(f), 1, f))
+    sim_matrix <- t(replicate(community_size, rbinom(length(f), 1, f)))
     
-    # Compute simulated frequencies
-    f_sim <- colSums(sim_matrix) / community_size
+    # Associate species names
+    colnames(sim_matrix) <- names(f)
+    
+    # community composition simulated
+    community_composition_sim <- colSums(sim_matrix)
+    
+  
+    # P/a transform
+    community_composition_sim <- ifelse(community_composition_sim >= 1, 1, 0)
+    
+    f_sim <- ifelse(community_composition_sim >= 1, f, 0)
     
     # Remove species with f_sim = 0
     f_sim <- f_sim[f_sim > 0]
@@ -140,6 +149,8 @@ null_model_rarity_commonness <- function(data_and_meta_clean){
   # Initialize an empty list to store data frames
   df_list <- list()
   
+  site <- sites[1]
+  
   # Loop through each site
   for (site in sites) {
     # Subset data for the current site
@@ -148,11 +159,13 @@ null_model_rarity_commonness <- function(data_and_meta_clean){
     # Compute species occurrence frequency
     f_site <- colSums(data_site) / nrow(data_site)
     
-    # Remove species with frequency = 0
-    f_site <- f_site[f_site != 0]
+    f_site <- ifelse(f_site > 0, 1, 0)
+    
+    f_global_dans_site <- ifelse(f_site >= 1, f, 0)
+    
     
     # Create a data frame and add a column for the site name
-    df_site <- data.frame(Frequency = f_site, Site = site)
+    df_site <- data.frame(Frequency = f_global_dans_site, Site = site)
     
     # Store in the list
     df_list[[site]] <- df_site
@@ -160,6 +173,8 @@ null_model_rarity_commonness <- function(data_and_meta_clean){
   
   # Combine all site data into one data frame
   df_all <- bind_rows(df_list)
+  
+  df_all <- df_all[df_all$Frequency != 0,]
   
   # Plot histograms for all sites using facet_wrap()
   # ggplot(df_all, aes(x = Frequency)) +
@@ -173,7 +188,7 @@ null_model_rarity_commonness <- function(data_and_meta_clean){
   # 
   
   # Define bin width
-  bin_width <- 0.02
+  bin_width <- 0.002
   bins <- seq(0, 1, by = bin_width)  # Define bin edges
   
   # Create custom interval labels
@@ -192,7 +207,7 @@ null_model_rarity_commonness <- function(data_and_meta_clean){
     geom_bar(stat = "identity", fill = "steelblue") +
     facet_wrap(~ Site) +  # Create separate plots per site
     theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-    ylim(0, 20) +  # Standardize Y-axis from 0 to 20
+    ylim(0, max(distribution_df$Count)) +  # Standardize Y-axis from 0 to 20
     labs(title = "Distribution of Species Frequencies per Site",
          x = "Frequency Interval",
          y = "Number of Species")
@@ -312,6 +327,218 @@ null_model_rarity_commonness <- function(data_and_meta_clean){
     theme_minimal() +
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
     scale_fill_brewer(palette = "Set3")  # Choose a color palette
+  
+  # Null Model based on ARMS ####
+  
+  data_mean <- read.csv(data_and_meta_clean_fullsites["path_data_mean"], row.names = 1)
+  meta_mean <- read.csv(data_and_meta_clean_fullsites["path_meta_mean"], row.names = 1)
+  
+  data_mean <- data_mean[, colSums(data_mean) != 0]
+  
+  data_mean <- data_mean[, msp_list_filter]
+  data_mean_pa <- vegan::decostand(data_mean, "pa")
+  
+  f <- colSums(data_mean_pa)/nrow(data_mean_pa)
+  # Compute a null model ####
+  
+  # Number of simulations
+  n_simulations <- 1000  # Adjust as needed
+  community_size <- 3  # Each simulated community has 48 sites
+  
+  # Define frequency intervals
+  intervals <- seq(0, 1, by = 0.02)
+  interval_labels <- paste0("[", head(intervals, -1), "-", tail(intervals, -1), "]")
+  
+  # Initialize a table to count species in each interval
+  interval_counts <- setNames(rep(0, length(interval_labels)), interval_labels)
+  
+  # i = 3
+  df_list_sim <- list()
+  # Loop over simulations
+  for (i in 1:n_simulations) {
+    # Generate a simulated presence-absence matrix for one community
+    sim_matrix <- t(replicate(community_size, rbinom(length(f), 1, f)))
+    
+    # Associate species names
+    colnames(sim_matrix) <- names(f)
+    
+    # community composition simulated
+    community_composition_sim <- colSums(sim_matrix)
+    
+    
+    # P/a transform
+    community_composition_sim <- ifelse(community_composition_sim >= 1, 1, 0)
+    
+    f_sim <- ifelse(community_composition_sim >= 1, f, NA)
+    
+    
+    # Create a data frame and add a column for the site name
+    df_sim <- data.frame(Frequency = f_sim, Species = names(f), n_sim = rep(i, length(f_sim)))
+    
+    # Store in the list
+    df_list_sim[[i]] <- df_sim 
+    
+    
+    
+    # Remove species with f_sim = 0
+    f_sim <- f_sim[f_sim > 0]
+ 
+ 
+       
+       
+    # Bin frequencies into intervals of 0.02
+    bin_counts <- table(cut(f_sim, breaks = intervals, labels = interval_labels, include.lowest = TRUE))
+    
+    # Accumulate counts
+    interval_counts <- interval_counts + bin_counts
+  }
+  
+  frequency_list <- lapply(df_list_sim, function(df) df$Frequency)
+  
+  # Combiner toutes les colonnes extraites en un seul DataFrame
+  result_df <- bind_cols(frequency_list)
+  
+  # Optionnel : Nommer les colonnes du résultat en fonction de l'index ou d'un autre critère
+  colnames(result_df) <- paste0("Frequency_", seq_along(frequency_list))
+  
+  # Voir le tableau final
+  head(result_df)
+  
+  mean_values <- rowMeans(result_df, na.rm = TRUE)
+
+  
+  # Résultat dans un vecteur
+
+  
+  mean_frequency_sim <- data.frame(Frequency = mean_values,
+                                   Species = names(f))
+  
+  vv <- ggplot(mean_frequency_sim, aes(x = Frequency)) +
+    geom_density(alpha = 0.3, adjust = 0.4) +
+    theme_minimal()
+  
+  # Convert results to a data frame
+  null_distribution_df <- data.frame(
+    Interval = names(interval_counts),
+    Count = (as.numeric(interval_counts)/n_simulations)
+  )
+  
+  # Print results
+  print(null_distribution_df)
+  
+  # Optional: Plot histogram of species counts per interval
+  
+  cc <- ggplot(null_distribution_df, aes(x = Interval, y = Count)) +
+    geom_bar(stat = "identity", fill = "steelblue") +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+    labs(title = "Distribution of Species Frequencies", x = "Frequency Interval", y = "Number of Species")
+  
+  
+  # plot a grid of SAD for each unique site ####
+  
+  
+  # Extract unique sites
+  sites <- unique(meta_mean$triplicat)
+  
+  # Initialize an empty list to store data frames
+  df_list <- list()
+  
+  # site <- sites[1]
+  
+  # Loop through each site
+  for (site in sites) {
+    # Subset data for the current site
+    data_site <- subset(data_mean_pa, meta_mean$triplicat == site)
+    
+    # Compute species occurrence frequency
+    f_site <- colSums(data_site) / nrow(data_site)
+    
+    f_site <- ifelse(f_site > 0, 1, 0)
+    
+    f_global_dans_site <- ifelse(f_site >= 1, f, 0)
+    
+    
+    # Create a data frame and add a column for the site name
+    df_site <- data.frame(Frequency = f_global_dans_site, Site = site)
+    
+    # Store in the list
+    df_list[[site]] <- df_site
+  }
+  
+  # Combine all site data into one data frame
+  df_all <- bind_rows(df_list)
+  
+  df_all <- df_all[df_all$Frequency != 0,]
+  
+  
+  color_map <- c(
+    "RODARMS1" = "#DD8D29",
+    "RODARMS2" = "#DD8D29",
+    "RODARMS3" = "#DD8D29",
+    "P50ARMS1" = "darkblue",
+    "P50ARMS2" = "darkblue",
+    "P50ARMS3" = "darkblue",
+    "RUNARMS1" = "#46ACC8",
+    "RUNARMS2" = "#46ACC8",
+    "RUNARMS3" = "#46ACC8",
+    "RUNARMS4" = "#46ACC8",
+    "RUNARMS5" = "#46ACC8",
+    "RUNARMS6" = "#46ACC8",
+    "RUNARMS7" = "#46ACC8",
+    "RUNARMS8" = "#46ACC8",
+    "RUNARMS9" = "#46ACC8"
+  )
+  
+  xx <- ggplot(df_all, aes(x = Frequency, color = Site, fill = Site)) +
+    geom_density(alpha = 0.3, adjust = 0.4) +
+    facet_wrap(~ Site) +
+    scale_color_manual(values = color_map) +
+    scale_fill_manual(values = color_map) +
+    labs(title = "Courbes de densité par site",
+         x = "Frequency",
+         y = "Densité") +
+    theme_minimal()
+  
+  
+  
+  
+  
+  # Plot histograms for all sites using facet_wrap()
+  # ggplot(df_all, aes(x = Frequency)) +
+  #   geom_histogram(binwidth = 0.02, fill = "steelblue", color = "black", alpha = 0.7) +
+  #   facet_wrap(~ Site, scales = "free_y") +  # Create a grid of plots
+  #   labs(title = "Histogram of Species Occurrence Frequencies per Site",
+  #        x = "Occurrence Frequency",
+  #        y = "Number of Species") +
+  #   theme_minimal() +
+  #   ylim(0, 20)
+  # 
+  
+  # Define bin width
+  bin_width <- 0.02
+  bins <- seq(0, 1, by = bin_width)  # Define bin edges
+  
+  # Create custom interval labels
+  interval_labels <- paste0("[", head(bins, -1), "-", tail(bins, -1), "]")
+  
+  # Compute null_distribution_df for each site
+  distribution_df <- df_all %>%
+    mutate(Interval = cut(Frequency, breaks = bins, include.lowest = TRUE, right = FALSE, labels = interval_labels)) %>%
+    group_by(Site, Interval) %>%
+    summarise(Count = n(), .groups = "drop") %>%
+    complete(Site, Interval = interval_labels, fill = list(Count = 0)) %>%
+    mutate(Interval = factor(Interval, levels = interval_labels))  # Ensure correct ordering
+  
+  # Plot the histogram for each site with standardized Y-axis (0 to 20)
+  dd <- ggplot(distribution_df, aes(x = Interval, y = Count)) +
+    geom_bar(stat = "identity", fill = "steelblue") +
+    facet_wrap(~ Site) +  # Create separate plots per site
+    theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+    ylim(0, max(distribution_df$Count)) +  # Standardize Y-axis from 0 to 20
+    labs(title = "Distribution of Species Frequencies per Site",
+         x = "Frequency Interval",
+         y = "Number of Species")
+  
   
   #### Kolmogorov smirnov ####
   

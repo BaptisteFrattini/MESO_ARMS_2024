@@ -29,7 +29,7 @@ fun_temperature_comparison <- function(temp_extraction, temp_in_situ){
     geom_line(aes(y = RUNA1, col = "RUNA1"), linewidth = 1.1) +
     geom_line(aes(y = RUNA5, col = "RUNA5"), linewidth = 1.1) +
     geom_line(aes(y = RUNA9, col = "RUNA9"), linewidth = 1.1) +
-    ylab("Temperature mean (°C)") +
+    ylab("Mean SST(°C)") +
     xlab("Time") +
     scale_x_date(date_labels = "%m/%Y", date_breaks = "1 month") + # Affiche mois/année
     theme_minimal() +
@@ -56,7 +56,7 @@ fun_temperature_comparison <- function(temp_extraction, temp_in_situ){
     geom_line(aes(y = RUNA9, col = "RUNA9"), linewidth = 0.8, linetype = 2) +
     geom_line(aes(y = mean.RUNA1, col = "RUNA9_in_situ"), linewidth = 1.1) +
     geom_line(aes(y = mean.RUNA2, col = "RUNA1_in_situ"), linewidth = 1.1) +
-    ylab("Temperature mean (°C)") +
+    ylab("Mean SST(°C)") +
     xlab("Time") +
     scale_y_continuous(limits = y_range) +  # Set the Y-axis limits
     scale_x_date(date_labels = "%m/%Y", date_breaks = "1 month") + # Affiche mois/année
@@ -74,7 +74,7 @@ fun_temperature_comparison <- function(temp_extraction, temp_in_situ){
     geom_line(aes(y = T_1A, col = "P50A1"), linewidth = 1.1) +
     geom_line(aes(y = T_2A, col = "P50A2"), linewidth = 1.1) +
     geom_line(aes(y = T_3A, col = "P50A3"), linewidth = 1.1) +
-    ylab("Temperature mean (°C)") +
+    ylab("Mean SST(°C)") +
     xlab("Time") +
     scale_y_continuous(limits = y_range) +
     scale_x_date(date_labels = "%m/%Y", date_breaks = "1 month") + # Affiche mois/année
@@ -145,7 +145,7 @@ fun_temperature_comparison <- function(temp_extraction, temp_in_situ){
     geom_hline(data = seasonal_means_combined, aes(yintercept = mean_temp, color = season), linetype = "dashed", size = 1) +
     geom_text(data = seasonal_means_combined, aes(x = as.Date("2018-11-01"), y = mean_temp, label = paste("Mean:", round(mean_temp, 2))), 
               color = "black", size = 3, vjust = -1) +
-    ylab("Temperature mean (°C)") +
+    ylab("Mean SST(°C)") +
     xlab("Time") +
     scale_y_continuous(limits = y_range) +
     scale_x_date(date_labels = "%m/%Y", date_breaks = "1 month") + 
@@ -165,7 +165,7 @@ fun_temperature_comparison <- function(temp_extraction, temp_in_situ){
     geom_hline(data = seasonal_means_in_situ, aes(yintercept = mean_temp, color = season), linetype = "dashed", size = 1) +
     geom_text(data = seasonal_means_in_situ, aes(x = as.Date("2021-11-01"), y = mean_temp, label = paste("Mean:", round(mean_temp, 2))), 
               color = "black", size = 3, vjust = -1) +
-    ylab("Temperature mean (°C)") +
+    ylab("Mean SST(°C)") +
     xlab("Time") +
     scale_y_continuous(limits = y_range) +
     scale_x_date(date_labels = "%m/%Y", date_breaks = "1 month") + 
@@ -308,7 +308,7 @@ fun_temperature_comparison <- function(temp_extraction, temp_in_situ){
     # geom_hline(data = seasonal_means_combined, aes(yintercept = mean_temp, color = season), linetype = "dashed", size = 1) +
     # geom_text(data = seasonal_means_combined, aes(x = as.Date("2021-11-01"), y = mean_temp, label = paste("Mean:", round(mean_temp, 2),"±",round(sd_temp, 2))), 
     #           color = "black", size = 3, vjust = -1) +
-    ylab("Temperature mean (°C)") +
+    ylab("Mean SST(°C)") +
     xlab("Time") +
     scale_y_continuous(limits = y_range) +
     scale_x_date(date_labels = "%m/%Y", date_breaks = "1 month") + # Affiche mois/année
@@ -452,7 +452,7 @@ fun_temperature_comparison <- function(temp_extraction, temp_in_situ){
     # geom_hline(data = seasonal_means_combined, aes(yintercept = mean_temp, color = season), linetype = "dashed", size = 1) +
     # geom_text(data = seasonal_means_combined, aes(x = as.Date("2021-11-01"), y = mean_temp, label = paste("Mean:", round(mean_temp, 2),"±",round(sd_temp, 2))), 
     #           color = "black", size = 3, vjust = -1) +
-    ylab("Temperature mean (°C)") +
+    ylab("Mean SST(°C)") +
     xlab("Time") +
     scale_y_continuous(limits = y_range) +
     scale_x_date(date_labels = "%m/%Y", date_breaks = "1 month") + # Affiche mois/année
@@ -471,7 +471,7 @@ fun_temperature_comparison <- function(temp_extraction, temp_in_situ){
       # geom_hline(data = seasonal_means_combined, aes(yintercept = mean_temp, color = season), linetype = "dashed", size = 1) +
       # geom_text(data = seasonal_means_combined, aes(x = as.Date("2021-11-01"), y = mean_temp, label = paste("Mean:", round(mean_temp, 2),"±",round(sd_temp, 2))), 
       #           color = "black", size = 3, vjust = -1) +
-      ylab("Temperature mean (°C)") +
+      ylab("Mean SST(°C)") +
       xlab("Time") +
       scale_y_continuous(limits = y_range) +
       scale_x_date(date_labels = "%m/%Y", date_breaks = "1 month") + # Affiche mois/année
