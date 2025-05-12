@@ -328,6 +328,11 @@ null_model_rarity_commonness <- function(data_and_meta_clean){
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
     scale_fill_brewer(palette = "Set3")  # Choose a color palette
   
+  # Is occurence frequency of species in plates is proportionnal to occurence frequency in sites?
+  
+  plot(tab_f$f_site, tab_f$f_plate)
+  plot(tab_f$f_ARMS, tab_f$f_plate)
+  
   # Null Model based on ARMS ####
   
   data_mean <- read.csv(data_and_meta_clean_fullsites["path_data_mean"], row.names = 1)
@@ -339,6 +344,18 @@ null_model_rarity_commonness <- function(data_and_meta_clean){
   data_mean_pa <- vegan::decostand(data_mean, "pa")
   
   f <- colSums(data_mean_pa)/nrow(data_mean_pa)
+  
+  df <- data.frame(Frequency = f)
+  
+  # Plot histogram
+  aa <- ggplot(df, aes(x = Frequency)) +
+    geom_histogram(binwidth = 0.02, fill = "steelblue", color = "black", alpha = 0.7) +
+    labs(title = "Histogram of Species Occurrence Frequencies",
+         x = "Occurrence Frequency",
+         y = "Number of Species") +
+    theme_minimal()
+  
+  
   # Compute a null model ####
   
   # Number of simulations
@@ -401,20 +418,10 @@ null_model_rarity_commonness <- function(data_and_meta_clean){
   # Optionnel : Nommer les colonnes du résultat en fonction de l'index ou d'un autre critère
   colnames(result_df) <- paste0("Frequency_", seq_along(frequency_list))
   
-  # Voir le tableau final
-  head(result_df)
+  long_freq <- pivot_longer(result_df, cols = everything(), names_to = "Iteration", values_to = "Frequency")
   
-  mean_values <- rowMeans(result_df, na.rm = TRUE)
-
-  
-  # Résultat dans un vecteur
-
-  
-  mean_frequency_sim <- data.frame(Frequency = mean_values,
-                                   Species = names(f))
-  
-  vv <- ggplot(mean_frequency_sim, aes(x = Frequency)) +
-    geom_density(alpha = 0.3, adjust = 0.4) +
+  vv <- ggplot(long_freq, aes(x = Frequency)) +
+    geom_density(alpha = 0.3, adjust = 1) +
     theme_minimal()
   
   # Convert results to a data frame
@@ -499,6 +506,38 @@ null_model_rarity_commonness <- function(data_and_meta_clean){
          y = "Densité") +
     theme_minimal()
   
+  library(ggplot2)
+  library(dplyr)
+  
+  # 1. Calculer les valeurs de densité globale
+  global_density <- density(na.omit(long_freq$Frequency), adjust = 1)
+  df_global_density <- data.frame(
+    Frequency = global_density$x,
+    Density = global_density$y
+  )
+  
+  # 2. Ajouter une colonne fictive "Site" pour répliquer la densité sur tous les sites
+  unique_sites <- unique(df_all$Site)
+  df_global_density_all <- df_global_density %>%
+    tidyr::crossing(Site = unique_sites)
+  
+  # 3. Tracer les densités par site avec densité globale superposée
+  xx <- ggplot(df_all, aes(x = Frequency, color = Site, fill = Site)) +
+    geom_density(alpha = 0.3, adjust = 0.4) +
+    geom_line(data = df_global_density_all,
+              aes(x = Frequency, y = Density),
+              inherit.aes = FALSE,
+              color = "black",  linewidth = 0.8) +
+    facet_wrap(~ Site) +
+    scale_color_manual(values = color_map) +
+    scale_fill_manual(values = color_map) +
+    labs(title = "Courbes de densité par site (avec densité globale en noir)",
+         x = "Frequency",
+         y = "Densité") +
+    theme_minimal()
+  
+  # Afficher le plot
+  print(xx)
   
   
   
