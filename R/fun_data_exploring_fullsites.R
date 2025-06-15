@@ -132,10 +132,10 @@ fun_data_exploring_fullsites <- function(data_and_meta_clean_fullsites){
   
   # Extract the endpoint positions for each assemblage from iNEXT object
 
-  
-  alpha_div_fullsites_path <- here::here("outputs/Species_acc_curves_fullsites.pdf")
-  
-  ggsave(alpha_div_fullsites_path, v1_combined, width = 9.5, height = 5.5)
+  # 
+  # alpha_div_fullsites_path <- here::here("outputs/Species_acc_curves_fullsites.pdf")
+  # 
+  # ggsave(alpha_div_fullsites_path, v1_combined, width = 9.5, height = 5.5)
   
   # Testing gamma diversity differences using bootstrap ####
   meta <- meta %>%

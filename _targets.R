@@ -102,27 +102,19 @@ list(
   # ,tarchetypes::tar_quarto(report, "quarto_file.qmd")
   
   # Data analysis - fullsites ####
+  ,tar_target(design_testing, fun_meta_explo(data_and_meta_clean_fullsites = clean_data_metadata_fullsites))
   
   ,tar_target(permanova_simper_fullsites, fun_permanova_fullsites(data_and_meta_clean_fullsites = clean_data_metadata_fullsites))
   
   ,tar_target(stack_c_chart_fullsites, fun_stack_c_chart_fullsites(data_and_meta_clean_fullsites = clean_data_metadata_fullsites))
   
-  ,tar_target(taxo_overlap_rarity_fullsites, fun_taxo_overlap_rarity_fullsites(data_and_meta_clean_fullsites = clean_data_metadata_fullsites))
-  
   ,tar_target(data_exploring_fullsites, fun_data_exploring_fullsites(data_and_meta_clean_fullsites = clean_data_metadata_fullsites))
   
   ,tar_target(LCBD_fullsites, fun_LCBD_fullsites(data_and_meta_clean_fullsites = clean_data_metadata_fullsites))
   
-  ,tar_target(rarity_per_taxa_per_habitat_fullsites, fun_rarity_per_taxa_per_habitat_fullsites(data_and_meta_clean_fullsites = clean_data_metadata_fullsites))
+  ,tar_target(rarity_per_taxa_per_habitat_fullsites_bis, fun_rarity_per_taxa_per_habitat_fullsites_bis(data_and_meta_clean_fullsites = clean_data_metadata_fullsites))
   
-  ,tar_target(mapping_indices, fun_map(data_and_meta_clean_fullsites = clean_data_metadata_fullsites,
-                                       gps_sites = data_gps_sites,
-                                       runa_map = map_runa,
-                                       roda_map = map_roda,
-                                       runa_reef = reef_runa,
-                                       roda_reef = reef_roda))
-  
-  ,tar_target(mapping_indices_campain, fun_map_campain(data_and_meta_clean_fullsites = clean_data_metadata_fullsites,
+  ,tar_target(mapping_sites, fun_map(data_and_meta_clean_fullsites = clean_data_metadata_fullsites,
                                        gps_sites = data_gps_sites,
                                        runa_map = map_runa,
                                        roda_map = map_roda,
@@ -136,19 +128,20 @@ list(
                                            runa_reef = reef_runa,
                                            roda_reef = reef_roda))
   
-  ,tar_target(mapping_indices_arms_scale, fun_map_arms_scale(data_and_meta_clean_fullsites = clean_data_metadata_fullsites,
-                                                             gps_sites = data_gps_sites,
-                                                             runa_map = map_runa,
-                                                             roda_map = map_roda,
-                                                             runa_reef = reef_runa,
-                                                             roda_reef = reef_roda))
+  ,tar_target(mapping_indices, fun_rarity(data_and_meta_clean_fullsites = clean_data_metadata_fullsites,
+                                          gps_sites = data_gps_sites,
+                                          runa_map = map_runa,
+                                          roda_map = map_roda,
+                                          runa_reef = reef_runa,
+                                          roda_reef = reef_roda))
   
-  ,tar_target(map_final, fun_map_final(data_and_meta_clean_fullsites = clean_data_metadata_fullsites,
-                                                             gps_sites = data_gps_sites,
-                                                             runa_map = map_runa,
-                                                             roda_map = map_roda,
-                                                             runa_reef = reef_runa,
-                                                             roda_reef = reef_roda))
+  ,tar_target(f_occ_taxa, fun_f_occ_taxa(data_and_meta_clean_fullsites = clean_data_metadata_fullsites))
+  
+  ,tar_target(tableau_presence, fun_tableau_presence(data_and_meta_clean_fullsites = clean_data_metadata_fullsites))
+ 
+  ,tar_target(f_plate_f_arms, fun_f_plate_f_arms(data_and_meta_clean_fullsites = clean_data_metadata_fullsites))
+  
+
                                            
   
   )

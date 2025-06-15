@@ -307,26 +307,7 @@ fun_map <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, roda_map
            Latitude = st_coordinates(.)[,2])
   
   # -- Ajuster les coordonnées pour éviter les chevauchements --
-  map_data_sf <- map_data_sf %>%
-    mutate(
-      Latitude = case_when(
-        site %in% c("RUNARMS2") ~ Latitude + 0.006,
-        site %in% c("RUNARMS3") ~ Latitude - 0.006,
-        site %in% c("RUNARMS4") ~ Latitude + 0.005,
-        site %in% c("RUNARMS5") ~ Latitude - 0.005,
-        site %in% c("RUNARMS6") ~ Latitude - 0.005,
-        TRUE ~ Latitude
-      )
-    )
-  
-  map_data_sf <- map_data_sf %>%
-    mutate(
-      Longitude = case_when(
-        site %in% c("RUNARMS2") ~ Longitude - 0.005,
-        site %in% c("RUNARMS3") ~ Longitude + 0.007,
-        TRUE ~ Longitude
-      )
-    )
+
   
   map_data_sf <- map_data_sf %>%
     mutate(

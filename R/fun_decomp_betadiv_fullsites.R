@@ -265,11 +265,11 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
   # Ajouter les lettres aux moyennes
   comp_means$letters <- letters[as.character(comp_means$comp)]
   
-  new_labels <- c("V" = paste0("Between RODARMS \n sites (Shallow) - N = ", nrow(V)),
-                  "W" = paste0("Between Islands \n (Shallow) - N = ", nrow(W)),
-                  "X" = paste0("Between RUNARMS \n sites (Mesophotic) - N = ", nrow(X)),
-                  "Y" = paste0("Between RUNARMS \n sites (Shallow) - N = ", nrow(Y)), 
-                  "Z" = paste0("Between depth within \n sites (RUNARMS) - N = ", nrow(Z)))
+  new_labels <- c("V" = paste0("Between ARMS from \n RODA (Shallow) - N = ", nrow(V)),
+                  "W" = paste0("Between ARMS of RUNA \n and RODA (Shallow) - N = ", nrow(W)),
+                  "X" = paste0("Between ARMS from \n P50A (Mesophotic) - N = ", nrow(X)),
+                  "Y" = paste0("Between ARMS from \n RUNA (Shallow) - N = ", nrow(Y)), 
+                  "Z" = paste0("Between ARMS of RUNA \n and P50A (within sites) - N = ", nrow(Z)))
   
   r1bis <- ggboxplot(df, x = "comp", 
                      y = "value",
@@ -487,11 +487,11 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
   
   df <- rbind(V,W,X,Y,Z)
   
-  new_labels <- c("V" = paste0("Between RODARMS \n sites (Shallow) - N = ", nrow(V)),
-                  "W" = paste0("Between Islands \n (Shallow) - N = ", nrow(W)),
-                  "X" = paste0("Between RUNARMS \n sites (Mesophotic) - N = ", nrow(X)),
-                  "Y" = paste0("Between RUNARMS \n sites (Shallow) - N = ", nrow(Y)), 
-                  "Z" = paste0("Between depth within \n sites (RUNARMS) - N = ", nrow(Z)))
+  new_labels <- c("V" = paste0("Between ARMS from \n RODA (Shallow) - N = ", nrow(V)),
+                  "W" = paste0("Between ARMS of RUNA \n and RODA (Shallow) - N = ", nrow(W)),
+                  "X" = paste0("Between ARMS from \n P50A (Mesophotic) - N = ", nrow(X)),
+                  "Y" = paste0("Between ARMS from \n RUNA (Shallow) - N = ", nrow(Y)), 
+                  "Z" = paste0("Between ARMS of RUNA \n and P50A (within sites) - N = ", nrow(Z)))
   
   
   my_comparisons <- list( c("V", "W"), c("V", "X"), c("V", "Y"), c("V","Z"), c("W","X"), c("W", "Y"), c("W","Z"), c("X","Y"), c("X","Z"), c("Y","Z"))
@@ -571,6 +571,14 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
                                  color = "black", vjust = 0)
   
   
+  #margin
+  fig1 <- plot_grid(q1bis, r1bis_2, s1bis, t1bis_2, ncol = 2, nrow = 2)
+  fig2 <- plot_grid(q1bis, s1bis, r1bis, t1bis, ncol = 2, nrow = 2)
+  
+  # Ajouter des marges autour de l’ensemble des figures
+  
+  
+  
   fin_1 <- cowplot::plot_grid(q1bis,  r1bis_2, s1bis, t1bis_2, 
                               ncol = 2,
                               nrow = 2)
@@ -578,6 +586,12 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
   fin_2 <- cowplot::plot_grid(q1bis,s1bis, r1bis, t1bis,
                               ncol = 2,
                               nrow = 2)
+  
+  fin_1 <- ggdraw(fig1) +
+    theme(plot.margin = margin(t = 1, r = 3, b = 1, l = 3, unit = "cm"))
+  
+  fin_2 <- ggdraw(fig2) +
+    theme(plot.margin = margin(t = 1, r = 3, b = 1, l = 3, unit = "cm"))
   
   path_to_boxplot_betadiv_XYZ_bis_2 <- paste0("outputs/boxplot_beta_decomp_XYZ_bis_2_fullsites.pdf")
   ggsave(filename =  path_to_boxplot_betadiv_XYZ_bis_2, plot = fin_1, width = 10, height = 9)

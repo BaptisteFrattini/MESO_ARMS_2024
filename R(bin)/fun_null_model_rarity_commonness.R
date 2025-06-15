@@ -12,6 +12,7 @@ null_model_rarity_commonness <- function(data_and_meta_clean){
   library(ggplot2)
   library(dplyr)
   library(tidyr)
+  library(mgcv)
   data <- read.csv(data_and_meta_clean_fullsites["path_data"], row.names = 1)
   meta <- read.csv(data_and_meta_clean_fullsites["path_meta"], row.names = 1)
   # data <- subset(data, meta$island == "Reunion")
@@ -332,6 +333,81 @@ null_model_rarity_commonness <- function(data_and_meta_clean){
   
   plot(tab_f$f_site, tab_f$f_plate)
   plot(tab_f$f_ARMS, tab_f$f_plate)
+
+  ggplot(tab_f, aes(x = f_ARMS, y = f_plate)) +
+    geom_point() +
+    geom_smooth(method = "lm", formula = y ~ poly(x, 2), color = "blue")  +
+    theme_minimal() +
+    labs(title = "", 
+         x = "Occurence frequency of MSPs in ARMS", 
+         y = "Occurrence frequency of MSPs in ARMS plate faces") +# Quadratique
+  
+  
+  
+  
+  
+  # Création du graphique
+  ggplot(tab_f, aes(x = f_ARMS, y = f_plate)) +
+    geom_point(color = "black", size = 2) +
+    geom_smooth(method = "gam", formula = y ~ s(x, k = 6), color = "red", fill = "red", alpha = 0.2) +
+    labs(title = "",
+      x = "Occurence frequency of MSPs in ARMS", 
+      y = "Occurrence frequency of MSPs in ARMS plate faces"
+    ) +
+    theme_minimal()
+  # 3. GAM avec pénalisation et k modéré
+  mod_gam <- gam(f_plate ~ s(f_ARMS, k = 6), data = tab_f, select = TRUE)
+  
+  # plot(residuals(mod_gam))
+  # k.check(mod_gam)
+  par(mfrow = c(2, 2))
+  gam.check(mod_gam)
+  
+  ggplot(tab_f, aes(x = log(f_ARMS), y = log(f_plate))) +
+    geom_point() +
+    geom_smooth(method = "lm")
+  
+  #AIC
+  
+  # 1. Régression polynomiale (ordre 2)
+  mod_poly2 <- lm(f_plate ~ poly(f_ARMS, 2), data = tab_f)
+  
+  # 2. Régression exponentielle (f_plate = a * exp(b * f_ARMS))
+  mod_exp <- nls(f_plate ~ a * exp(b * f_ARMS),
+                 data = tab_f,
+                 start = list(a = 0.01, b = 2),
+                 control = list(maxiter = 100))
+  
+  model_exp <- nls(f_plate ~ a * exp(b * f_ARMS), data = tab_f, start = list(a = 0.01, b = 2))
+  
+  
+  tab_f$pred_exp <- predict(model_exp)
+  
+  coefs <- coef(model_exp)
+  a <- signif(coefs["a"], 3)
+  b <- signif(coefs["b"], 3)
+  formule_texte <- paste0("f = ", a, " * exp(", b, " * x)")
+  
+  ggplot(tab_f, aes(x = f_ARMS, y = f_plate)) +
+    geom_point() +
+    geom_line(aes(y = pred_exp), color = "red") +
+    annotate("text", x = min(tab_f$f_ARMS), y = max(tab_f$f_plate),
+             label = formule_texte, hjust = 0, vjust = 1, size = 6, fontface = "italic") +
+    labs(
+      title = "",
+      x = "Occurrence frequency of MSPs in ARMS", 
+      y = "Occurrence frequency of MSPs in ARMS plate faces"
+    ) +
+    theme_minimal() +
+    theme(
+      axis.title = element_text(size = 16),
+      axis.text = element_text(size = 16)
+    )
+  
+  # 4. Comparaison des AIC
+  aic_values <- AIC(mod_poly2, mod_exp, mod_gam)
+  print(aic_values)
+  
   
   # Null Model based on ARMS ####
   
