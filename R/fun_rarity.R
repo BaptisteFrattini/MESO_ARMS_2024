@@ -1060,7 +1060,7 @@ fun_rarity <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, roda_
   method <- "Pearson"
   
   # Création du graphique
-  ggplot(map_data_sf, aes(x = LCBD_all, y =R_all)) +
+  dd <- ggplot(map_data_sf, aes(x = LCBD_all, y =R_all)) +
     geom_point() +
     geom_smooth(method = "lm", se = FALSE, color = "blue") +
     annotate("text", x = min(map_data_sf$LCBD_all), y = max(map_data_sf$R_all),
@@ -1080,6 +1080,7 @@ fun_rarity <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, roda_
       axis.text.y  = element_text(size = 16)
     )
     
+  ggsave("outputs/IRR_LCBD_corr_plot.pdf", plot = dd, width = 12, height = 10)
   
   return(NULL)  
 }
