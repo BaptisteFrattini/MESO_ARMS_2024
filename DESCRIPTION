@@ -41,5 +41,6 @@ Imports:
     ncdf4,
     iNEXT,
     hrbrthemes,
-    adespatial
+    adespatial,
+    dplyr
     
