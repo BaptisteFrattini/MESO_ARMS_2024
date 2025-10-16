@@ -85,7 +85,7 @@ fun_f_occ_taxa <- function(data_and_meta_clean_fullsites){
     theme_minimal() +
     labs(
       x = "Taxa",
-      y = "Log(occurence frequency)",
+      y = "Log(occurrence frequency)",
       title = ""
     ) +
     theme_minimal() +
@@ -103,7 +103,7 @@ fun_f_occ_taxa <- function(data_and_meta_clean_fullsites){
     theme_minimal() +
     labs(
       x = "Taxa",
-      y = "Occurence frequency",
+      y = "Occurrence frequency",
       title = ""
     ) +
     theme_minimal() +

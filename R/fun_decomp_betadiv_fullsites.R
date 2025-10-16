@@ -18,6 +18,7 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
   library(ggpubr)
   library(car)
   library(ggplot2)
+
   
   data_mean <- read.csv(data_and_meta_clean_fullsites["path_data_mean"], row.names = 1)
   meta_mean <- read.csv(data_and_meta_clean_fullsites["path_meta_mean"], row.names = 1)
@@ -91,7 +92,8 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
   X = data.frame(value = df.bray.X$value, 
                  comp = rep("X", nrow(df.bray.X)))
   
-  df <- rbind(V,W,X,Y,Z)
+  df <- rbind(Y,X,V,Z,W)
+  
   
   my_comparisons <- list( c("V", "W"), c("V", "X"), c("V", "Y"), c("V","Z"), c("W","X"), c("W", "Y"), c("W","Z"), c("X","Y"), c("X","Z"), c("Y","Z"))
   
@@ -113,19 +115,16 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
   
   bartlett.test(residus ~ comp, data = df)
   
-  df$comp <- factor(df$comp, levels = c("X", "Y", "Z", "W", "V"))
-  
   q1 <- ggboxplot(df, 
                   x = "comp", 
                   y = "value",
                   add = "jitter", 
                   short.panel.labs = FALSE,
                   color = "comp",
-                  palette = c("purple4" , "darkgreen", "blue3","aquamarine3", "black"),
+                  palette = c("aquamarine3", "blue3", "orange",  "black", "darkgreen"),
                   ylab = "Bray-Curtis") + 
     stat_compare_means(comparisons = my_comparisons, method = "wilcox.test", label = "p.signif") + 
     stat_compare_means(label.y = 1, method = "kruskal.test") + theme_classic()          
-  ?stat_compare_means
   
   
   q1 
@@ -151,7 +150,7 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
                      add = "jitter", 
                      short.panel.labs = FALSE,
                      color = "comp",
-                     palette = c("blue3", "aquamarine3", "black",  "darkgreen","purple4"),
+                     palette = c("aquamarine3", "blue3", "orange",  "black", "darkgreen"),
                      ylab = "Bray-Curtis") +  # Change x-axis label 
     scale_x_discrete(name = NULL, labels = NULL)+
     theme(legend.position = "none")+
@@ -227,14 +226,12 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
   X = data.frame(value = df.turn.X$value, 
                  comp = rep("X", nrow(df.turn.X)))
   
-  df <- rbind(V,W,X,Y,Z)
+  df <- rbind(Y,X,V,Z,W)
   
   my_comparisons <- list( c("V", "W"), c("V", "X"), c("V", "Y"), c("V","Z"), c("W","X"), c("W", "Y"), c("W","Z"), c("X","Y"), c("X","Z"), c("Y","Z"))
   
   
   library(ggplot2)
-  
-  df$comp <- factor(df$comp, levels = c("X", "Y", "Z", "W", "V"))
   
   r1 <- ggboxplot(df, 
                   x = "comp", 
@@ -242,7 +239,7 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
                   add = "jitter", 
                   short.panel.labs = FALSE,
                   color = "comp",
-                  palette = c("purple4" , "darkgreen", "blue3","aquamarine3", "black"),
+                  palette = c("aquamarine3", "blue3", "orange",  "black", "darkgreen"),
                   ylab = "Turnover") + 
     stat_compare_means(comparisons = my_comparisons, method = "wilcox.test", label = "p.signif") + 
     stat_compare_means(label.y = 1, method = "kruskal.test") + theme_classic()          
@@ -265,18 +262,22 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
   # Ajouter les lettres aux moyennes
   comp_means$letters <- letters[as.character(comp_means$comp)]
   
-  new_labels <- c("V" = paste0("Between ARMS from \n RODA (Shallow) - N = ", nrow(V)),
-                  "W" = paste0("Between ARMS of RUNA \n and RODA (Shallow) - N = ", nrow(W)),
-                  "X" = paste0("Between ARMS from \n P50A (Mesophotic) - N = ", nrow(X)),
-                  "Y" = paste0("Between ARMS from \n RUNA (Shallow) - N = ", nrow(Y)), 
-                  "Z" = paste0("Between ARMS of RUNA \n and P50A (within sites) - N = ", nrow(Z)))
+  new_labels <- c("V" = paste0("Between ARMS from \n RODA (shallow) ; N = ", nrow(V)),
+                  "W" = paste0("Between ARMS of RUNA \n and RODA (shallow) ; N = ", nrow(W)),
+                  "X" = paste0("Between ARMS from \n P50A (mesophotic) ; N = ", nrow(X)),
+                  "Y" = paste0("Between ARMS from \n RUNA (shallow) ; N = ", nrow(Y)), 
+                  "Z" = paste0("Between ARMS of RUNA \n and P50A (within localities) ; N = ", nrow(Z)))
   
-  r1bis <- ggboxplot(df, x = "comp", 
+
+  levels(df$comp)
+  
+  r1bis <- ggboxplot(df, 
+                     x = "comp", 
                      y = "value",
                      add = "jitter", 
                      short.panel.labs = FALSE,
                      color = "comp",
-                     palette = c("blue3", "aquamarine3", "black",  "darkgreen","purple4"),
+                     palette =c("aquamarine3", "blue3", "orange",  "black", "darkgreen"),
                      ylab = "Turnover") + 
     scale_x_discrete(name = "Comparisons", labels = new_labels) +
     theme(axis.text.x = element_text(size = 12, angle = 45, hjust = 1), legend.position = "none")+
@@ -297,7 +298,7 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
                        add = "jitter", 
                        short.panel.labs = FALSE,
                        color = "comp",
-                       palette = c("blue3", "aquamarine3", "black",  "darkgreen","purple4"),
+                       palette = c("aquamarine3", "blue3", "orange",  "black", "darkgreen"),
                        ylab = "Turnover") + 
     scale_x_discrete(name = NULL, labels = NULL) +
     theme(legend.position = "none")+
@@ -372,9 +373,8 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
   X = data.frame(value = df.jacc.X$value, 
                  comp = rep("X", nrow(df.jacc.X)))
   
-  df <- rbind(V,W,X,Y,Z)
+  df <- rbind(Y,X,V,Z,W)
   
-  df$comp <- factor(df$comp, levels = c("X", "Y", "Z", "W", "V"))
   
   my_comparisons <- list( c("V", "W"), c("V", "X"), c("V", "Y"), c("V","Z"), c("W","X"), c("W", "Y"), c("W","Z"), c("X","Y"), c("X","Z"), c("Y","Z"))
   library(ggplot2)
@@ -383,7 +383,7 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
                   add = "jitter", 
                   short.panel.labs = FALSE,
                   color = "comp",
-                  palette = c("blue3", "aquamarine3", "black",  "darkgreen","purple4"),
+                  palette = c("aquamarine3", "blue3", "orange",  "black", "darkgreen"),
                   ylab = "jaccard") + 
     stat_compare_means(comparisons = my_comparisons, method = "wilcox.test", label = "p.signif") + 
     stat_compare_means(label.y = 1, method = "kruskal.test") + theme_classic()          
@@ -411,7 +411,7 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
                      add = "jitter", 
                      short.panel.labs = FALSE,
                      color = "comp",
-                     palette = c("blue3", "aquamarine3", "black",  "darkgreen","purple4"),
+                     palette = c("aquamarine3", "blue3", "orange",  "black", "darkgreen"),
                      ylab = "Jaccard") +  # Change x-axis label 
     scale_x_discrete(name = NULL, labels = NULL) +
     theme(legend.position = "none")+
@@ -485,13 +485,13 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
   X = data.frame(value = df.nest.X$value, 
                  comp = rep("X", nrow(df.nest.X)))
   
-  df <- rbind(V,W,X,Y,Z)
+  df <- rbind(Y,X,V,Z,W)
   
-  new_labels <- c("V" = paste0("Between ARMS from \n RODA (Shallow) - N = ", nrow(V)),
-                  "W" = paste0("Between ARMS of RUNA \n and RODA (Shallow) - N = ", nrow(W)),
-                  "X" = paste0("Between ARMS from \n P50A (Mesophotic) - N = ", nrow(X)),
-                  "Y" = paste0("Between ARMS from \n RUNA (Shallow) - N = ", nrow(Y)), 
-                  "Z" = paste0("Between ARMS of RUNA \n and P50A (within sites) - N = ", nrow(Z)))
+  new_labels <- c("V" = paste0("Between ARMS from \n RODA (shallow) ; N = ", nrow(V)),
+                  "W" = paste0("Between ARMS of RUNA \n and RODA (shallow) ; N = ", nrow(W)),
+                  "X" = paste0("Between ARMS from \n P50A (mesophotic) ; N = ", nrow(X)),
+                  "Y" = paste0("Between ARMS from \n RUNA (shallow) ; N = ", nrow(Y)), 
+                  "Z" = paste0("Between ARMS of RUNA \n and P50A (within localities) ; N = ", nrow(Z)))
   
   
   my_comparisons <- list( c("V", "W"), c("V", "X"), c("V", "Y"), c("V","Z"), c("W","X"), c("W", "Y"), c("W","Z"), c("X","Y"), c("X","Z"), c("Y","Z"))
@@ -504,7 +504,7 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
                   add = "jitter", 
                   short.panel.labs = FALSE,
                   color = "comp",
-                  palette =c("blue3", "aquamarine3", "black",  "darkgreen","purple4"),
+                  palette = c("aquamarine3", "blue3", "orange",  "black", "darkgreen"),
                   ylab = "Nestedness") + 
     stat_compare_means(comparisons = my_comparisons, method = "wilcox.test", label = "p.signif") + 
     stat_compare_means(label.y = 1, method = "kruskal.test") + theme_classic()          
@@ -532,7 +532,7 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
                      add = "jitter", 
                      short.panel.labs = FALSE,
                      color = "comp",
-                     palette = c("blue3", "aquamarine3", "black",  "darkgreen","purple4"),
+                     palette = c("aquamarine3", "blue3", "orange",  "black", "darkgreen"),
                      ylab = "Nestedness") + 
     scale_x_discrete(name = "Comparisons", labels = new_labels) +
     theme(axis.text.x = element_text(size = 12, angle = 45, hjust = 1), legend.position = "none")+
@@ -554,7 +554,7 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
                        add = "jitter", 
                        short.panel.labs = FALSE,
                        color = "comp",
-                       palette = c("blue3", "aquamarine3", "black",  "darkgreen","purple4"),
+                       palette = c("aquamarine3", "blue3", "orange",  "black", "darkgreen"),
                        ylab = "Nestedness") + 
     scale_x_discrete(name = NULL, labels = NULL) +
     theme(legend.position = "none") +
@@ -570,7 +570,7 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
   t1bis_2 <- t1bis_2 + geom_text(data = comp_means, aes(x = comp, y = 0.30, label = letters),
                                  color = "black", vjust = 0)
   
-  
+  library(cowplot)
   #margin
   fig1 <- plot_grid(q1bis, r1bis_2, s1bis, t1bis_2, ncol = 2, nrow = 2)
   fig2 <- plot_grid(q1bis, s1bis, r1bis, t1bis, ncol = 2, nrow = 2)

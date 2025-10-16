@@ -218,6 +218,15 @@ fun_temperature_comparison <- function(temp_extraction, temp_in_situ){
                        cold_deep_3 = c(mean(cold_deep$T_3A), sd(cold_deep$T_3A))
   )
   
+  mean_range <- data.frame(range_deep_1 = c(mean(hot_deep$T_1A)-mean(cold_deep$T_1A)), 
+                           range_deep_2 = c(mean(hot_deep$T_2A)-mean(cold_deep$T_2A)), 
+                           range_deep_3 = c(mean(hot_deep$T_3A)-mean(cold_deep$T_3A)), 
+                           range_shallow_1 = c(mean(hot_shallow$RUNA1, na.rm = TRUE)-mean(cold_shallow$RUNA1)), 
+                           range_shallow_2 = c(mean(hot_shallow$RUNA5, na.rm = TRUE)-mean(cold_shallow$RUNA5)), 
+                           range_shallow_3 = c(mean(hot_shallow$RUNA9, na.rm = TRUE)-mean(cold_shallow$RUNA9))
+  )
+  
+  
   rownames(deep_T) <- c("mean", "sd")
   
   Temp_summary_Hot <- data.frame(Cap_La_Houssaye = c(paste0(round(mean(hot_shallow$RUNA1), 2)," ± ", round(sd(hot_shallow$RUNA1), 2)),
@@ -464,6 +473,8 @@ fun_temperature_comparison <- function(temp_extraction, temp_in_situ){
       axis.text.x = element_text(angle = 45, hjust = 1) # Écrit les dates de biais
     )
     
+    combined_data_roda
+    
     p3 <- ggplot(data_rodrigues_16_17, aes(x = date)) +
       geom_line(aes(y = RODA1, col = "RODA1"), linewidth = 1.1, linetype = 2) +
       geom_line(aes(y = RODA2, col = "RODA2"), linewidth = 1.1, linetype = 2) +
@@ -483,6 +494,7 @@ fun_temperature_comparison <- function(temp_extraction, temp_in_situ){
         axis.text.x = element_text(angle = 45, hjust = 1) # Écrit les dates de biais
       )
   
+    
     cow <- cowplot::plot_grid(p3,
                               p1_shallow_bis,
                               p2,
@@ -494,6 +506,30 @@ fun_temperature_comparison <- function(temp_extraction, temp_in_situ){
     
     ggsave(Temp_dev_path, cow, width = 9, height = 13)
   
+    
+  #Amplitude 
+    library(dplyr)
+
+# Suppression des colonnes inutiles
+df_clean <- combined_data_roda %>%
+  select(-T_1B, -T_2B, -T_3B)
+
+# Mise en format long
+df_long <- df_clean %>%
+  pivot_longer(
+    cols = c(RUNA1, RUNA5, RUNA9, T_1A, T_2A, T_3A, RODA1, RODA2, RODA3),
+    names_to = "site",
+    values_to = "temp"
+  )
+
+# Calcul de l'amplitude annuelle par site
+amplitudes_annuelles <- df_long %>%
+  group_by(site) %>%
+  summarise(
+    amplitude = max(temp, na.rm = TRUE) - min(temp, na.rm = TRUE)
+  )
+
+amplitudes_annuelles
 
   
   return(NULL) 

@@ -144,8 +144,13 @@ fun_rarity <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, roda_
     # 4. On calcule sur la base de la matrice presence absence d'origine, l'indice de rareté de chaque face de plaque
     Community_rarity_index <- as.data.frame(Isr(data_mean_pa_camp_all, W))
     
+    # Community_rarity_index <- as.data.frame(Irr(data_mean_pa_camp_all, W))
+    
     # 5. On fait la somme des indices par site
     res_all <- tapply(Community_rarity_index$IsrValue, meta_mean_camp$triplicat, mean)
+    
+    # res_all <- tapply(Community_rarity_index$Irr, meta_mean_camp$triplicat, mean)
+    
     res_all <- data.frame(site = names(res_all),
                           R = res_all)
     
@@ -200,8 +205,13 @@ fun_rarity <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, roda_
     # 4. On calcule sur la base de la matrice presence absence d'origine, l'indice de rareté de chaque face de plaque
     Community_rarity_index <- as.data.frame(Isr(data_mean_pa_camp_asc, W))
     
+    # Community_rarity_index <- as.data.frame(Irr(data_mean_pa_camp_asc, W))
+    
     # 5. On fait la somme des indices par site
     res_asc <- tapply(Community_rarity_index$IsrValue, meta_mean_camp$triplicat, mean)
+    
+    # res_asc <- tapply(Community_rarity_index$Irr, meta_mean_camp$triplicat, mean)
+    
     res_asc <- data.frame(site = names(res_asc),
                           R = res_asc)
     
@@ -254,8 +264,13 @@ fun_rarity <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, roda_
     # 4. On calcule sur la base de la matrice presence absence d'origine, l'indice de rareté de chaque face de plaque
     Community_rarity_index <- as.data.frame(Isr(data_mean_pa_camp_por, W))
     
+    # Community_rarity_index <- as.data.frame(Irr(data_mean_pa_camp_por, W))
+    
     # 5. On fait la somme des indices par site
     res_por <- tapply(Community_rarity_index$IsrValue, meta_mean_camp$triplicat, mean)
+    
+    # res_por <- tapply(Community_rarity_index$Irr, meta_mean_camp$triplicat, mean)
+    
     res_por <- data.frame(site = names(res_por),
                           R = res_por)
     
@@ -309,8 +324,13 @@ fun_rarity <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, roda_
     # 4. On calcule sur la base de la matrice presence absence d'origine, l'indice de rareté de chaque face de plaque
     Community_rarity_index <- as.data.frame(Isr(data_mean_pa_camp_bry, W))
     
+    # Community_rarity_index <- as.data.frame(Irr(data_mean_pa_camp_bry, W))
+    
     # 5. On fait la somme des indices par site
     res_bry <- tapply(Community_rarity_index$IsrValue, meta_mean_camp$triplicat, mean)
+    
+    # res_bry <- tapply(Community_rarity_index$Irr, meta_mean_camp$triplicat, mean)
+    
     res_bry <- data.frame(site = names(res_bry),
                           R = res_bry)
     
@@ -457,7 +477,7 @@ fun_rarity <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, roda_
   
   # -- Scales communes --
   scale_r <- scale_size_continuous(
-    name = "IRR", 
+    name = "ISR", 
     range = c(1, 12),
     limits = c(min(map_data$R_all, na.rm = TRUE), max(map_data$R_all, na.rm = TRUE))
   )
@@ -606,7 +626,7 @@ fun_rarity <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, roda_
   
   ## Ascidiacea ####
   scale_r <- scale_size_continuous(
-    name = "IRR", 
+    name = "ISR", 
     range = c(1, 12),
     limits = c(min(map_data$R_asc, na.rm = TRUE), max(map_data$R_asc, na.rm = TRUE))
   )
@@ -752,7 +772,7 @@ fun_rarity <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, roda_
   
   ## Bryozoa ####
   scale_r <- scale_size_continuous(
-    name = "IRR", 
+    name = "ISR", 
     range = c(1, 12),
     limits = c(min(map_data$R_bry, na.rm = TRUE), max(map_data$R_bry, na.rm = TRUE))
   )
@@ -900,7 +920,7 @@ fun_rarity <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, roda_
   
 
   scale_r <- scale_size_continuous(
-    name = "IRR", 
+    name = "ISR", 
     range = c(1, 12),
     limits = c(min(map_data$R_por, na.rm = TRUE), max(map_data$R_por, na.rm = TRUE))
   )
@@ -1046,7 +1066,7 @@ fun_rarity <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, roda_
   final_plot <- (tt / xx / yy / zz) +
     plot_layout(guides = "collect")
   
-  ggsave("outputs/Cartes - LCBD_Rarity/map_02_06_2025bis.pdf", plot = final_plot, width = 0.75*18, height = 18)
+  ggsave("outputs/Cartes - LCBD_Rarity/map_09_07_2025_IRR.pdf", plot = final_plot, width = 0.75*18, height = 18)
   
   # Computing correlation plto btw IRR and LCBD ####
   
@@ -1069,7 +1089,7 @@ fun_rarity <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, roda_
              hjust = 0, vjust = 1, size = 5) +
     labs(
       x = "LCBD values",
-      y = "IRR values",
+      y = "ISR values",
       title = ""
     ) +
     theme_minimal() +
@@ -1080,10 +1100,207 @@ fun_rarity <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, roda_
       axis.text.y  = element_text(size = 16)
     )
     
-  ggsave("outputs/IRR_LCBD_corr_plot.pdf", plot = dd, width = 12, height = 10)
+  ggsave("outputs/ISR_LCBD_corr_plot.pdf", plot = dd, width = 12, height = 10)
   
   return(NULL)  
 }
 
 
-
+# 
+# tab <- as.data.frame(rbind(runarms_index_plate))
+# # tab$site <- rownames(tab)
+# 
+# #### Import the GPS data ####
+# data_gps <- read.csv(gps_sites, sep = ";", dec = ",", header = TRUE)
+# 
+# #### Import the map shapefiles ####
+# runa_map <- st_read(runa_map)
+# roda_map <- st_read(roda_map)
+# 
+# 
+# 
+# data_gps <- data_gps %>%
+#   mutate(
+#     label = case_when(
+#       grepl("P50ARMS", Site) ~ gsub("P50ARMS", "P50A", Site),
+#       grepl("RUNARMS", Site) ~ gsub("RUNARMS", "RUNA", Site),
+#       grepl("RODARMS", Site) ~ gsub("RODARMS", "RODA", Site),
+#       TRUE ~ Site
+#     )
+#   )
+# 
+# data_gps <- data_gps %>%
+#   mutate(
+#     site = case_when(
+#       grepl("RUNA", Site) ~ gsub("RUNA", "RUNARMS", Site),
+#       grepl("RODA", Site) ~ gsub("RODA", "RODARMS", Site),
+#       TRUE ~ Site
+#     )
+#   )
+# 
+# map_data <- left_join(tab, data_gps, by = "site")
+# 
+# map_data_runa <- map_data[grepl("RUNA", map_data$label),]
+# 
+# # Convert to sf object
+# map_data_runa_sf <- st_as_sf(map_data_runa, coords = c("Longitude", "Latitude"), crs = 4326)
+# st_crs(map_data_runa_sf) <- 4326
+# 
+# runa_map <- st_transform(runa_map, crs = 4326)
+# 
+# map_data_runa_sf <- st_transform(map_data_runa_sf, st_crs(runa_map))
+# st_crs(runa_map)
+# st_crs(map_data_runa_sf)
+# 
+# map_data_runa_sf <- map_data_runa_sf %>%
+#   mutate(Longitude = st_coordinates(.)[,1],
+#          Latitude = st_coordinates(.)[,2])
+# 
+# lcbd_all <- c(map_data$LCBD_all)
+# min_LCBD <- min(lcbd_all)
+# max_LCBD <- max(lcbd_all)
+# 
+# scale_lcbd <- scale_size_continuous(name = "LCBD", range = c(2, 10), limits = c(min_LCBD, max_LCBD))
+# 
+# #### Import the reef shapefiles ####
+# 
+# runa_reef <- st_read(runa_reef)
+# roda_reef <- st_read(roda_reef)
+# 
+# runa_reef <- st_transform(runa_reef, crs = 4326)
+# roda_reef <- st_transform(roda_reef, crs = 4326)
+# 
+# # #### RUNA map settings ####
+# # map_data_p50a <- map_data[grepl("P50A", map_data$Site),]
+# # map_data_p50a_sf <- st_as_sf(map_data_p50a, coords = c("Longitude", "Latitude"), crs = 4326)
+# # st_crs(map_data_p50a_sf) <- 4326
+# # map_data_p50a_sf <- st_transform(map_data_p50a_sf, st_crs(runa_map))
+# # st_crs(runa_map)
+# # st_crs(map_data_p50a_sf)
+# # map_data_p50a_sf <- map_data_p50a_sf %>%
+# #   mutate(Longitude = st_coordinates(.)[,1],
+# #          Latitude = st_coordinates(.)[,2])
+# # 
+# # #### RODA map settings ####
+# # map_data_roda <- map_data[grepl("RODA", map_data$Site),]
+# # map_data_roda_sf <- st_as_sf(map_data_roda, coords = c("Longitude", "Latitude"), crs = 4326)
+# # st_crs(roda_map)
+# # st_crs(map_data_roda_sf)
+# # map_data_roda_sf <- map_data_roda_sf %>%
+# #   mutate(Longitude = st_coordinates(.)[,1],
+# #          Latitude = st_coordinates(.)[,2])
+# 
+# 
+# # -- Créer l'objet sf principal --
+# map_data_sf <- st_as_sf(map_data, coords = c("Longitude", "Latitude"), crs = 4326)
+# map_data_sf <- st_transform(map_data_sf, st_crs(runa_map)) %>%
+#   mutate(Longitude = st_coordinates(.)[,1],
+#          Latitude = st_coordinates(.)[,2])
+# 
+# # -- Ajuster les coordonnées pour éviter les chevauchements --
+# map_data_sf <- map_data_sf %>%
+#   mutate(
+#     Latitude = case_when(
+#       site %in% c("RUNARMS2") ~ Latitude + 0.006,
+#       site %in% c("RUNARMS3") ~ Latitude - 0.006,
+#       site %in% c("RUNARMS4") ~ Latitude + 0.005,
+#       site %in% c("RUNARMS5") ~ Latitude - 0.005,
+#       site %in% c("RUNARMS6") ~ Latitude - 0.005,
+#       TRUE ~ Latitude
+#     )
+#   )
+# 
+# map_data_sf <- map_data_sf %>%
+#   mutate(
+#     Longitude = case_when(
+#       site %in% c("RUNARMS2") ~ Longitude - 0.005,
+#       site %in% c("RUNARMS3") ~ Longitude + 0.007,
+#       TRUE ~ Longitude
+#     )
+#   )
+# 
+# # -- Scales communes --
+# scale_r <- scale_size_continuous(
+#   name = "ISR", 
+#   range = c(1, 12),
+#   limits = c(min(map_data$R_all, na.rm = TRUE), max(map_data$R_all, na.rm = TRUE))
+# )
+# 
+# 
+# 
+# 
+# scale_lcbd <- scale_fill_gradientn(
+#   colours = rev(viridis::viridis(10)),
+#   name = "LCBD",
+#   limits = c(min(map_data$LCBD_all, na.rm = TRUE), max(map_data$LCBD_all, na.rm = TRUE)),
+#   guide = guide_colorbar(
+#     title.hjust = 0.5,
+#     barwidth = unit(4, "cm"),     # allonge la barre
+#     barheight = unit(0.4, "cm"),  # réduit l’épaisseur (utile pour une légende horizontale)
+#     label.theme = element_text(size = 8)  # taille des chiffres
+#   )
+# )
+# 
+# # Define common width and heights
+# map_width <- 0.45
+# map_height <- 0.45
+# 
+# # Center coordinates for each map
+# center_p50a <- c(x = mean(c(55.15, 55.6)), y = mean(c(-21.4, -21)))
+# center_roda <- c(x = mean(c(63.20, 63.58)), y = mean(c(-19.90, -19.58)))
+# # (Add RUNA similarly if needed)
+# 
+# # Create coordinate limits
+# p50a_xlim <- c(center_p50a['x'] - map_width / 2, center_p50a['x'] + map_width / 2)
+# p50a_ylim <- c(center_p50a['y'] - map_height / 2, center_p50a['y'] + map_height / 2)
+# 
+# roda_xlim <- c(center_roda['x'] - map_width / 2, center_roda['x'] + map_width / 2)
+# roda_ylim <- c(center_roda['y'] - map_height / 2, center_roda['y'] + map_height / 2)
+# 
+# # Then apply in each coord_sf:
+# coord_sf(xlim = p50a_xlim, ylim = p50a_ylim, expand = FALSE)
+# coord_sf(xlim = roda_xlim, ylim = roda_ylim, expand = FALSE)
+# 
+# # --- 9. Création des cartes ---
+# runa_sf <- map_data_sf[grepl("RUNARMS", map_data_sf$site),]
+# p50a_sf <- map_data_sf[grepl("P50ARMS", map_data_sf$site),]
+# roda_sf <- map_data_sf[grepl("RODARMS", map_data_sf$site),]
+# 
+# # -- Map the RUNA data --
+# map_data_runa_sf <- map_data_sf[grepl("RUNARMS", map_data_sf$site),]
+# 
+# 
+# uu <- ggplot() +
+#   geom_sf(data = runa_map, fill = "grey85", color = "black") +
+#   geom_sf(data = runa_reef, fill = "darkcyan", color = "darkcyan", alpha = 0.5) +
+#   geom_point(data = map_data_runa_sf,
+#              aes(x = Longitude, y = Latitude,size = R_all, fill = LCBD_all),
+#              shape = 21, stroke = 0.6) +
+#   geom_text_repel(
+#     data = map_data_runa_sf,
+#     aes(x = Longitude, y = Latitude, label = label),
+#     size = 4,
+#     fontface = "bold",
+#     color = "black",
+#     box.padding = 0.8,         # Distance entre point et étiquette (en "lines")
+#     max.overlaps = Inf,        # Ne jamais supprimer d’étiquettes
+#     force = 1.5,               # Force de répulsion
+#     segment.size = 0.2,        # Taille du segment
+#     segment.color = "grey30"   # Couleur du trait
+#   ) +
+#   # coord_sf(xlim = c(55.15, 55.6), ylim = c(-21.4, -21), expand = FALSE) +
+#   coord_sf(xlim = p50a_xlim, ylim = p50a_ylim, expand = FALSE) +
+#   theme_minimal() +
+#   labs(title = "RUNA") +
+#   scale_r + scale_lcbd +
+#   annotation_scale(location = "bl", width_hint = 0.25) +
+#   annotation_north_arrow(location = "tr", which_north = "true",
+#                          pad_x = unit(0.1, "in"), pad_y = unit(0.2, "in"),
+#                          style = north_arrow_fancy_orienteering)
+# 
+# 
+# zuzu <- (uu) +
+#   plot_layout(guides = "collect") &
+#   theme(legend.position = "bottom")
+# 
+# ggsave("outputs/Reunion_plot.pdf", plot = zuzu, width = 6, height = 5)

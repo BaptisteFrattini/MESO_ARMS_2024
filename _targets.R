@@ -18,6 +18,9 @@ list(
   
   ,tar_target(reef_roda, "data/raw-data/Map/roda_reef.shp", format = "file")
   
+  ,tar_target(map_world, "data/raw-data/Map/GSHHS_h_L1.shp", format = "file")
+  
+  
   # Temperature ####
   
   ,tar_target(temp_data_1A, "data/raw-data/Temperature/P50ARMS1A.csv", format = "file")
@@ -119,7 +122,8 @@ list(
                                        runa_map = map_runa,
                                        roda_map = map_roda,
                                        runa_reef = reef_runa,
-                                       roda_reef = reef_roda))
+                                       roda_reef = reef_roda, 
+                                       world_map = map_world))
   
   ,tar_target(mapping_alpha, fun_map_alpha(data_and_meta_clean_fullsites = clean_data_metadata_fullsites,
                                            gps_sites = data_gps_sites,

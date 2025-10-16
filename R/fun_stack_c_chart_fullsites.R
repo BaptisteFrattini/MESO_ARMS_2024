@@ -74,6 +74,21 @@ fun_stack_c_chart_fullsites <- function(data_and_meta_clean_fullsites){
   col[13] <- "#446455"
   
   names(col)<- colnames(data_pool)
+ 
+  # pcm_P50A <- subset(pcm, grepl("P50A", Var1))
+  # pcm_P50A <- pcm_P50A[order(pcm_P50A$Var1), ]
+  # 
+  # pcm_RODA <- subset(pcm, grepl("RODA", Var1))
+  # pcm_RODA <- pcm_RODA[order(pcm_RODA$Var1), ]
+  # 
+  # pcm_RUNA <- subset(pcm, grepl("RUNA", Var1))
+  # pcm_RUNA <- pcm_RUNA[order(pcm_RUNA$Var1), ]
+  # 
+  # pcm <- as.data.frame(rbind(pcm_RUNA, pcm_P50A, pcm_RODA))
+  
+  # Reorder Var1 alphabetically
+
+  
   
   library(ggplot2)
   mx <- ggplot(pcm, aes(x =Var1, fill =Var2, y = value)) + 
@@ -89,6 +104,12 @@ fun_stack_c_chart_fullsites <- function(data_and_meta_clean_fullsites){
   
   
   mx = mx + guides(fill = guide_legend(reverse = TRUE))
+  
+  # library(forcats)
+  # library(dplyr)
+  # pcm <- pcm %>%
+  #   mutate(Var1 = fct_relevel(Var1, sort(unique(as.character(Var1)))))
+  
   
   path_to_stack_c_chart <-  here::here("outputs/stack_c_chart_fullsites.pdf")
   ggsave(path_to_stack_c_chart, plot = mx, width = 8, height = 9.5)

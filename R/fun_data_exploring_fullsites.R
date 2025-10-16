@@ -156,6 +156,10 @@ fun_data_exploring_fullsites <- function(data_and_meta_clean_fullsites){
     all(1:4 %in% sampled_data$clust)
   }
   
+  # is_valid_sample <- function(sampled_data) {
+  #   length(unique(sampled_data$clust)) >= 3
+  # }
+  
   # Bootstrap alpha diversity function
   bootstrap_alpha_div <- function(data, metadata, num_bootstraps = 1000) {
     # Filter shallow metadata

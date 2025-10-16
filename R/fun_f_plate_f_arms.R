@@ -197,8 +197,8 @@ fun_f_plate_f_arms <- function(data_and_meta_clean_fullsites){
              label = formule_texte, hjust = 0, vjust = 1, size = 6, fontface = "italic") +
     labs(
       title = "",
-      x = "Occurrence frequency of MSPs in ARMS", 
-      y = "Occurrence frequency of MSPs in ARMS plate faces"
+      x = "Occurrence frequency of MSPs on ARMS", 
+      y = "Occurrence frequency of MSPs on ARMS plate faces"
     ) +
     theme_minimal() +
     theme(
