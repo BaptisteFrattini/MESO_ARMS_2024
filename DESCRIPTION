@@ -1,17 +1,17 @@
 Package: MESO_ARMS_2024
 Type: Package
-Title: The Title of the Project
-Version: 0.0.0.9000
+Title: ARMS photo-analysis RUNA P50A RODA
+Version: 0.0.0.0000
 Authors@R: c(
-    person(given   = "Baptiste",
-           family  = "Frattini",
+    person(given   = "X",
+           family  = "X",
            role    = c("aut", "cre", "cph"),
-           email   = "baptiste.frattini22@gmail.com",
+           email   = "X",
            comment = c(ORCID = "0000-0000-0000-0000")))
 Description: A paragraph providing a full description of the project (on 
     several lines...)
-URL: https://github.com/BaptisteFrattini/MESO_ARMS_2024
-BugReports: https://github.com/BaptisteFrattini/MESO_ARMS_2024/issues
+URL: X
+BugReports: X
 License: GPL-2
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

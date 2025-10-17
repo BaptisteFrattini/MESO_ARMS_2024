@@ -4,7 +4,7 @@
 #' A paragraph providing a full description of the project and describing each 
 #' step of the workflow.
 #' 
-#' @author Baptiste Frattini \email{baptiste.frattini22@gmail.com}
+#' @author 
 #' 
 #' @date 2024/01/23
 
