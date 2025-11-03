@@ -1,4 +1,5 @@
-#' occ freq of species in plates arms and sites
+#' occ freq of species in plates arms and sites Baptiste FRattini
+#' 
 #'
 #' @param data_and_meta_clean_fullsites the path to the clean data
 #' 
