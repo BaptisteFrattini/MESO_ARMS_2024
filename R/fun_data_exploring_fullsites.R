@@ -81,6 +81,8 @@ fun_data_exploring_fullsites <- function(data_and_meta_clean_fullsites){
   
   estimates_RODA <- subset(estimates$size_based, Assemblage == "RODA")
   
+  estimates_RODA$SD_qD <- (estimates_RODA$qD.UCL - estimates_RODA$qD.LCL) / (2 * 1.96)
+  
   richness_144 <- estimates_RODA[estimates_RODA$t == 141,]
   
   richness_144_RODA <- round(richness_144[1,5],0)

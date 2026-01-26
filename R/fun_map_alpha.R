@@ -42,6 +42,18 @@ fun_map_alpha <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, ro
   
   S <- vegan::specnumber(data_pa, groups = meta$triplicat)
   
+  S_arms <- vegan::specnumber(data_pa, groups = meta$arms)
+  
+  grepl(S_arms, 1, 5)
+  
+  df <- data.frame(S = S_arms, arms = names(S_arms))
+  df$campain = substr(df$arms, 1, 7)
+  
+  df$campain <- factor(df$campain)
+  
+  kruskal.test(S ~ campain, data = df)
+  
+  # Pas de difference significative de diversité alpha entre les campagnes 
   
   triplicat_name = "RODARMS3"
   

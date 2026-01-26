@@ -76,8 +76,6 @@ list(
   
 
   # ,tar_target(venn_diag, fun_venn_diag(data_and_meta_clean = clean_data_metadata))
-   
-  # ,tar_target(beta_decomp, fun_decomp_betadiv(data_and_meta_clean = clean_data_metadata))
   
   # ,tar_target(permanova_simper, fun_permanova(data_and_meta_clean = clean_data_metadata))
   
@@ -114,6 +112,12 @@ list(
   ,tar_target(data_exploring_fullsites, fun_data_exploring_fullsites(data_and_meta_clean_fullsites = clean_data_metadata_fullsites))
   
   ,tar_target(LCBD_fullsites, fun_LCBD_fullsites(data_and_meta_clean_fullsites = clean_data_metadata_fullsites))
+  
+  ,tar_target(beta_decomp, fun_decomp_betadiv_fullsites(data_and_meta_clean_fullsites = clean_data_metadata_fullsites))
+  
+  ,tar_target(RDA_temp_comm, fun_temp_comm_RDA(data_and_meta_clean_fullsites = clean_data_metadata_fullsites,
+                                               temp_extraction = temp_extraction,
+                                               temp_in_situ = temp_in_situ))
   
   ,tar_target(rarity_per_taxa_per_habitat_fullsites_bis, fun_rarity_per_taxa_per_habitat_fullsites_bis(data_and_meta_clean_fullsites = clean_data_metadata_fullsites))
   

@@ -31,6 +31,17 @@ fun_permanova_fullsites <- function(data_and_meta_clean_fullsites){
     all(1:4 %in% sampled_data$clust)
   }
   
+  class(data_mean_RUN)
+  class(meta_mean_RUN)
+  
+  simper_bray <- vegan::simper(data_mean_RUN, meta_mean_RUN$Depth, distance = "bray")
+  summary(simper_bray)
+  simper_df <- as.data.frame(simper_bray$Deep_Shallow)
+  simper_df <- subset(simper_df, simper_df$cusum < 0.75)
+  Shallow_spe <- simper_df[simper_df$avb > simper_df$ava, ]
+  Deep_spe <- simper_df[simper_df$ava > simper_df$avb, ]
+  
+  
   
   bootstrap_permanova_jacc <- function(data, metadata, num_bootstraps = 1000) {
     # Identify indices of shallow and deep samples

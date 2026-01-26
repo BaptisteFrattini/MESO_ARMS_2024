@@ -42,5 +42,8 @@ Imports:
     iNEXT,
     hrbrthemes,
     adespatial,
-    dplyr
+    dplyr,
+    lubridate,
+    ade4,
+    ggspatial
     

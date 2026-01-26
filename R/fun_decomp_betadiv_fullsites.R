@@ -6,7 +6,7 @@
 #' @return the path to...
 #' @export
 #'
-fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
+fun_decomp_betadiv_fullsites <- function(data_and_meta_clean_fullsites){
   # data_and_meta_clean_fullsites = targets::tar_read("clean_data_metadata_fullsites") 
   library(betapart)
   library(reshape2)
@@ -34,7 +34,7 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
   
   #### bray ####
   
-  df.bray <- melt(as.matrix(mat.bray), varnames = c("row", "col"))
+  df.bray <- reshape2::melt(as.matrix(mat.bray), varnames = c("row", "col"))
   df.bray <- subset(df.bray, row != col)
   
   # Convert factors to characters
@@ -52,6 +52,10 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
   
   merged_df <- merge(df.bray, meta_mean, by.x = c("row"), by.y = c("arms"))
   merged_df2 <- merge(merged_df, meta_mean, by.x = c("col"), by.y = c("arms"))
+  
+  df.bray.U <- subset(merged_df2, triplicat.x == triplicat.y & row != col)
+  U = data.frame(value = df.bray.U$value, 
+                 comp = rep("U", nrow(df.bray.U)))
   
   df.bray.V <- subset(merged_df2,  campain.x == "RODARMS" & campain.y == "RODARMS")
   df.bray.V$comparisons <- ifelse(df.bray.V$site.x == df.bray.V$site.y, "Same_site", "Different_site")
@@ -92,10 +96,11 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
   X = data.frame(value = df.bray.X$value, 
                  comp = rep("X", nrow(df.bray.X)))
   
-  df <- rbind(Y,X,V,Z,W)
+  df <- rbind(Y,X,V,Z,W,U)
   
   
   my_comparisons <- list( c("V", "W"), c("V", "X"), c("V", "Y"), c("V","Z"), c("W","X"), c("W", "Y"), c("W","Z"), c("X","Y"), c("X","Z"), c("Y","Z"))
+  my_comparisons <- combn(LETTERS[which(LETTERS == "U"):which(LETTERS == "Z")], 2, simplify = FALSE)
   
   
   # ANOVA
@@ -115,13 +120,24 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
   
   bartlett.test(residus ~ comp, data = df)
   
+  df_summary_bray <- df %>%
+    group_by(comp) %>%
+    summarise(
+      mean_value = mean(value, na.rm = TRUE),
+      sd_value = sd(value, na.rm = TRUE),
+      n = n()  # nombre d'observations par groupe
+    )
+  
+  df_summary_bray
+  
+  
   q1 <- ggboxplot(df, 
                   x = "comp", 
                   y = "value",
                   add = "jitter", 
                   short.panel.labs = FALSE,
                   color = "comp",
-                  palette = c("aquamarine3", "blue3", "orange",  "black", "darkgreen"),
+                  palette = c("aquamarine3", "blue3", "orange",  "black", "darkgreen", "red"),
                   ylab = "Bray-Curtis") + 
     stat_compare_means(comparisons = my_comparisons, method = "wilcox.test", label = "p.signif") + 
     stat_compare_means(label.y = 1, method = "kruskal.test") + theme_classic()          
@@ -131,6 +147,22 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
   
   # Calcul des comparaisons post-hoc avec t.test
   comp_results <- compare_means(value ~ comp, data = df, method = "wilcox.test", p.adjust.method = "bonferroni")
+  comp_results_bray <- as.data.frame(comp_results)
+  
+  # vecteur de correspondance
+  label_map <- c(
+    "V" = "Between ARMS from RODA (shallow)",
+    "W" = "Between ARMS of RUNA and RODA (shallow)",
+    "X" = "Between ARMS from P50A (mesophotic)",
+    "Y" = "Between ARMS from RUNA (shallow)",
+    "Z" = "Between ARMS of RUNA and P50A (within localities)",
+    "U" = "Between ARMS of the same triplicate")
+  
+  # ajout des colonnes
+  comp_results_bray$group1.bis <- label_map[comp_results_bray$group1]
+  comp_results_bray$group2.bis <- label_map[comp_results_bray$group2]
+  
+  write.csv2(comp_results_bray, file = "outputs/comp_wilcox_bray.csv", row.names = TRUE)
   
   # Extraction des p-values ajustées
   pvals <- comp_results$p.adj
@@ -150,11 +182,11 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
                      add = "jitter", 
                      short.panel.labs = FALSE,
                      color = "comp",
-                     palette = c("aquamarine3", "blue3", "orange",  "black", "darkgreen"),
+                     palette = c("aquamarine3", "blue3", "orange",  "black", "darkgreen", "red"),
                      ylab = "Bray-Curtis") +  # Change x-axis label 
     scale_x_discrete(name = NULL, labels = NULL)+
     theme(legend.position = "none")+
-    ylim(0, 0.9) +
+    ylim(0, 1) +
     stat_summary(fun = mean, 
                  geom = "point", 
                  shape = 23,   # Diamond shape
@@ -168,7 +200,7 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
   
   ### turn ####
   
-  df.turn <- melt(as.matrix(mat.turn), varnames = c("row", "col"))
+  df.turn <- reshape2::melt(as.matrix(mat.turn), varnames = c("row", "col"))
   df.turn <- subset(df.turn, row != col)
   
   # Convert factors to characters
@@ -186,6 +218,10 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
   
   merged_df <- merge(df.turn, meta_mean, by.x = c("row"), by.y = c("arms"))
   merged_df2 <- merge(merged_df, meta_mean, by.x = c("col"), by.y = c("arms"))
+  
+  df.turn.U <- subset(merged_df2, triplicat.x == triplicat.y & row != col)
+  U = data.frame(value = df.turn.U$value, 
+                 comp = rep("U", nrow(df.turn.U)))
   
   df.turn.V <- subset(merged_df2,  campain.x == "RODARMS" & campain.y == "RODARMS")
   df.turn.V$comparisons <- ifelse(df.turn.V$site.x == df.turn.V$site.y, "Same_site", "Different_site")
@@ -226,10 +262,10 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
   X = data.frame(value = df.turn.X$value, 
                  comp = rep("X", nrow(df.turn.X)))
   
-  df <- rbind(Y,X,V,Z,W)
+  df <- rbind(Y,X,V,Z,W, U)
   
   my_comparisons <- list( c("V", "W"), c("V", "X"), c("V", "Y"), c("V","Z"), c("W","X"), c("W", "Y"), c("W","Z"), c("X","Y"), c("X","Z"), c("Y","Z"))
-  
+  my_comparisons <- combn(LETTERS[which(LETTERS == "U"):which(LETTERS == "Z")], 2, simplify = FALSE)
   
   library(ggplot2)
   
@@ -239,7 +275,7 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
                   add = "jitter", 
                   short.panel.labs = FALSE,
                   color = "comp",
-                  palette = c("aquamarine3", "blue3", "orange",  "black", "darkgreen"),
+                  palette = c("aquamarine3", "blue3", "orange",  "black", "darkgreen", "red"),
                   ylab = "Turnover") + 
     stat_compare_means(comparisons = my_comparisons, method = "wilcox.test", label = "p.signif") + 
     stat_compare_means(label.y = 1, method = "kruskal.test") + theme_classic()          
@@ -247,8 +283,34 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
   
   r1 
   
+  df_summary_turn <- df %>%
+    group_by(comp) %>%
+    summarise(
+      mean_value = mean(value, na.rm = TRUE),
+      sd_value = sd(value, na.rm = TRUE),
+      n = n()  # nombre d'observations par groupe
+    )
+  
+  df_summary_turn
+  
   # Calcul des comparaisons post-hoc avec t.test
   comp_results <- compare_means(value ~ comp, data = df, method = "wilcox.test", p.adjust.method = "bonferroni")
+  comp_results_turn <- as.data.frame(comp_results)
+  
+  # vecteur de correspondance
+  label_map <- c(
+    "V" = "Between ARMS from RODA (shallow)",
+    "W" = "Between ARMS of RUNA and RODA (shallow)",
+    "X" = "Between ARMS from P50A (mesophotic)",
+    "Y" = "Between ARMS from RUNA (shallow)",
+    "Z" = "Between ARMS of RUNA and P50A (within localities)",
+    "U" = "Between ARMS of the same triplicate")
+  
+  # ajout des colonnes
+  comp_results_turn$group1.bis <- label_map[comp_results_turn$group1]
+  comp_results_turn$group2.bis <- label_map[comp_results_turn$group2]
+  
+  write.csv2(comp_results_turn, file = "outputs/comp_wilcox_turn.csv", row.names = TRUE)
   
   # Extraction des p-values ajustées
   pvals <- comp_results$p.adj
@@ -266,7 +328,8 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
                   "W" = paste0("Between ARMS of RUNA \n and RODA (shallow) ; N = ", nrow(W)),
                   "X" = paste0("Between ARMS from \n P50A (mesophotic) ; N = ", nrow(X)),
                   "Y" = paste0("Between ARMS from \n RUNA (shallow) ; N = ", nrow(Y)), 
-                  "Z" = paste0("Between ARMS of RUNA \n and P50A (within localities) ; N = ", nrow(Z)))
+                  "Z" = paste0("Between ARMS of RUNA \n and P50A (within localities) ; N = ", nrow(Z)),
+                  "U" = paste0("Between ARMS of \n the same triplicate ; N = ", nrow(U)))
   
 
   levels(df$comp)
@@ -277,11 +340,11 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
                      add = "jitter", 
                      short.panel.labs = FALSE,
                      color = "comp",
-                     palette =c("aquamarine3", "blue3", "orange",  "black", "darkgreen"),
+                     palette = c("aquamarine3", "blue3", "orange",  "black", "darkgreen", "red"),
                      ylab = "Turnover") + 
     scale_x_discrete(name = "Comparisons", labels = new_labels) +
     theme(axis.text.x = element_text(size = 12, angle = 45, hjust = 1), legend.position = "none")+
-    ylim(0, 0.9) +
+    ylim(0, 1) +
     stat_summary(fun = mean, 
                  geom = "point", 
                  shape = 23,   # Diamond shape
@@ -298,11 +361,11 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
                        add = "jitter", 
                        short.panel.labs = FALSE,
                        color = "comp",
-                       palette = c("aquamarine3", "blue3", "orange",  "black", "darkgreen"),
+                       palette = c("aquamarine3", "blue3", "orange",  "black", "darkgreen", "red"),
                        ylab = "Turnover") + 
     scale_x_discrete(name = NULL, labels = NULL) +
     theme(legend.position = "none")+
-    ylim(0, 0.9) +
+    ylim(0, 1) +
     stat_summary(fun = mean, 
                  geom = "point", 
                  shape = 23,   # Diamond shape
@@ -315,7 +378,7 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
                                  color = "black", vjust = 0)
   
   ### jacc ####
-  df.jacc <- melt(as.matrix(mat.jacc), varnames = c("row", "col"))
+  df.jacc <- reshape2::melt(as.matrix(mat.jacc), varnames = c("row", "col"))
   df.jacc <- subset(df.jacc, row != col)
   
   # Convert factors to characters
@@ -333,6 +396,10 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
   
   merged_df <- merge(df.jacc, meta_mean, by.x = c("row"), by.y = c("arms"))
   merged_df2 <- merge(merged_df, meta_mean, by.x = c("col"), by.y = c("arms"))
+  
+  df.jacc.U <- subset(merged_df2, triplicat.x == triplicat.y & row != col)
+  U = data.frame(value = df.jacc.U$value, 
+                 comp = rep("U", nrow(df.jacc.U)))
   
   df.jacc.V <- subset(merged_df2,  campain.x == "RODARMS" & campain.y == "RODARMS")
   df.jacc.V$comparisons <- ifelse(df.jacc.V$site.x == df.jacc.V$site.y, "Same_site", "Different_site")
@@ -373,17 +440,19 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
   X = data.frame(value = df.jacc.X$value, 
                  comp = rep("X", nrow(df.jacc.X)))
   
-  df <- rbind(Y,X,V,Z,W)
+  df <- rbind(Y,X,V,Z,W,U)
   
   
   my_comparisons <- list( c("V", "W"), c("V", "X"), c("V", "Y"), c("V","Z"), c("W","X"), c("W", "Y"), c("W","Z"), c("X","Y"), c("X","Z"), c("Y","Z"))
-  library(ggplot2)
+  my_comparisons <- combn(LETTERS[which(LETTERS == "U"):which(LETTERS == "Z")], 2, simplify = FALSE)
+  
+  
   s1 <- ggboxplot(df, x = "comp", 
                   y = "value",
                   add = "jitter", 
                   short.panel.labs = FALSE,
                   color = "comp",
-                  palette = c("aquamarine3", "blue3", "orange",  "black", "darkgreen"),
+                  palette = c("aquamarine3", "blue3", "orange",  "black", "darkgreen", "red"),
                   ylab = "jaccard") + 
     stat_compare_means(comparisons = my_comparisons, method = "wilcox.test", label = "p.signif") + 
     stat_compare_means(label.y = 1, method = "kruskal.test") + theme_classic()          
@@ -391,8 +460,35 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
   
   s1 
   
+  df_summary_jacc <- df %>%
+    group_by(comp) %>%
+    summarise(
+      mean_value = mean(value, na.rm = TRUE),
+      sd_value = sd(value, na.rm = TRUE),
+      n = n()  # nombre d'observations par groupe
+    )
+  
+  df_summary_jacc
+  
   # Calcul des comparaisons post-hoc avec t.test
   comp_results <- compare_means(value ~ comp, data = df, method = "wilcox.test", p.adjust.method = "bonferroni")
+  
+  comp_results_jacc <- as.data.frame(comp_results)
+  
+  # vecteur de correspondance
+  label_map <- c(
+    "V" = "Between ARMS from RODA (shallow)",
+    "W" = "Between ARMS of RUNA and RODA (shallow)",
+    "X" = "Between ARMS from P50A (mesophotic)",
+    "Y" = "Between ARMS from RUNA (shallow)",
+    "Z" = "Between ARMS of RUNA and P50A (within localities)",
+    "U" = "Between ARMS of the same triplicate")
+  
+  # ajout des colonnes
+  comp_results_jacc$group1.bis <- label_map[comp_results_jacc$group1]
+  comp_results_jacc$group2.bis <- label_map[comp_results_jacc$group2]
+  
+  write.csv2(comp_results_jacc, file = "outputs/comp_wilcox_jacc.csv", row.names = TRUE)
   
   # Extraction des p-values ajustées
   pvals <- comp_results$p.adj
@@ -411,11 +507,11 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
                      add = "jitter", 
                      short.panel.labs = FALSE,
                      color = "comp",
-                     palette = c("aquamarine3", "blue3", "orange",  "black", "darkgreen"),
+                     palette = c("aquamarine3", "blue3", "orange",  "black", "darkgreen", "red"),
                      ylab = "Jaccard") +  # Change x-axis label 
     scale_x_discrete(name = NULL, labels = NULL) +
     theme(legend.position = "none")+
-    ylim(0, 0.9)  +
+    ylim(0, 1)  +
     stat_summary(fun = mean, 
                  geom = "point", 
                  shape = 23,   # Diamond shape
@@ -427,7 +523,7 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
                              color = "black", vjust = 0)
   
   ### nest ####
-  df.nest <- melt(as.matrix(mat.nest), varnames = c("row", "col"))
+  df.nest <- reshape2::melt(as.matrix(mat.nest), varnames = c("row", "col"))
   df.nest <- subset(df.nest, row != col)
   
   # Convert factors to characters
@@ -445,6 +541,10 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
   
   merged_df <- merge(df.nest, meta_mean, by.x = c("row"), by.y = c("arms"))
   merged_df2 <- merge(merged_df, meta_mean, by.x = c("col"), by.y = c("arms"))
+  
+  df.nest.U <- subset(merged_df2, triplicat.x == triplicat.y & row != col)
+  U = data.frame(value = df.nest.U$value, 
+                 comp = rep("U", nrow(df.nest.U)))
   
   df.nest.V <- subset(merged_df2,  campain.x == "RODARMS" & campain.y == "RODARMS")
   df.nest.V$comparisons <- ifelse(df.nest.V$site.x == df.nest.V$site.y, "Same_site", "Different_site")
@@ -485,26 +585,27 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
   X = data.frame(value = df.nest.X$value, 
                  comp = rep("X", nrow(df.nest.X)))
   
-  df <- rbind(Y,X,V,Z,W)
+  df <- rbind(Y,X,V,Z,W,U)
   
   new_labels <- c("V" = paste0("Between ARMS from \n RODA (shallow) ; N = ", nrow(V)),
                   "W" = paste0("Between ARMS of RUNA \n and RODA (shallow) ; N = ", nrow(W)),
                   "X" = paste0("Between ARMS from \n P50A (mesophotic) ; N = ", nrow(X)),
                   "Y" = paste0("Between ARMS from \n RUNA (shallow) ; N = ", nrow(Y)), 
-                  "Z" = paste0("Between ARMS of RUNA \n and P50A (within localities) ; N = ", nrow(Z)))
+                  "Z" = paste0("Between ARMS of RUNA \n and P50A (within localities) ; N = ", nrow(Z)),
+                  "U" = paste0("Between ARMS of \n the same triplicate ; N = ", nrow(U)))
   
   
   my_comparisons <- list( c("V", "W"), c("V", "X"), c("V", "Y"), c("V","Z"), c("W","X"), c("W", "Y"), c("W","Z"), c("X","Y"), c("X","Z"), c("Y","Z"))
-  library(ggplot2)
+  my_comparisons <- combn(LETTERS[which(LETTERS == "U"):which(LETTERS == "Z")], 2, simplify = FALSE)
   
-  df$comp <- factor(df$comp, levels = c("X", "Y", "Z", "W", "V"))
+  df$comp <- factor(df$comp, levels = c("X", "Y", "Z", "W", "V", "U"))
   
   t1 <- ggboxplot(df, x = "comp", 
                   y = "value",
                   add = "jitter", 
                   short.panel.labs = FALSE,
                   color = "comp",
-                  palette = c("aquamarine3", "blue3", "orange",  "black", "darkgreen"),
+                  palette = c("aquamarine3", "blue3", "orange",  "black", "darkgreen","red"),
                   ylab = "Nestedness") + 
     stat_compare_means(comparisons = my_comparisons, method = "wilcox.test", label = "p.signif") + 
     stat_compare_means(label.y = 1, method = "kruskal.test") + theme_classic()          
@@ -512,8 +613,40 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
   
   t1 
   
+  df_summary_nest <- df %>%
+    group_by(comp) %>%
+    summarise(
+      mean_value = mean(value, na.rm = TRUE),
+      sd_value = sd(value, na.rm = TRUE),
+      n = n()  # nombre d'observations par groupe
+    )
+  
+  df_summary_nest
+  
+  df_summary_bray
+  df_summary_jacc
+  df_summary_turn
+  df_summary_nest
   # Calcul des comparaisons post-hoc avec t.test
   comp_results <- compare_means(value ~ comp, data = df, method = "wilcox.test", p.adjust.method = "bonferroni")
+  
+  comp_results_nest <- as.data.frame(comp_results)
+  
+  # vecteur de correspondance
+  label_map <- c(
+    "V" = "Between ARMS from RODA (shallow)",
+    "W" = "Between ARMS of RUNA and RODA (shallow)",
+    "X" = "Between ARMS from P50A (mesophotic)",
+    "Y" = "Between ARMS from RUNA (shallow)",
+    "Z" = "Between ARMS of RUNA and P50A (within localities)",
+    "U" = "Between ARMS of the same triplicate")
+  
+  # ajout des colonnes
+  comp_results_nest$group1.bis <- label_map[comp_results_nest$group1]
+  comp_results_nest$group2.bis <- label_map[comp_results_nest$group2]
+  
+  write.csv2(comp_results_nest, file = "outputs/comp_wilcox_nest.csv", row.names = TRUE)
+  
   
   # Extraction des p-values ajustées
   pvals <- comp_results$p.adj
@@ -532,11 +665,11 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
                      add = "jitter", 
                      short.panel.labs = FALSE,
                      color = "comp",
-                     palette = c("aquamarine3", "blue3", "orange",  "black", "darkgreen"),
+                     palette = c("aquamarine3", "blue3", "orange",  "black", "darkgreen","red"),
                      ylab = "Nestedness") + 
     scale_x_discrete(name = "Comparisons", labels = new_labels) +
     theme(axis.text.x = element_text(size = 12, angle = 45, hjust = 1), legend.position = "none")+
-    ylim(0, 0.9) +
+    ylim(0, 1) +
     stat_summary(fun = mean, 
                  geom = "point", 
                  shape = 23,   # Diamond shape
@@ -554,11 +687,11 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
                        add = "jitter", 
                        short.panel.labs = FALSE,
                        color = "comp",
-                       palette = c("aquamarine3", "blue3", "orange",  "black", "darkgreen"),
+                       palette = c("aquamarine3", "blue3", "orange",  "black", "darkgreen","red"),
                        ylab = "Nestedness") + 
     scale_x_discrete(name = NULL, labels = NULL) +
     theme(legend.position = "none") +
-    ylim(0, 0.9) +
+    ylim(0, 1) +
     stat_summary(fun = mean, 
                  geom = "point", 
                  shape = 23,   # Diamond shape
@@ -593,10 +726,10 @@ fun_decomp_betadiv_fullsites <- function(data_and_meta_clean){
   fin_2 <- ggdraw(fig2) +
     theme(plot.margin = margin(t = 1, r = 3, b = 1, l = 3, unit = "cm"))
   
-  path_to_boxplot_betadiv_XYZ_bis_2 <- paste0("outputs/boxplot_beta_decomp_XYZ_bis_2_fullsites.pdf")
+  path_to_boxplot_betadiv_XYZ_bis_2 <- paste0("outputs/boxplot_beta_decomp_XYZ_bis_2_fullsites_2026.pdf")
   ggsave(filename =  path_to_boxplot_betadiv_XYZ_bis_2, plot = fin_1, width = 10, height = 9)
   
-  path_to_boxplot_betadiv_XYZ_bis <- paste0("outputs/boxplot_beta_decomp_XYZ_bis_fullsites.pdf")
+  path_to_boxplot_betadiv_XYZ_bis <- paste0("outputs/boxplot_beta_decomp_XYZ_bis_fullsites_2026.pdf")
   ggsave(filename =  path_to_boxplot_betadiv_XYZ_bis, plot = fin_2, width = 10, height = 9)
   
   return(path_to_boxplot_betadiv_XYZ_bis_2)

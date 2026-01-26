@@ -25,6 +25,7 @@ fun_temperature_comparison <- function(temp_extraction, temp_in_situ){
   
   combined_data <- left_join(data_copernicus, data_in_situ_shallow, by = "date", relationship = "many-to-many",  suffix = c(".coperni", ".insit"))
   data_copernicus$date <- as.Date(data_copernicus$date)
+  
   p1_shallow <- ggplot(data_copernicus, aes(x = date)) +
     geom_line(aes(y = RUNA1, col = "RUNA1"), linewidth = 1.1) +
     geom_line(aes(y = RUNA5, col = "RUNA5"), linewidth = 1.1) +
@@ -516,7 +517,7 @@ df_clean <- combined_data_roda %>%
 
 # Mise en format long
 df_long <- df_clean %>%
-  pivot_longer(
+  tidyr::pivot_longer(
     cols = c(RUNA1, RUNA5, RUNA9, T_1A, T_2A, T_3A, RODA1, RODA2, RODA3),
     names_to = "site",
     values_to = "temp"
@@ -530,6 +531,7 @@ amplitudes_annuelles <- df_long %>%
   )
 
 amplitudes_annuelles
+
 
   
   return(NULL) 
