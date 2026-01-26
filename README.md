@@ -38,12 +38,6 @@ Running the complete targets network reproduces all results and outputs used in 
 To run the full pipeline:
 
 ```r
-source("make.R")
-```
-
-or equivalently:
-
-```r
 targets::tar_make()
 ```
 
