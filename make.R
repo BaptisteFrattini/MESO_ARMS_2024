@@ -34,6 +34,8 @@ renv::snapshot()
 targets::tar_make()
 targets::tar_visnetwork()
 
+## To re-build the outputs, need to create the  file at the 
+## "Cartes - LCBD" and "Venn" files at the root of the project
 
 ## Global Variables ----
 
