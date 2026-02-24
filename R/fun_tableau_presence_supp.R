@@ -22,6 +22,8 @@ fun_tableau_presence <- function(data_and_meta_clean_fullsites){
   data <- read.csv(data_and_meta_clean_fullsites["path_data_mean"], row.names = 1)
   meta <- read.csv(data_and_meta_clean_fullsites["path_meta_mean"], row.names = 1)
   
+  data <- data[, colSums(data) != 0]
+  
   msp_list <- names(data) 
   msp_list_filter <- msp_list[!msp_list %in% c("Bivalvia",
                                                "Calcareous_worm_tubes",
@@ -41,6 +43,8 @@ fun_tableau_presence <- function(data_and_meta_clean_fullsites){
                                                "Erect_Chlorophyta_algae",
                                                "Erect_Rhodophyta_algae",
                                                "Cni_Plumulariidae")]
+  
+
   
   
   data <- data[, msp_list_filter]
@@ -70,6 +74,8 @@ fun_tableau_presence <- function(data_and_meta_clean_fullsites){
   data$arms <- rownames(data)
   data_joined <- data %>%
     left_join(meta, by = "arms")
+  
+
   
   # 2. Convertir en format long
   data_long <- data_joined %>%

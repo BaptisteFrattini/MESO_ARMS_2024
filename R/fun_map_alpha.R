@@ -99,7 +99,7 @@ fun_map_alpha <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, ro
   
   S["RODARMS3"] <- S_RODA3
   
-
+  kruskal.test(S ~ campain, data = df)
   
   #specpool# Mapping the indices ####
   data_gps <- read.csv(gps_sites, sep = ";", dec = ",", header = TRUE)

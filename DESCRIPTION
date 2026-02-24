@@ -33,6 +33,7 @@ Imports:
     plotly,
     ggfortify,
     factoextra,
+    plot3D,
     BiodiversityR,
     quarto,
     igraph,
@@ -45,5 +46,7 @@ Imports:
     dplyr,
     lubridate,
     ade4,
-    ggspatial
+    taxize,
+    ggspatial,
+    worrms
     

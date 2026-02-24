@@ -10,7 +10,6 @@ fun_data_exploring_fullsites <- function(data_and_meta_clean_fullsites){
   # data_and_meta_clean_fullsites = targets::tar_read("clean_data_metadata_fullsites") 
   data <- read.csv(data_and_meta_clean_fullsites["path_data"], row.names = 1)
   meta <- read.csv(data_and_meta_clean_fullsites["path_meta"], row.names = 1)
-
   
   library(iNEXT)
   library(ggpubr)
@@ -302,6 +301,8 @@ fun_data_exploring_fullsites <- function(data_and_meta_clean_fullsites){
   
   s = specnumber(data, groups = meta$triplicat)
   barplot(s)
+  
+  data
   
   return(NULL)
 }
