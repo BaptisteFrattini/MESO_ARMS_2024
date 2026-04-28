@@ -433,7 +433,7 @@ fun_temp_comm_RDA <- function(temp_extraction, temp_in_situ, data_and_meta_clean
   res <- anova(dbrda3,by="terms", permu=500)
   as.data.frame(res)
   
-  return(res)
+  return(NULL)
   
   }
   

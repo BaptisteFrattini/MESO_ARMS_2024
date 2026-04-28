@@ -8,7 +8,64 @@
       }
     ]
   },
+  "Bioconductor": {
+    "Version": "3.22"
+  },
   "Packages": {
+    "BiocManager": {
+      "Package": "BiocManager",
+      "Version": "1.30.27",
+      "Source": "Repository",
+      "Title": "Access the Bioconductor Project Package Repository",
+      "Description": "A convenient tool to install and update Bioconductor packages.",
+      "Authors@R": "c( person(\"Martin\", \"Morgan\", email = \"martin.morgan@roswellpark.org\", role = \"aut\", comment = c(ORCID = \"0000-0002-5874-8148\")), person(\"Marcel\", \"Ramos\", email = \"marcel.ramos@sph.cuny.edu\", role = c(\"aut\", \"cre\"), comment = c(ORCID = \"0000-0002-3242-0582\")))",
+      "Imports": [
+        "utils"
+      ],
+      "Suggests": [
+        "BiocVersion",
+        "BiocStyle",
+        "remotes",
+        "rmarkdown",
+        "testthat",
+        "withr",
+        "curl",
+        "knitr"
+      ],
+      "URL": "https://bioconductor.github.io/BiocManager/",
+      "BugReports": "https://github.com/Bioconductor/BiocManager/issues",
+      "VignetteBuilder": "knitr",
+      "License": "Artistic-2.0",
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.3.2",
+      "NeedsCompilation": "no",
+      "Author": "Martin Morgan [aut] (ORCID: <https://orcid.org/0000-0002-5874-8148>), Marcel Ramos [aut, cre] (ORCID: <https://orcid.org/0000-0002-3242-0582>)",
+      "Maintainer": "Marcel Ramos <marcel.ramos@sph.cuny.edu>",
+      "Repository": "https://packagemanager.posit.co/cran/latest"
+    },
+    "BiocVersion": {
+      "Package": "BiocVersion",
+      "Version": "3.22.0",
+      "Source": "Bioconductor",
+      "Title": "Set the appropriate version of Bioconductor packages",
+      "Description": "This package provides repository information for the appropriate version of Bioconductor.",
+      "Authors@R": "c( person(\"Martin\", \"Morgan\", email = \"martin.morgan@roswellpark.org\", role = \"aut\"), person(\"Marcel\", \"Ramos\", email = \"marcel.ramos@sph.cuny.edu\", role = \"ctb\"), person(\"Bioconductor\", \"Package Maintainer\", email  = \"maintainer@bioconductor.org\", role = c(\"ctb\", \"cre\")))",
+      "biocViews": "Infrastructure",
+      "Depends": [
+        "R (>= 4.5.0)"
+      ],
+      "License": "Artistic-2.0",
+      "Encoding": "UTF-8",
+      "RoxygenNote": "6.0.1",
+      "git_url": "https://git.bioconductor.org/packages/BiocVersion",
+      "git_branch": "devel",
+      "git_last_commit": "fea53ac",
+      "git_last_commit_date": "2025-04-15",
+      "Repository": "Bioconductor 3.22",
+      "NeedsCompilation": "no",
+      "Author": "Martin Morgan [aut], Marcel Ramos [ctb], Bioconductor Package Maintainer [ctb, cre]",
+      "Maintainer": "Bioconductor Package Maintainer <maintainer@bioconductor.org>"
+    },
     "BiodiversityR": {
       "Package": "BiodiversityR",
       "Version": "2.17-4",
@@ -1021,6 +1078,36 @@
       "Author": "Jeroen Ooms [aut, cre] (ORCID: <https://orcid.org/0000-0002-4035-0289>), George Stagg [ctb] (ORCID: <https://orcid.org/0009-0006-3173-9846>), Jan Marvin Garbuszus [ctb]",
       "Maintainer": "Jeroen Ooms <jeroenooms@gmail.com>",
       "Repository": "CRAN"
+    },
+    "WikipediR": {
+      "Package": "WikipediR",
+      "Version": "1.7.1",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "A MediaWiki API Wrapper",
+      "Date": "2024-04-05",
+      "Author": "Os Keyes [aut, cre], Brock Tilbert [ctb], Clemens Schmid [aut]",
+      "Maintainer": "Os Keyes <ironholds@gmail.com>",
+      "Description": "A wrapper for the MediaWiki API, aimed particularly at the Wikimedia 'production' wikis, such as Wikipedia. It can be used to retrieve page text, information about users or the history of pages, and elements of the category tree.",
+      "License": "MIT + file LICENSE",
+      "Imports": [
+        "httr",
+        "jsonlite",
+        "magrittr"
+      ],
+      "Suggests": [
+        "testthat",
+        "knitr",
+        "WikidataR",
+        "pageviews"
+      ],
+      "BugReports": "https://github.com/Ironholds/WikipediR/issues",
+      "URL": "https://github.com/Ironholds/WikipediR/",
+      "VignetteBuilder": "knitr",
+      "RoxygenNote": "7.3.1",
+      "Encoding": "UTF-8",
+      "NeedsCompilation": "no",
+      "Repository": "https://packagemanager.posit.co/cran/latest"
     },
     "XML": {
       "Package": "XML",
@@ -6452,6 +6539,35 @@
       "Repository": "CRAN",
       "Author": "Douglas Bates [aut], Katharine M. Mullen [aut, cre], John C. Nash [aut], Ravi Varadhan [aut]"
     },
+    "misc3d": {
+      "Package": "misc3d",
+      "Version": "0.9-2",
+      "Source": "Repository",
+      "Title": "Miscellaneous 3D Plots",
+      "Authors@R": "c(person(\"Luke\", \"Tierney\", role = c(\"aut\", \"cre\"), email = \"luke-tierney@uiowa.edu\"), person(\"Dai\", \"Feng\", role=\"aut\"))",
+      "Suggests": [
+        "rgl",
+        "tkrplot",
+        "MASS",
+        "maps",
+        "lattice",
+        "scatterplot3d"
+      ],
+      "Imports": [
+        "grDevices",
+        "graphics",
+        "stats",
+        "tcltk"
+      ],
+      "Description": "A collection of miscellaneous 3d plots, including isosurfaces.",
+      "URL": "https://gitlab.com/luke-tierney/misc3d",
+      "License": "GPL",
+      "NeedsCompilation": "no",
+      "Author": "Luke Tierney [aut, cre], Dai Feng [aut]",
+      "Maintainer": "Luke Tierney <luke-tierney@uiowa.edu>",
+      "Repository": "https://packagemanager.posit.co/cran/latest",
+      "Encoding": "UTF-8"
+    },
     "mitools": {
       "Package": "mitools",
       "Version": "2.4",
@@ -6559,6 +6675,42 @@
       "Author": "Alan Genz [aut], Frank Bretz [aut], Tetsuhisa Miwa [aut], Xuefei Mi [aut], Friedrich Leisch [ctb], Fabian Scheipl [ctb], Bjoern Bornkamp [ctb] (<https://orcid.org/0000-0002-6294-8185>), Martin Maechler [ctb] (<https://orcid.org/0000-0002-8685-9910>), Torsten Hothorn [aut, cre] (<https://orcid.org/0000-0001-8301-0471>)",
       "Maintainer": "Torsten Hothorn <Torsten.Hothorn@R-project.org>",
       "Repository": "CRAN"
+    },
+    "natserv": {
+      "Package": "natserv",
+      "Version": "1.0.0",
+      "Source": "Repository",
+      "Title": "'NatureServe' Interface",
+      "Description": "Interface to 'NatureServe' (<https://www.natureserve.org/>). Includes methods to get data, image metadata, search taxonomic names, and make maps.",
+      "License": "MIT + file LICENSE",
+      "URL": "https://docs.ropensci.org/natserv, https://github.com/ropensci/natserv",
+      "BugReports": "https://github.com/ropensci/natserv/issues",
+      "Authors@R": "c( person(\"Scott\", \"Chamberlain\", role = c(\"aut\", \"cre\"), email = \"myrmecocystus@gmail.com\", comment = c(ORCID=\"0000-0003-1444-9135\")), person(given = \"rOpenSci\", role = \"fnd\", comment = \"https://ropensci.org/\"))",
+      "LazyData": "true",
+      "VignetteBuilder": "knitr",
+      "Language": "en-US",
+      "Encoding": "UTF-8",
+      "Depends": [
+        "R(>= 3.2.1)"
+      ],
+      "Imports": [
+        "crul (>= 0.7.0)",
+        "jsonlite",
+        "tibble"
+      ],
+      "Suggests": [
+        "testthat",
+        "knitr",
+        "vcr"
+      ],
+      "RoxygenNote": "7.1.0",
+      "X-schema.org-applicationCategory": "Taxonomy",
+      "X-schema.org-keywords": "taxonomy, species, API, web-services, NatureServe, metadata, maps",
+      "X-schema.org-isPartOf": "https://ropensci.org",
+      "NeedsCompilation": "no",
+      "Author": "Scott Chamberlain [aut, cre] (<https://orcid.org/0000-0003-1444-9135>), rOpenSci [fnd] (https://ropensci.org/)",
+      "Maintainer": "Scott Chamberlain <myrmecocystus@gmail.com>",
+      "Repository": "https://packagemanager.posit.co/cran/latest"
     },
     "ncdf4": {
       "Package": "ncdf4",
@@ -6837,6 +6989,64 @@
       "Author": "Gavin L. Simpson [aut, cph, cre] (ORCID: <https://orcid.org/0000-0002-9084-8413>), R Core Team [cph], Douglas M. Bates [ctb], Jari Oksanen [ctb]",
       "Maintainer": "Gavin L. Simpson <ucfagls@gmail.com>",
       "Repository": "CRAN"
+    },
+    "phangorn": {
+      "Package": "phangorn",
+      "Version": "2.12.1",
+      "Source": "Bioconductor",
+      "Title": "Phylogenetic Reconstruction and Analysis",
+      "Authors@R": "c(person(\"Klaus\", \"Schliep\", role = c(\"aut\", \"cre\"), email = \"klaus.schliep@gmail.com\", comment = c(ORCID = \"0000-0003-2941-0161\")), person(\"Emmanuel\", \"Paradis\", role = \"aut\", comment = c(ORCID = \"0000-0003-3092-2199\")), person(\"Leonardo\", \"de Oliveira Martins\", role = \"aut\", comment = c(ORCID = \"0000-0001-5247-1320\")), person(\"Alastair\", \"Potts\", role = \"aut\"), person(\"Iris\", \"Bardel-Kahr\", role = \"aut\", comment = c(ORCID = \"0000-0002-8950-834X\")),             person(\"Tim W.\", \"White\", role = \"ctb\"), person(\"Cyrill\", \"Stachniss\", role = \"ctb\"), person(\"Michelle\", \"Kendall\", role = \"ctb\", email = \"m.kendall@imperial.ac.uk\"), person(\"Keren\", \"Halabi\",  role = \"ctb\"), person(\"Richel\", \"Bilderbeek\",  role = \"ctb\"), person(\"Kristin\", \"Winchell\", role = \"ctb\"), person(\"Liam\", \"Revell\", role = \"ctb\"), person(\"Mike\", \"Gilchrist\", role = \"ctb\"), person(\"Jeremy\", \"Beaulieu\", role = \"ctb\"), person(\"Brian\", \"O'Meara\", role = \"ctb\"), person(\"Long\", \"Qu\", role = \"ctb\"),  person(given= \"Joseph\", \"Brown\", role = \"ctb\",  comment = c(ORCID = \"0000-0002-3835-8062\")), person(given=\"Santiago\", \"Claramunt\", role = \"ctb\",  comment = c(ORCID = \"0000-0002-8926-5974\")))",
+      "Description": "Allows for estimation of phylogenetic trees and networks using Maximum Likelihood, Maximum Parsimony, distance methods and Hadamard conjugation (Schliep 2011). Offers methods for tree comparison,  model selection and visualization of phylogenetic networks as described in Schliep et al. (2017).",
+      "License": "GPL (>= 2)",
+      "URL": "https://github.com/KlausVigo/phangorn, https://klausvigo.github.io/phangorn/",
+      "BugReports": "https://github.com/KlausVigo/phangorn/issues",
+      "Depends": [
+        "ape (>= 5.8)",
+        "R (>= 4.1.0)"
+      ],
+      "Imports": [
+        "digest",
+        "fastmatch",
+        "generics",
+        "graphics",
+        "grDevices",
+        "igraph (>= 1.0)",
+        "Matrix",
+        "methods",
+        "parallel",
+        "quadprog",
+        "Rcpp",
+        "stats",
+        "utils"
+      ],
+      "Suggests": [
+        "apex",
+        "Biostrings",
+        "ggseqlogo",
+        "ggplot2",
+        "knitr",
+        "magick",
+        "rgl",
+        "rmarkdown",
+        "seqinr",
+        "testthat (>= 3.0.0)",
+        "tinytest",
+        "vdiffr",
+        "xtable"
+      ],
+      "LinkingTo": [
+        "Rcpp"
+      ],
+      "VignetteBuilder": "knitr, utils",
+      "biocViews": "Software, Technology, QualityControl",
+      "Encoding": "UTF-8",
+      "Repository": "RSPM",
+      "RoxygenNote": "7.3.2",
+      "Language": "en-US",
+      "Config/testthat/edition": "3",
+      "NeedsCompilation": "yes",
+      "Author": "Klaus Schliep [aut, cre] (<https://orcid.org/0000-0003-2941-0161>), Emmanuel Paradis [aut] (<https://orcid.org/0000-0003-3092-2199>), Leonardo de Oliveira Martins [aut] (<https://orcid.org/0000-0001-5247-1320>), Alastair Potts [aut], Iris Bardel-Kahr [aut] (<https://orcid.org/0000-0002-8950-834X>), Tim W. White [ctb], Cyrill Stachniss [ctb], Michelle Kendall [ctb], Keren Halabi [ctb], Richel Bilderbeek [ctb], Kristin Winchell [ctb], Liam Revell [ctb], Mike Gilchrist [ctb], Jeremy Beaulieu [ctb], Brian O'Meara [ctb], Long Qu [ctb], Joseph Brown [ctb] (<https://orcid.org/0000-0002-3835-8062>), Santiago Claramunt [ctb] (<https://orcid.org/0000-0002-8926-5974>)",
+      "Maintainer": "Klaus Schliep <klaus.schliep@gmail.com>"
     },
     "phylobase": {
       "Package": "phylobase",
@@ -7193,6 +7403,31 @@
       "Author": "Hadley Wickham [aut], Winston Chang [aut], Jim Hester [aut], Lionel Henry [aut, cre], Posit Software, PBC [cph, fnd], R Core team [ctb] (Some namespace and vignette code extracted from base R)",
       "Maintainer": "Lionel Henry <lionel@posit.co>",
       "Repository": "CRAN"
+    },
+    "plot3D": {
+      "Package": "plot3D",
+      "Version": "1.4.2",
+      "Source": "Repository",
+      "Title": "Plotting Multi-Dimensional Data",
+      "Authors@R": "person(given = \"Karline\", family = \"Soetaert\", role = c(\"aut\", \"cre\"), email = \"karline.soetaert@nioz.nl\", comment = c(ORCID = \"0000-0003-4603-7100\"))",
+      "Depends": [
+        "R (>= 2.15)"
+      ],
+      "Imports": [
+        "misc3d",
+        "stats",
+        "graphics",
+        "grDevices",
+        "methods"
+      ],
+      "Description": "Functions for viewing 2-D and 3-D data, including perspective plots, slice plots, surface plots, scatter plots, etc. Includes data sets from oceanography.",
+      "License": "GPL (>= 3.0)",
+      "LazyData": "yes",
+      "NeedsCompilation": "no",
+      "Author": "Karline Soetaert [aut, cre] (ORCID: <https://orcid.org/0000-0003-4603-7100>)",
+      "Maintainer": "Karline Soetaert <karline.soetaert@nioz.nl>",
+      "Repository": "https://packagemanager.posit.co/cran/latest",
+      "Encoding": "UTF-8"
     },
     "plotly": {
       "Package": "plotly",
@@ -8331,6 +8566,38 @@
       "Maintainer": "Gábor Csárdi <csardi.gabor@gmail.com>",
       "Repository": "CRAN"
     },
+    "rentrez": {
+      "Package": "rentrez",
+      "Version": "1.2.4",
+      "Source": "Repository",
+      "Date": "2025-06-11",
+      "Title": "'Entrez' in R",
+      "Authors@R": "c( person(\"David\", \"Winter\", role=c(\"aut\", \"cre\"),  email = \"david.winter@gmail.com\",  comment = c(ORCID = \"0000-0002-6165-0029\")), person(\"Scott\", \"Chamberlain\", role=\"ctb\", email = \"myrmecocystus@gmail.com\", comment = c(ORCID = \"0000-0003-1444-9135\")), person(\"Han\",\"Guangchun\", role=c(\"ctb\"),email=\"hanguangchun@gmail.com\", comment = c(ORCID = \"0000-0001-9277-2507\")) )",
+      "Depends": [
+        "R (>= 2.6.0)"
+      ],
+      "Imports": [
+        "XML",
+        "httr (>= 0.5)",
+        "jsonlite (>= 0.9)"
+      ],
+      "Suggests": [
+        "testthat",
+        "knitr",
+        "rmarkdown"
+      ],
+      "URL": "https://github.com/ropensci/rentrez/",
+      "BugReports": "https://github.com/ropensci/rentrez/issues/",
+      "Description": "Provides an R interface to the NCBI's 'EUtils' API,  allowing users to search databases like 'GenBank'  <https://www.ncbi.nlm.nih.gov/genbank/> and 'PubMed'  <https://pubmed.ncbi.nlm.nih.gov/>, process the  results of those searches and pull data into their R sessions.",
+      "VignetteBuilder": "knitr",
+      "License": "MIT + file LICENSE",
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.3.2",
+      "NeedsCompilation": "no",
+      "Author": "David Winter [aut, cre] (ORCID: <https://orcid.org/0000-0002-6165-0029>), Scott Chamberlain [ctb] (ORCID: <https://orcid.org/0000-0003-1444-9135>), Han Guangchun [ctb] (ORCID: <https://orcid.org/0000-0001-9277-2507>)",
+      "Maintainer": "David Winter <david.winter@gmail.com>",
+      "Repository": "https://packagemanager.posit.co/cran/latest"
+    },
     "renv": {
       "Package": "renv",
       "Version": "1.1.4",
@@ -8418,6 +8685,40 @@
       "Author": "Hadley Wickham [aut, cre]",
       "Maintainer": "Hadley Wickham <hadley@posit.co>",
       "Repository": "CRAN"
+    },
+    "ritis": {
+      "Package": "ritis",
+      "Version": "1.0.0",
+      "Source": "Repository",
+      "Title": "Integrated Taxonomic Information System Client",
+      "Description": "An interface to the Integrated Taxonomic Information System ('ITIS') (<https://www.itis.gov>). Includes functions to work with the 'ITIS' REST API methods (<https://www.itis.gov/ws_description.html>), as well as the 'Solr' web service (<https://www.itis.gov/solr_documentation.html>).",
+      "License": "MIT + file LICENSE",
+      "URL": "https://github.com/ropensci/ritis (devel) https://docs.ropensci.org/ritis/ (docs)",
+      "BugReports": "https://github.com/ropensci/ritis/issues",
+      "Authors@R": "c( person(\"Scott\", \"Chamberlain\", role = c(\"aut\", \"cre\"), email = \"myrmecocystus@gmail.com\", comment = c(ORCID = \"0000-0003-1444-9135\")), person(given = \"rOpenSci\", role = \"fnd\", comment = \"https://ropensci.org/\"))",
+      "LazyData": "true",
+      "Encoding": "UTF-8",
+      "Language": "en-US",
+      "Imports": [
+        "solrium (>= 1.1.4)",
+        "crul (>= 0.9.0)",
+        "jsonlite",
+        "data.table",
+        "tibble"
+      ],
+      "Suggests": [
+        "testthat",
+        "webmockr",
+        "vcr (>= 0.5.4)"
+      ],
+      "RoxygenNote": "7.1.1",
+      "X-schema.org-applicationCategory": "Taxonomy",
+      "X-schema.org-keywords": "taxonomy, biology, nomenclature, JSON, API, web, api-client, identifiers, species, names",
+      "X-schema.org-isPartOf": "https://ropensci.org",
+      "NeedsCompilation": "no",
+      "Author": "Scott Chamberlain [aut, cre] (<https://orcid.org/0000-0003-1444-9135>), rOpenSci [fnd] (https://ropensci.org/)",
+      "Maintainer": "Scott Chamberlain <myrmecocystus@gmail.com>",
+      "Repository": "https://packagemanager.posit.co/cran/latest"
     },
     "rlang": {
       "Package": "rlang",
@@ -8601,6 +8902,48 @@
       "Author": "Dewey Dunnington [aut, cre] (<https://orcid.org/0000-0002-9415-4582>), Timothée Giraud [ctb]",
       "Repository": "CRAN"
     },
+    "rotl": {
+      "Package": "rotl",
+      "Version": "3.1.1",
+      "Source": "Repository",
+      "Title": "Interface to the 'Open Tree of Life' API",
+      "Authors@R": "c(person(given = \"Francois\", family = \"Michonneau\", role = c(\"aut\", \"cre\"), email = \"francois.michonneau@gmail.com\", comment = c(ORCID = \"0000-0002-9092-966X\")), person(given = \"Joseph\", family = \"Brown\", role = \"aut\", comment = c(ORCID = \"0000-0002-3835-8062\")), person(given = \"David\", family = \"Winter\", role = \"aut\", comment = c(ORCID = \"0000-0002-6165-0029\")), person(given = \"Scott\", family = \"Chamberlain\", role = \"rev\", comment = c(ORCID = \"0000-0003-1444-9135\")))",
+      "Description": "An interface to the 'Open Tree of Life' API to retrieve phylogenetic trees, information about studies used to assemble the synthetic tree, and utilities to match taxonomic names to 'Open Tree identifiers'. The 'Open Tree of Life' aims at assembling a comprehensive phylogenetic tree for all named species.",
+      "License": "BSD_2_clause + file LICENSE",
+      "URL": "https://docs.ropensci.org/rotl/, https://github.com/ropensci/rotl",
+      "BugReports": "https://github.com/ropensci/rotl/issues",
+      "Depends": [
+        "R (>= 3.1.1)"
+      ],
+      "Imports": [
+        "ape",
+        "curl (>= 3.0.0)",
+        "httr",
+        "jsonlite",
+        "rentrez",
+        "rlang",
+        "rncl (>= 0.6.0)"
+      ],
+      "Suggests": [
+        "knitr (>= 1.12)",
+        "MCMCglmm",
+        "phylobase",
+        "readxl",
+        "rmarkdown (>= 0.7)",
+        "RNeXML",
+        "testthat"
+      ],
+      "VignetteBuilder": "knitr",
+      "Encoding": "UTF-8",
+      "X-schema.org-isPartOf": "https://ropensci.org",
+      "X-schema.org-keywords": "metadata, ropensci, phylogenetics, independant-contrasts, biodiversity",
+      "X-schema.org-relatedLink": "https://codemeta.github.io/codemetar",
+      "RoxygenNote": "7.3.3",
+      "NeedsCompilation": "no",
+      "Author": "Francois Michonneau [aut, cre] (ORCID: <https://orcid.org/0000-0002-9092-966X>), Joseph Brown [aut] (ORCID: <https://orcid.org/0000-0002-3835-8062>), David Winter [aut] (ORCID: <https://orcid.org/0000-0002-6165-0029>), Scott Chamberlain [rev] (ORCID: <https://orcid.org/0000-0003-1444-9135>)",
+      "Maintainer": "Francois Michonneau <francois.michonneau@gmail.com>",
+      "Repository": "https://packagemanager.posit.co/cran/latest"
+    },
     "roxygen2": {
       "Package": "roxygen2",
       "Version": "7.3.3",
@@ -8716,6 +9059,52 @@
       "Author": "Kirill Müller [aut, cre] (ORCID: <https://orcid.org/0000-0002-1416-3412>)",
       "Maintainer": "Kirill Müller <kirill@cynkra.com>",
       "Repository": "CRAN"
+    },
+    "rredlist": {
+      "Package": "rredlist",
+      "Version": "1.1.1",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "'IUCN' Red List Client",
+      "Description": "'IUCN' Red List (<https://api.iucnredlist.org/>) client. The 'IUCN' Red List is a global list of threatened and endangered species. Functions cover all of the Red List 'API' routes. An 'API' key is required.",
+      "Authors@R": "c(person(given = \"William\", family = \"Gearty\", role = c(\"aut\", \"cre\"), email = \"willgearty@gmail.com\", comment = c(ORCID = \"0000-0003-0076-3262\")), person(given = \"Scott\", family = \"Chamberlain\", role = c(\"aut\"), email = \"myrmecocystus@gmail.com\", comment = c(ORCID = \"0000-0003-1444-9135\")), person(given = \"rOpenSci\", role = \"fnd\", comment = c(ROR = \"019jywm96\")), person(given = \"Maëlle\", family = \"Salmon\", role = \"ctb\", email = \"maelle.salmon@yahoo.se\", comment = c(ORCID = \"0000-0002-2815-0399\")), person(given = \"Kevin\", family = \"Cazelles\", role = \"rev\", email = \"kevin.cazelles@insileco.io\",  comment = c(ORCID = \"0000-0001-6619-9874\")), person(given = \"Stephanie\", family = \"Hazlitt\", role = \"rev\", email = \"stephhazlitt@gmail.com\", comment = c(ORCID = \"0000-0002-3161-2304\")) )",
+      "License": "MIT + file LICENSE",
+      "URL": "https://docs.ropensci.org/rredlist/, https://github.com/ropensci/rredlist",
+      "BugReports": "https://github.com/ropensci/rredlist/issues",
+      "Encoding": "UTF-8",
+      "Language": "en-US",
+      "Imports": [
+        "crul (>= 0.3.8)",
+        "jsonlite (>= 1.1)",
+        "lifecycle",
+        "cli",
+        "curl",
+        "rlang"
+      ],
+      "Suggests": [
+        "spelling",
+        "testthat",
+        "vcr (>= 0.6.0)",
+        "knitr",
+        "rmarkdown",
+        "webmockr",
+        "microbenchmark",
+        "ggplot2",
+        "dplyr",
+        "tibble",
+        "tidyr",
+        "patchwork",
+        "vdiffr"
+      ],
+      "RoxygenNote": "7.3.2.9000",
+      "VignetteBuilder": "knitr",
+      "X-schema.org-applicationCategory": "Biodiversity",
+      "X-schema.org-keywords": "IUCN, biodiversity, API, web-services, traits, habitat, species, conservation",
+      "X-schema.org-isPartOf": "https://ropensci.org",
+      "NeedsCompilation": "no",
+      "Author": "William Gearty [aut, cre] (ORCID: <https://orcid.org/0000-0003-0076-3262>), Scott Chamberlain [aut] (ORCID: <https://orcid.org/0000-0003-1444-9135>), rOpenSci [fnd] (ROR: <https://ror.org/019jywm96>), Maëlle Salmon [ctb] (ORCID: <https://orcid.org/0000-0002-2815-0399>), Kevin Cazelles [rev] (ORCID: <https://orcid.org/0000-0001-6619-9874>), Stephanie Hazlitt [rev] (ORCID: <https://orcid.org/0000-0002-3161-2304>)",
+      "Maintainer": "William Gearty <willgearty@gmail.com>",
+      "Repository": "https://packagemanager.posit.co/cran/latest"
     },
     "rstatix": {
       "Package": "rstatix",
@@ -9279,6 +9668,43 @@
       "NeedsCompilation": "no",
       "Repository": "CRAN"
     },
+    "solrium": {
+      "Package": "solrium",
+      "Version": "1.2.0",
+      "Source": "Repository",
+      "Title": "General Purpose R Interface to 'Solr'",
+      "Description": "Provides a set of functions for querying and parsing data from 'Solr' (<https://solr.apache.org/>) 'endpoints' (local and remote), including search, 'faceting', 'highlighting', 'stats', and 'more like this'. In addition, some functionality is included for creating, deleting, and updating documents in a 'Solr' 'database'.",
+      "Authors@R": "c( person(\"Scott\", \"Chamberlain\", role = c(\"aut\", \"cre\"), email = \"myrmecocystus@gmail.com\",  comment = c(ORCID=\"0000-0003-1444-9135\")), person(given = \"rOpenSci\", role = \"fnd\", comment = \"https://ropensci.org/\"))",
+      "License": "MIT + file LICENSE",
+      "URL": "https://github.com/ropensci/solrium (devel), https://docs.ropensci.org/solrium/ (user manual)",
+      "BugReports": "https://github.com/ropensci/solrium/issues",
+      "VignetteBuilder": "knitr",
+      "Encoding": "UTF-8",
+      "Language": "en-US",
+      "Imports": [
+        "utils",
+        "dplyr (>= 0.5.0)",
+        "plyr (>= 1.8.4)",
+        "crul (>= 0.4.0)",
+        "xml2 (>= 1.0.0)",
+        "jsonlite (>= 1.0)",
+        "tibble (>= 1.4.2)",
+        "R6"
+      ],
+      "Suggests": [
+        "testthat",
+        "knitr",
+        "rmarkdown"
+      ],
+      "RoxygenNote": "7.1.1",
+      "X-schema.org-applicationCategory": "Databases",
+      "X-schema.org-keywords": "database, search, JSON, XML, API, web",
+      "X-schema.org-isPartOf": "https://ropensci.org",
+      "NeedsCompilation": "no",
+      "Author": "Scott Chamberlain [aut, cre] (<https://orcid.org/0000-0003-1444-9135>), rOpenSci [fnd] (https://ropensci.org/)",
+      "Maintainer": "Scott Chamberlain <myrmecocystus@gmail.com>",
+      "Repository": "https://packagemanager.posit.co/cran/latest"
+    },
     "sourcetools": {
       "Package": "sourcetools",
       "Version": "0.1.7-1",
@@ -9784,6 +10210,63 @@
       "NeedsCompilation": "no",
       "Author": "William Michael Landau [aut, cre] (ORCID: <https://orcid.org/0000-0003-1878-3253>), Matthew T. Warkentin [ctb], Mark Edmondson [ctb] (ORCID: <https://orcid.org/0000-0002-8434-3881>), Samantha Oliver [rev] (ORCID: <https://orcid.org/0000-0001-5668-1165>), Tristan Mahr [rev] (ORCID: <https://orcid.org/0000-0002-8890-5116>), Eli Lilly and Company [cph, fnd]",
       "Maintainer": "William Michael Landau <will.landau.oss@gmail.com>",
+      "Repository": "CRAN"
+    },
+    "taxize": {
+      "Package": "taxize",
+      "Version": "0.10.1",
+      "Source": "Repository",
+      "Title": "Taxonomic Information from Around the Web",
+      "Description": "Interacts with a suite of web application programming interfaces (API) for taxonomic tasks, such as getting database specific taxonomic identifiers, verifying species names, getting taxonomic hierarchies, fetching downstream and upstream taxonomic names, getting taxonomic synonyms, converting scientific to common names and vice versa, and more. Some of the services supported include 'NCBI E-utilities' (<https://www.ncbi.nlm.nih.gov/books/NBK25501/>), 'Encyclopedia of Life' (<https://eol.org/docs/what-is-eol/data-services>), 'Global Biodiversity Information Facility' (<https://techdocs.gbif.org/en/openapi/>), and many more. Links to the API documentation for other supported services are available in the documentation for their respective functions in this package.",
+      "License": "MIT + file LICENSE",
+      "URL": "https://docs.ropensci.org/taxize/ (website), https://github.com/ropensci/taxize (devel)",
+      "BugReports": "https://github.com/ropensci/taxize/issues",
+      "Authors@R": "c(person(given = \"Scott\", family = \"Chamberlain\", role = c(\"aut\"), email = \"myrmecocystus@gmail.com\"), person(given = \"Eduard\", family = \"Szoecs\", role = \"aut\"), person(given = \"Zachary\", family = \"Foster\", role = c(\"aut\", \"cre\"), email = \"zacharyfoster1989@gmail.com\"), person(given = \"Zebulun\", family = \"Arendsee\", role = \"aut\"), person(given = \"Carl\", family = \"Boettiger\", role = \"ctb\"), person(given = \"Karthik\", family = \"Ram\", role = \"ctb\"), person(given = \"Ignasi\", family = \"Bartomeus\", role = \"ctb\"), person(given = \"John\", family = \"Baumgartner\", role = \"ctb\"), person(given = \"James\", family = \"O'Donnell\", role = \"ctb\"), person(given = \"Jari\", family = \"Oksanen\", role = \"ctb\"), person(given = \"Bastian Greshake\", family = \"Tzovaras\", role = \"ctb\"), person(given = \"Philippe\", family = \"Marchand\", role = \"ctb\"), person(given = \"Vinh\", family = \"Tran\", role = \"ctb\"), person(given = \"Maëlle\", family = \"Salmon\", role = \"ctb\"), person(given = \"Gaopeng\", family = \"Li\", role = \"ctb\"), person(given = \"Matthias\", family = \"Grenié\", role = \"ctb\"), person(given = \"rOpenSci\", role = \"fnd\"))",
+      "LazyLoad": "yes",
+      "LazyData": "true",
+      "Encoding": "UTF-8",
+      "Language": "en-US",
+      "Depends": [
+        "R(>= 3.2.1)"
+      ],
+      "Imports": [
+        "graphics",
+        "methods",
+        "stats",
+        "utils",
+        "crul (>= 0.7.0)",
+        "xml2 (>= 1.2.0)",
+        "jsonlite",
+        "ape",
+        "zoo",
+        "data.table",
+        "tibble (>= 1.2)",
+        "rredlist",
+        "rotl (>= 3.0.0)",
+        "ritis (>= 0.7.6)",
+        "worrms (>= 0.4.0)",
+        "natserv (>= 1.0.0)",
+        "wikitaxa (>= 0.3.0)",
+        "R6",
+        "crayon",
+        "cli",
+        "phangorn",
+        "lifecycle",
+        "curl",
+        "stringi"
+      ],
+      "Suggests": [
+        "testthat",
+        "vegan",
+        "vcr"
+      ],
+      "RoxygenNote": "7.3.3",
+      "X-schema.org-applicationCategory": "Taxonomy",
+      "X-schema.org-keywords": "taxonomy, biology, nomenclature, JSON, API, web, api-client, identifiers, species, names",
+      "X-schema.org-isPartOf": "https://ropensci.org",
+      "NeedsCompilation": "no",
+      "Author": "Scott Chamberlain [aut], Eduard Szoecs [aut], Zachary Foster [aut, cre], Zebulun Arendsee [aut], Carl Boettiger [ctb], Karthik Ram [ctb], Ignasi Bartomeus [ctb], John Baumgartner [ctb], James O'Donnell [ctb], Jari Oksanen [ctb], Bastian Greshake Tzovaras [ctb], Philippe Marchand [ctb], Vinh Tran [ctb], Maëlle Salmon [ctb], Gaopeng Li [ctb], Matthias Grenié [ctb], rOpenSci [fnd]",
+      "Maintainer": "Zachary Foster <zacharyfoster1989@gmail.com>",
       "Repository": "CRAN"
     },
     "tcltk2": {
@@ -10797,6 +11280,49 @@
       "NeedsCompilation": "no",
       "Repository": "CRAN"
     },
+    "wikitaxa": {
+      "Package": "wikitaxa",
+      "Version": "0.5.0",
+      "Source": "Repository",
+      "Title": "Taxonomic Information from 'Wikipedia'",
+      "Description": "'Taxonomic' information from 'Wikipedia', 'Wikicommons', 'Wikispecies', and 'Wikidata'. Functions included for getting taxonomic information from each of the sources just listed, as well performing taxonomic search.",
+      "License": "MIT + file LICENSE",
+      "URL": "https://docs.ropensci.org/wikitaxa/, https://github.com/ropensci/wikitaxa",
+      "BugReports": "https://github.com/ropensci/wikitaxa/issues",
+      "Authors@R": "c( person(\"Scott\", \"Chamberlain\", role = \"aut\", email = \"myrmecocystus+r@gmail.com\"), person(\"Ethan\", \"Welty\", role = \"aut\"), person(\"Grzegorz\", \"Sapijaszko\", role = \"aut\"), person(\"Zachary\", \"Foster\", role = c(\"aut\", \"cre\"), email = \"zacharyfoster1989@gmail.com\") )",
+      "LazyLoad": "yes",
+      "LazyData": "yes",
+      "Encoding": "UTF-8",
+      "Language": "en-US",
+      "VignetteBuilder": "knitr",
+      "Depends": [
+        "R(>= 3.2.1)"
+      ],
+      "Imports": [
+        "data.table",
+        "curl",
+        "crul (>= 0.3.4)",
+        "tibble",
+        "jsonlite",
+        "xml2",
+        "WikipediR",
+        "httr"
+      ],
+      "Suggests": [
+        "testthat",
+        "knitr",
+        "rmarkdown",
+        "vcr"
+      ],
+      "RoxygenNote": "7.3.3",
+      "X-schema.org-applicationCategory": "Taxonomy",
+      "X-schema.org-keywords": "taxonomy, species, API, web-services, Wikipedia, vernacular, Wikispecies, Wikicommons",
+      "X-schema.org-isPartOf": "https://ropensci.org",
+      "NeedsCompilation": "no",
+      "Author": "Scott Chamberlain [aut], Ethan Welty [aut], Grzegorz Sapijaszko [aut], Zachary Foster [aut, cre]",
+      "Maintainer": "Zachary Foster <zacharyfoster1989@gmail.com>",
+      "Repository": "CRAN"
+    },
     "withr": {
       "Package": "withr",
       "Version": "3.0.2",
@@ -10863,6 +11389,42 @@
       "NeedsCompilation": "yes",
       "Author": "Dewey Dunnington [aut, cre] (ORCID: <https://orcid.org/0000-0002-9415-4582>), Edzer Pebesma [aut] (ORCID: <https://orcid.org/0000-0001-8049-7069>), Anthony North [ctb]",
       "Repository": "CRAN"
+    },
+    "worrms": {
+      "Package": "worrms",
+      "Version": "0.4.3",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "World Register of Marine Species (WoRMS) Client",
+      "Description": "Client for World Register of Marine Species (<https://www.marinespecies.org/>). Includes functions for each of the API methods, including searching for names by name, date and common names, searching using external identifiers, fetching synonyms, as well as fetching taxonomic children and taxonomic classification.",
+      "Authors@R": "c( person(\"Scott\", \"Chamberlain\", role = \"aut\", email = \"myrmecocystus@gmail.com\", comment = c(ORCID = \"0000-0003-1444-9135\")), person(\"Bart\", \"Vanhoorne.\", email = \"bart.vanhoorne@vliz.be\", role = c(\"aut\",\"cre\")) )",
+      "License": "MIT + file LICENSE",
+      "URL": "https://docs.ropensci.org/worrms/, https://github.com/ropensci/worrms (devel), https://taxize.dev (user manual)",
+      "BugReports": "https://github.com/ropensci/worrms/issues",
+      "VignetteBuilder": "knitr",
+      "Encoding": "UTF-8",
+      "Language": "en-US",
+      "Imports": [
+        "crul (>= 0.6.0)",
+        "tibble (>= 1.2)",
+        "jsonlite (>= 1.1)",
+        "data.table"
+      ],
+      "Suggests": [
+        "roxygen2 (>= 7.1.0)",
+        "knitr",
+        "rmarkdown",
+        "testthat",
+        "vcr (>= 0.2.0)"
+      ],
+      "RoxygenNote": "7.2.3",
+      "X-schema.org-applicationCategory": "Biology",
+      "X-schema.org-keywords": "biology, science, marine, API, web, api-client, worms, species",
+      "X-schema.org-isPartOf": "https://ropensci.org",
+      "NeedsCompilation": "no",
+      "Author": "Scott Chamberlain [aut] (<https://orcid.org/0000-0003-1444-9135>), Bart Vanhoorne. [aut, cre]",
+      "Maintainer": "Bart Vanhoorne. <bart.vanhoorne@vliz.be>",
+      "Repository": "https://packagemanager.posit.co/cran/latest"
     },
     "writexl": {
       "Package": "writexl",
