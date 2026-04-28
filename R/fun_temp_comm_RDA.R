@@ -416,6 +416,13 @@ fun_temp_comm_RDA <- function(temp_extraction, temp_in_situ, data_and_meta_clean
        ylim = c(min(c(scores_sites$CAP2, scores_vars$CAP2)) - 0.1,
                 max(c(scores_sites$CAP2, scores_vars$CAP2)) + 0.1))
   
+  library(vegan)
+  
+  orditorp(as.matrix(scores_sites[, c("CAP1", "CAP2")]),
+           labels = scores_sites$site,
+           cex = 0.8,
+           col = scores_sites$color)
+  
   # Ajouter les labels des sites
   text(scores_sites$CAP1, scores_sites$CAP2, labels = scores_sites$site, pos = 3, cex = 0.8)
   

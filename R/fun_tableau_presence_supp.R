@@ -45,6 +45,13 @@ fun_tableau_presence <- function(data_and_meta_clean_fullsites){
                                                "Cni_Plumulariidae")]
   
 
+  data <- data[, msp_list_filter]
+  data_pa <- vegan::decostand(data, "pa")
+  richesse_totale <- sum(colSums(data_pa) > 0)
+  
+  especes_presentes <- colnames(data_pa)[colSums(data_pa) > 0]
+  
+  msp_list_filter
   
   
   data <- data[, msp_list_filter]

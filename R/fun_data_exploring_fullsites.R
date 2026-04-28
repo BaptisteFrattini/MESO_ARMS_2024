@@ -18,7 +18,6 @@ fun_data_exploring_fullsites <- function(data_and_meta_clean_fullsites){
   library(wesanderson)
   library(vegan)
   library(dplyr)
-
   
   meta_P50 <- subset(meta, campain == "P50ARMS") 
   data_P50 <- subset(data, meta$campain == "P50ARMS") 

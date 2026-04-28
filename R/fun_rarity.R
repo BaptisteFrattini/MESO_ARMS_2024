@@ -65,7 +65,9 @@ fun_rarity <- function(data_and_meta_clean_fullsites, gps_sites, runa_map, roda_
   
   data <- data[, msp_list_filter]
   data_pa <- vegan::decostand(data, "pa")
+  richesse_totale <- sum(colSums(data_pa) > 0)
   
+  especes_presentes <- colnames(data_pa)[colSums(data_pa) > 0]
   
   species_names <- data.frame(Species = colnames(data))
   
