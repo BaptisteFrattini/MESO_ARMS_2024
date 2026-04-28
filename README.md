@@ -2,7 +2,8 @@
 
 ## Overview
 
-This repository contains the full analytical workflow supporting the manuscript “Beta diversity and rarity assessment of sessile cryptobenthic communities across depth and islands can inform coral reef conservation”, currently in preparation and not yet published.
+This repository contains the full analytical workflow supporting the manuscript “Beta diversity and rarity assessment of sessile cryptobenthic communities across depth and islands can inform coral reef conservation”, accepted for publication in Diversity and Distributions, an open access, international, biodiversity journal devoted to the advancement of conservation biogeography.
+
 
 The repository ensures reproducibility, transparency, and traceability of all analyses and figures presented in the manuscript. All results, tables, and graphical outputs are generated programmatically from raw and processed data using a fully specified R environment and a pipeline-based workflow.
 
